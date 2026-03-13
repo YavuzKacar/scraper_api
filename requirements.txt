@@ -1,0 +1,12 @@
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+httpx[socks]>=0.27.0
+aiosqlite>=0.20.0
+pydantic>=2.7.0
+
+# Browser scraping (optional — required for 'browser' and 'hybrid' strategies)
+undetected-chromedriver>=3.5.5
+selenium>=4.20.0
+
+# Tor identity rotation (optional — required for NEWNYM circuit rotation)
+stem>=1.8.2
