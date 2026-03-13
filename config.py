@@ -43,6 +43,10 @@ class Config:
     scheduler_interval_seconds: int     # How often the background scheduler runs
     metadata_max_age_hours: int         # Re-classify records older than this
 
+    # ── Logging ───────────────────────────────────────────────────────────────
+    log_level: str                      # DEBUG | INFO | WARNING | ERROR
+    log_dir: str                        # Directory for rotating log files ("" = console only)
+
 
 def load_config() -> Config:
     """Build Config from environment variables."""
@@ -64,6 +68,8 @@ def load_config() -> Config:
         classification_timeout=float(os.environ.get("CLASSIFICATION_TIMEOUT", "20.0")),
         scheduler_interval_seconds=int(os.environ.get("SCHEDULER_INTERVAL_SECONDS", "3600")),
         metadata_max_age_hours=int(os.environ.get("METADATA_MAX_AGE_HOURS", "24")),
+        log_level=os.environ.get("LOG_LEVEL", "INFO").upper(),
+        log_dir=os.environ.get("LOG_DIR", "logs"),
     )
 
 

@@ -19,6 +19,8 @@ import asyncio
 import contextlib
 import logging
 import socket
+import time
+import uuid
 from urllib.parse import unquote
 
 import uvicorn
@@ -29,6 +31,7 @@ from fastapi.responses import JSONResponse
 from classifier import classify_url
 from config import CONFIG
 from database import get_url_record, init_db, upsert_url_record
+from logging_setup import setup_logging
 from models import (
     ClassifyRequest,
     ClassifyResponse,
@@ -44,10 +47,7 @@ from scheduler import start_scheduler, stop_scheduler
 from security import require_api_key
 
 # ── Logging setup ─────────────────────────────────────────────────────────────
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s — %(message)s",
-)
+setup_logging(log_level=CONFIG.log_level, log_dir=CONFIG.log_dir)
 logger = logging.getLogger(__name__)
 
 # ── Application lifecycle ─────────────────────────────────────────────────────
@@ -87,6 +87,59 @@ app.add_middleware(
     allow_methods=["POST", "GET"],
     allow_headers=["X-API-KEY", "Content-Type"],
 )
+
+
+# ── Request logging middleware ────────────────────────────────────────────────────
+
+_req_logger = logging.getLogger("scraper_api.requests")
+
+
+@app.middleware("http")
+async def _request_logging_middleware(request, call_next):
+    """
+    Log every request with: method, path, status code, duration, and a
+    unique request ID that appears in all log lines for that request.
+    """
+    request_id = str(uuid.uuid4())[:8]
+    start = time.perf_counter()
+
+    _req_logger.info(
+        "[%s] → %s %s (client=%s)",
+        request_id,
+        request.method,
+        request.url.path,
+        request.client.host if request.client else "unknown",
+    )
+
+    try:
+        response = await call_next(request)
+    except Exception as exc:
+        duration_ms = (time.perf_counter() - start) * 1000
+        _req_logger.error(
+            "[%s] ✗ %s %s — unhandled exception after %.0fms: %s",
+            request_id,
+            request.method,
+            request.url.path,
+            duration_ms,
+            exc,
+            exc_info=True,
+        )
+        raise
+
+    duration_ms = (time.perf_counter() - start) * 1000
+    level = logging.WARNING if response.status_code >= 400 else logging.INFO
+    _req_logger.log(
+        level,
+        "[%s] ← %s %s %d (%.0fms)",
+        request_id,
+        request.method,
+        request.url.path,
+        response.status_code,
+        duration_ms,
+    )
+
+    response.headers["X-Request-ID"] = request_id
+    return response
 
 
 # ── Error handlers ─────────────────────────────────────────────────────────────
