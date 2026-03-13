@@ -109,6 +109,7 @@ class URLRecord(BaseModel):
 class ScrapeRequest(BaseModel):
     url: str
     force_reclassify: bool = False
+    force_scrape: bool = False  # bypass HTML cache, keep existing classification
 
     @field_validator("url")
     @classmethod

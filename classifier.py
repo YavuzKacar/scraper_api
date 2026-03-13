@@ -157,6 +157,14 @@ def _detect_antiscraping(
     # Signal 5 — Very short HTML for a 200 response (block page)
     signals.append(status_code == 200 and len(html.strip()) < 512)
 
+    # Signal 6 — 200 response whose content is actually a failure/error page
+    # (covers custom bot detection like X.com that doesn't use Cloudflare/CAPTCHA)
+    if status_code == 200 and html:
+        from utils import is_scrape_failure
+        signals.append(is_scrape_failure(html, status_code))
+    else:
+        signals.append(False)
+
     protected_count = sum(signals)
 
     if protected_count >= 2:
@@ -231,9 +239,15 @@ async def _probe_tor(url: str) -> tuple[TorAvailability, float]:
             verify=False,
         ) as client:
             resp = await client.get(url, headers=headers)
-            if resp.status_code < 500:
-                return TorAvailability.yes, 0.85
-            return TorAvailability.no, 0.7
+            if resp.status_code >= 500:
+                return TorAvailability.no, 0.7
+            # Validate content quality — a 200 that is a failure page means
+            # Tor alone can't bypass the site's bot detection.
+            from utils import is_scrape_failure
+            if is_scrape_failure(resp.text or "", resp.status_code):
+                logger.debug("Tor probe returned failure-page content for %s", url)
+                return TorAvailability.no, 0.75
+            return TorAvailability.yes, 0.85
     except Exception as exc:
         logger.debug("Tor probe failed for %s: %s", url, exc)
         return TorAvailability.no, 0.75
@@ -254,10 +268,14 @@ async def _probe_browser(
     static probe showed protection indicators.  Otherwise we infer from
     the static result.
     """
-    # Check whether protection is evident from static fetch
+    # Check whether protection is evident from static fetch — includes both
+    # standard Cloudflare/CAPTCHA challenges AND generic failure pages
+    # (e.g. X.com-style "something went wrong" bot detection).
+    from utils import is_scrape_failure
     has_challenge = bool(
         _CLOUDFLARE_HTML.search(html_from_static)
         or _CAPTCHA_PATTERNS.search(html_from_static)
+        or is_scrape_failure(html_from_static, 0)
     )
 
     if not has_challenge:

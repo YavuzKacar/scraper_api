@@ -223,7 +223,8 @@ async def scrape(request: ScrapeRequest) -> ScrapeResponse:
         )
 
     # ── Step 4: cache check ───────────────────────────────────────────────────
-    if not request.force_reclassify and _is_cache_valid(record):
+    bypass_cache = request.force_reclassify or request.force_scrape
+    if not bypass_cache and _is_cache_valid(record):
         logger.info("Returning cached HTML for %s", url)
         return ScrapeResponse(
             url=url,

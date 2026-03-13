@@ -55,7 +55,7 @@ def _uc_driver(profile: FingerprintProfile, headless: bool = True):
         # New headless mode — harder to detect than "--headless"
         options.add_argument("--headless=new")
 
-    driver = uc.Chrome(options=options)
+    driver = uc.Chrome(options=options, version_main=145)
 
     try:
         # Inject fingerprint overrides before any page load

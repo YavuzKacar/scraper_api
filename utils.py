@@ -84,6 +84,14 @@ _BLOCK_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Application-level error pages (no size gate — these pages can be large).
+_APP_ERROR_RE = re.compile(
+    r"(something went wrong|try again later|we('re| are) having trouble|"
+    r"an error has occurred|page (isn'?t|is not) available|service unavailable|"
+    r"error loading (page|content))",
+    re.IGNORECASE,
+)
+
 
 def detect_challenge_page(html: str, headers: dict[str, str] | None = None) -> bool:
     """Return True if *html* looks like a Cloudflare or bot-detection challenge."""
@@ -114,6 +122,11 @@ def is_empty_dom(html: str) -> bool:
     return len(stripped) < 100
 
 
+def detect_app_error_page(html: str) -> bool:
+    """Return True if the page reports a generic application-level error."""
+    return bool(_APP_ERROR_RE.search(html))
+
+
 def is_scrape_failure(html: str, status_code: int, headers: dict[str, str] | None = None) -> bool:
     """
     Aggregate check: return True when any failure mode is detected.
@@ -125,6 +138,7 @@ def is_scrape_failure(html: str, status_code: int, headers: dict[str, str] | Non
         or detect_challenge_page(html, headers)
         or detect_captcha(html)
         or detect_block_page(html, status_code)
+        or detect_app_error_page(html)
     )
 
 
