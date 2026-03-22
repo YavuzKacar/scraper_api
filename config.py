@@ -30,19 +30,11 @@ class Config:
     tor_control_port: int               # Control port for NEWNYM
     tor_control_password: Optional[str] # Tor control password (None = cookie auth)
     tor_exe_path: str                   # Full path to tor.exe; used for auto-launch
-    firefox_binary_path: str            # Path to firefox.exe used for Tor Browser scraping
+
     # ── Scraper behaviour ─────────────────────────────────────────────────────
-    cache_ttl_seconds: int              # Re-use cached HTML for this duration
-    low_confidence_threshold: float     # Trigger reclassification below this value
     retry_count: int                    # Max scrape retries per request
     domain_rate_limit_seconds: float    # Min seconds between requests to same domain
-    headless_browser: bool              # Run Chrome/Firefox headless
     request_timeout: float              # HTTP request timeout in seconds
-    classification_timeout: float       # Max time for a single classification probe
-
-    # ── Scheduler ─────────────────────────────────────────────────────────────
-    scheduler_interval_seconds: int     # How often the background scheduler runs
-    metadata_max_age_hours: int         # Re-classify records older than this
 
     # ── Logging ───────────────────────────────────────────────────────────────
     log_level: str                      # DEBUG | INFO | WARNING | ERROR
@@ -67,19 +59,9 @@ def load_config() -> Config:
             "TOR_EXE_PATH",
             r"C:\Users\Pc\Desktop\Tor Browser\Browser\TorBrowser\Tor\tor.exe",
         ),
-        firefox_binary_path=os.environ.get(
-            "FIREFOX_BINARY_PATH",
-            r"C:\Users\Pc\Desktop\Tor Browser\Browser\firefox.exe",
-        ),
-        cache_ttl_seconds=int(os.environ.get("CACHE_TTL_SECONDS", "600")),
-        low_confidence_threshold=float(os.environ.get("LOW_CONFIDENCE_THRESHOLD", "0.6")),
         retry_count=int(os.environ.get("RETRY_COUNT", "3")),
         domain_rate_limit_seconds=float(os.environ.get("DOMAIN_RATE_LIMIT_SECONDS", "2.0")),
-        headless_browser=os.environ.get("HEADLESS_BROWSER", "true").lower() == "true",
         request_timeout=float(os.environ.get("REQUEST_TIMEOUT", "30.0")),
-        classification_timeout=float(os.environ.get("CLASSIFICATION_TIMEOUT", "20.0")),
-        scheduler_interval_seconds=int(os.environ.get("SCHEDULER_INTERVAL_SECONDS", "3600")),
-        metadata_max_age_hours=int(os.environ.get("METADATA_MAX_AGE_HOURS", "24")),
         log_level=os.environ.get("LOG_LEVEL", "INFO").upper(),
         log_dir=os.environ.get("LOG_DIR", "logs"),
     )

@@ -1,16 +1,10 @@
 """
 tor_scraper.py — Tor-based scraping implementations.
 
-Adapted from BUSS-90 (etsy_get_listing_data_tor.py) and extended with:
-  - httpx SOCKS5 lightweight path (fast, no browser overhead)
-  - Selenium Firefox SOCKS5 path (full JS rendering via Tor)
-  - Identity rotation via Stem NEWNYM signal
-
 Public API
 ----------
-scrape_with_tor(url, profile)           → str   (async, httpx path)
-scrape_with_tor_browser(url, profile)   → str   (sync, Selenium path; run in executor)
-rotate_tor_identity()                   → bool  (async)
+scrape_with_tor(url, profile)   -> str   (async, httpx path)
+rotate_tor_identity()           -> bool  (async)
 """
 from __future__ import annotations
 
@@ -28,7 +22,7 @@ import httpx
 
 from config import CONFIG
 from fingerprint import FingerprintProfile, build_http_headers
-from utils import human_delay, human_delay_sync
+from utils import human_delay
 
 logger = logging.getLogger(__name__)
 
@@ -276,105 +270,7 @@ async def scrape_with_tor(url: str, profile: FingerprintProfile) -> str:
         return response.text
 
 
-# ── Full-browser path: Selenium Firefox through Tor SOCKS5 ───────────────────
-# Adapted from BUSS-90 / etsy_get_listing_data_tor.py
-
-def _build_tor_firefox_driver(
-    tor_socks_port: int,
-    headless: bool = True,
-):
-    """
-    Build a Selenium Firefox WebDriver that tunnels all traffic via Tor.
-
-    Uses the Firefox binary from CONFIG.firefox_binary_path (defaults to
-    the bundled Tor Browser Firefox).  Relies on Selenium 4's built-in
-    selenium-manager to download geckodriver automatically if it is not
-    already on PATH.
-
-    Returns a ``selenium.webdriver.Firefox`` instance.
-    Raises ImportError if selenium is not installed.
-    """
-    import os as _os
-    from selenium import webdriver
-    from selenium.webdriver.firefox.options import Options as FirefoxOptions
-    from selenium.webdriver.firefox.service import Service as FirefoxService
-
-    options = FirefoxOptions()
-    if headless:
-        options.add_argument("-headless")
-
-    # Point Selenium at the Tor Browser's Firefox binary.
-    # Falls back gracefully if the path doesn't exist (system Firefox).
-    ff_bin = CONFIG.firefox_binary_path
-    if ff_bin and _os.path.isfile(ff_bin):
-        options.binary_location = ff_bin
-        logger.debug("Using Firefox binary: %s", ff_bin)
-    else:
-        logger.warning(
-            "Firefox binary not found at %r — using system Firefox. "
-            "Set FIREFOX_BINARY_PATH to point to Tor Browser's firefox.exe.",
-            ff_bin,
-        )
-
-    # Configure SOCKS5 proxy pointing at Tor
-    options.set_preference("network.proxy.type", 1)
-    options.set_preference("network.proxy.socks", CONFIG.tor_socks_host)
-    options.set_preference("network.proxy.socks_port", tor_socks_port)
-    options.set_preference("network.proxy.socks_version", 5)
-    options.set_preference("network.proxy.socks_remote_dns", True)   # DNS via Tor
-    options.set_preference("places.history.enabled", False)
-    options.set_preference("privacy.trackingprotection.enabled", True)
-    # Force English locale — prevents sites from serving Turkish pages
-    options.set_preference("intl.accept_languages", "en-US, en")
-    options.set_preference("general.useragent.locale", "en-US")
-    # Suppress Firefox's default browser / data-reporting prompts
-    options.set_preference("datareporting.policy.dataSubmissionEnabled", False)
-    options.set_preference("toolkit.telemetry.reportingpolicy.firstRun", False)
-
-    # selenium-manager (Selenium 4.6+) will auto-download geckodriver
-    # if it is not already available on PATH.
-    return webdriver.Firefox(options=options, service=FirefoxService())
-
-
-def scrape_with_tor_browser(
-    url: str,
-    fingerprint: FingerprintProfile,
-    headless: bool = True,
-    geckodriver_path: Optional[str] = None,  # kept for API compat; ignored (selenium-manager handles it)
-) -> str:
-    """
-    Fetch *url* using a Firefox browser that tunnels through Tor.
-
-    Intended to run in a thread-pool executor (blocking).
-    Returns the fully rendered page source.
-
-    Raises RuntimeError if Tor or Firefox/geckodriver is not available.
-    """
-    tor_port = _ensure_tor_running()
-
-    driver = _build_tor_firefox_driver(
-        tor_socks_port=tor_port,
-        headless=headless,
-    )
-
-    try:
-        # Tor is slow — give pages more time to load through the circuit.
-        driver.set_page_load_timeout(60)
-        human_delay_sync(1.5, 3.0)
-        driver.get(url)
-        human_delay_sync(3.0, 6.0)
-
-        # Scroll to trigger lazy-loaded content
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight * 0.3);")
-        human_delay_sync(1.0, 2.5)
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight * 0.7);")
-        human_delay_sync(0.8, 2.0)
-
-        return driver.page_source or ""
-    finally:
-        with contextlib.suppress(Exception):
-            driver.quit()
-
+# ── Full-browser path: Chrome through Tor SOCKS5 ─────────────────────────────
 
 # ── Identity rotation ─────────────────────────────────────────────────────────
 

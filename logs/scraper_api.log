@@ -3090,3 +3090,965 @@ Stacktrace:
 2026-03-22 20:11:24 [INFO    ] scraper_api.requests — [0647651e] ← GET /feedback 200 (8ms)
 2026-03-22 20:16:44 [WARNING ] scraper — Attempt 3 failed: Tor Browser was launched but the SOCKS port did not open within 60 s.  Make sure 'Connect automatically' is enabled in Tor Browser settings (Settings → Connection → Connect automatically).
 2026-03-22 20:16:44 [INFO    ] scraper_api.requests — [40122c9a] ← POST /scrape 200 (521264ms)
+2026-03-22 22:28:56 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 22:28:56 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 22:28:56 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 22:28:56 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 22:41:34 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 22:41:34 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 22:41:34 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 22:41:34 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 22:42:00 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 22:42:00 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 22:42:00 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 22:42:00 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 22:42:34 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 22:42:34 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 22:42:34 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 22:42:34 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 22:42:52 [INFO    ] scraper_api.requests — [010205af] → POST /scrape (client=127.0.0.1)
+2026-03-22 22:42:52 [INFO    ] scraper — Classifying URL: https://eksisozluk.com/
+2026-03-22 22:42:57 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 22:43:03 [INFO    ] uc — setting properties for headless
+2026-03-22 22:43:15 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 22:43:20 [INFO    ] uc — setting properties for headless
+2026-03-22 22:43:38 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 22:43:42 [INFO    ] uc — setting properties for headless
+2026-03-22 22:43:49 [INFO    ] scraper_api.requests — [5a7ff5e2] → POST /scrape (client=127.0.0.1)
+2026-03-22 22:43:49 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 22:43:49 [WARNING ] uc — could not detect version_main.therefore, we are assuming it is chrome 108 or higher
+2026-03-22 22:43:50 [INFO    ] uc — setting properties for headless
+2026-03-22 22:43:54 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 22:43:56 [INFO    ] scraper_api.requests — [010205af] ← POST /scrape 200 (63599ms)
+2026-03-22 22:44:05 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 22:44:10 [INFO    ] uc — setting properties for headless
+2026-03-22 22:44:25 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 22:44:31 [INFO    ] uc — setting properties for headless
+2026-03-22 22:44:40 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 22:44:42 [INFO    ] scraper_api.requests — [5a7ff5e2] ← POST /scrape 200 (52733ms)
+2026-03-22 22:44:56 [INFO    ] scraper_api.requests — [145f9447] → POST /scrape (client=127.0.0.1)
+2026-03-22 22:44:56 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 22:45:01 [INFO    ] uc — setting properties for headless
+2026-03-22 22:45:14 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 22:45:18 [INFO    ] uc — setting properties for headless
+2026-03-22 22:45:31 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 22:45:36 [INFO    ] uc — setting properties for headless
+2026-03-22 22:45:42 [INFO    ] scraper_api.requests — [fb091e18] → POST /scrape (client=127.0.0.1)
+2026-03-22 22:45:42 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 22:45:42 [WARNING ] uc — could not detect version_main.therefore, we are assuming it is chrome 108 or higher
+2026-03-22 22:45:43 [INFO    ] uc — setting properties for headless
+2026-03-22 22:45:49 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 22:45:50 [INFO    ] scraper_api.requests — [145f9447] ← POST /scrape 200 (54518ms)
+2026-03-22 22:45:54 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 22:46:00 [INFO    ] uc — setting properties for headless
+2026-03-22 22:46:16 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 22:46:21 [INFO    ] uc — setting properties for headless
+2026-03-22 22:46:32 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 22:46:33 [INFO    ] scraper_api.requests — [fb091e18] ← POST /scrape 200 (51346ms)
+2026-03-22 22:47:50 [INFO    ] scraper_api.requests — [4fdab757] → POST /scrape (client=127.0.0.1)
+2026-03-22 22:47:50 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_chrome_windows url=https://eksisozluk.com/
+2026-03-22 22:47:55 [INFO    ] uc — setting properties for headless
+2026-03-22 22:48:08 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 22:48:13 [INFO    ] uc — setting properties for headless
+2026-03-22 22:48:25 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 22:48:30 [INFO    ] uc — setting properties for headless
+2026-03-22 22:48:33 [INFO    ] scraper_api.requests — [8b484bfa] → POST /scrape (client=127.0.0.1)
+2026-03-22 22:48:33 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 22:48:33 [WARNING ] uc — could not detect version_main.therefore, we are assuming it is chrome 108 or higher
+2026-03-22 22:48:34 [INFO    ] uc — setting properties for headless
+2026-03-22 22:48:41 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 22:48:42 [INFO    ] scraper_api.requests — [4fdab757] ← POST /scrape 200 (51707ms)
+2026-03-22 22:48:42 [INFO    ] scraper_api.requests — [a99e0826] → POST /classify (client=127.0.0.1)
+2026-03-22 22:48:46 [INFO    ] scraper_api.requests — [a99e0826] ← POST /classify 200 (4139ms)
+2026-03-22 22:48:48 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 22:48:54 [INFO    ] uc — setting properties for headless
+2026-03-22 22:49:09 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 22:49:15 [INFO    ] uc — setting properties for headless
+2026-03-22 22:49:24 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 22:49:26 [INFO    ] scraper_api.requests — [8b484bfa] ← POST /scrape 200 (52245ms)
+2026-03-22 22:49:26 [INFO    ] scraper_api.requests — [36b00194] → POST /classify (client=127.0.0.1)
+2026-03-22 22:49:35 [INFO    ] uc — setting properties for headless
+2026-03-22 22:49:46 [INFO    ] scraper_api.requests — [36b00194] ← POST /classify 200 (20266ms)
+2026-03-22 22:51:14 [INFO    ] scraper_api.requests — [5ac2ba59] → GET / (client=127.0.0.1)
+2026-03-22 22:51:14 [WARNING ] scraper_api.requests — [5ac2ba59] ← GET / 404 (2ms)
+2026-03-22 22:51:14 [INFO    ] scraper_api.requests — [ca3c126c] → GET /favicon.ico (client=127.0.0.1)
+2026-03-22 22:51:14 [WARNING ] scraper_api.requests — [ca3c126c] ← GET /favicon.ico 404 (3ms)
+2026-03-22 22:51:18 [INFO    ] scraper_api.requests — [c903986d] → GET /ui/ (client=127.0.0.1)
+2026-03-22 22:51:18 [INFO    ] scraper_api.requests — [c903986d] ← GET /ui/ 200 (56ms)
+2026-03-22 22:51:19 [INFO    ] scraper_api.requests — [aa483844] → GET /feedback (client=127.0.0.1)
+2026-03-22 22:51:19 [WARNING ] scraper_api.requests — [aa483844] ← GET /feedback 401 (5ms)
+2026-03-22 22:51:42 [INFO    ] scraper_api.requests — [72079dde] → POST /scrape (client=127.0.0.1)
+2026-03-22 22:51:42 [INFO    ] scraper_api.requests — [72079dde] ← POST /scrape 200 (9ms)
+2026-03-22 22:51:42 [INFO    ] scraper_api.requests — [36e6107c] → POST /classify (client=127.0.0.1)
+2026-03-22 22:51:46 [INFO    ] scraper_api.requests — [36e6107c] ← POST /classify 200 (4190ms)
+2026-03-22 22:52:19 [INFO    ] scraper_api.requests — [4aca46ad] → GET /feedback (client=127.0.0.1)
+2026-03-22 22:52:19 [WARNING ] scraper_api.requests — [4aca46ad] ← GET /feedback 401 (3ms)
+2026-03-22 22:52:26 [INFO    ] scraper_api.requests — [dd97eb28] → POST /scrape (client=127.0.0.1)
+2026-03-22 22:52:26 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 22:52:31 [INFO    ] uc — setting properties for headless
+2026-03-22 22:52:44 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 22:52:48 [INFO    ] uc — setting properties for headless
+2026-03-22 22:53:03 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=desktop_chrome_windows url=https://eksisozluk.com/
+2026-03-22 22:53:08 [INFO    ] uc — setting properties for headless
+2026-03-22 22:53:11 [INFO    ] scraper_api.requests — [648fa874] → GET /health (client=127.0.0.1)
+2026-03-22 22:53:19 [INFO    ] scraper_api.requests — [648fa874] ← GET /health 200 (8028ms)
+2026-03-22 22:53:19 [INFO    ] scraper_api.requests — [eb27e2bd] → GET /feedback (client=127.0.0.1)
+2026-03-22 22:53:19 [INFO    ] scraper_api.requests — [eb27e2bd] ← GET /feedback 200 (7ms)
+2026-03-22 22:53:19 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 22:53:20 [INFO    ] scraper_api.requests — [0c660506] → POST /scrape (client=127.0.0.1)
+2026-03-22 22:53:20 [INFO    ] scraper — Classifying URL: https://eksisozluk.com/
+2026-03-22 22:53:24 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_chrome_windows url=https://eksisozluk.com/
+2026-03-22 22:53:24 [INFO    ] scraper_api.requests — [dd97eb28] ← POST /scrape 200 (58669ms)
+2026-03-22 22:53:24 [INFO    ] scraper_api.requests — [0f93651a] → POST /classify (client=127.0.0.1)
+2026-03-22 22:53:31 [WARNING ] scraper — Attempt 1 failed: Message: Service C:\Users\Pc\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe unexpectedly exited. Status code was: 3221225477
+
+2026-03-22 22:53:34 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 22:53:36 [INFO    ] scraper_api.requests — [0f93651a] ← POST /classify 200 (11407ms)
+2026-03-22 22:53:39 [INFO    ] uc — setting properties for headless
+2026-03-22 22:53:55 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 22:54:02 [INFO    ] uc — setting properties for headless
+2026-03-22 22:54:12 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 22:54:14 [INFO    ] scraper_api.requests — [0c660506] ← POST /scrape 200 (53412ms)
+2026-03-22 22:54:14 [INFO    ] scraper_api.requests — [8feb4f16] → GET /feedback (client=127.0.0.1)
+2026-03-22 22:54:14 [INFO    ] scraper_api.requests — [8feb4f16] ← GET /feedback 200 (6ms)
+2026-03-22 22:54:19 [INFO    ] scraper_api.requests — [8cd32dd0] → GET /feedback (client=127.0.0.1)
+2026-03-22 22:54:19 [INFO    ] scraper_api.requests — [8cd32dd0] ← GET /feedback 200 (6ms)
+2026-03-22 22:55:19 [INFO    ] scraper_api.requests — [b36efb19] → GET /feedback (client=127.0.0.1)
+2026-03-22 22:55:19 [INFO    ] scraper_api.requests — [b36efb19] ← GET /feedback 200 (6ms)
+2026-03-22 22:56:16 [INFO    ] scraper_api.requests — [354a9d71] → POST /scrape (client=127.0.0.1)
+2026-03-22 22:56:16 [INFO    ] scraper — Classifying URL: https://eksisozluk.com/
+2026-03-22 22:56:21 [INFO    ] scraper_api.requests — [ce145731] → GET /feedback (client=127.0.0.1)
+2026-03-22 22:56:21 [INFO    ] scraper_api.requests — [ce145731] ← GET /feedback 200 (6ms)
+2026-03-22 22:56:27 [INFO    ] uc — setting properties for headless
+2026-03-22 22:56:38 [INFO    ] scraper — force_strategy override for https://eksisozluk.com/: blocked → tor
+2026-03-22 22:56:38 [INFO    ] scraper — Scrape attempt 1/3 — strategy=tor profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 22:56:44 [INFO    ] tor_scraper — Starting Tor Browser: C:\Users\Pc\Desktop\Tor Browser\Browser\firefox.exe
+2026-03-22 22:56:50 [INFO    ] tor_scraper — Tor Browser SOCKS port 9150 open after 1s — waiting for circuit…
+2026-03-22 22:56:52 [INFO    ] tor_scraper — Tor circuit ready — fully connected.
+2026-03-22 22:56:56 [WARNING ] scraper — Attempt 1 failed: Client error '403 Forbidden' for url 'https://eksisozluk.com/'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403
+2026-03-22 22:56:57 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 22:56:57 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 22:57:07 [INFO    ] scraper — Scrape attempt 2/3 — strategy=tor profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 22:57:11 [WARNING ] scraper — Attempt 2 failed: Client error '403 Forbidden' for url 'https://eksisozluk.com/'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403
+2026-03-22 22:57:17 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 22:57:17 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 22:57:19 [INFO    ] scraper_api.requests — [4731d03b] → GET /feedback (client=127.0.0.1)
+2026-03-22 22:57:19 [INFO    ] scraper_api.requests — [4731d03b] ← GET /feedback 200 (8ms)
+2026-03-22 22:57:27 [INFO    ] scraper — Scrape attempt 3/3 — strategy=tor profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 22:57:31 [WARNING ] scraper — Attempt 3 failed: Client error '403 Forbidden' for url 'https://eksisozluk.com/'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403
+2026-03-22 22:57:31 [INFO    ] scraper_api.requests — [354a9d71] ← POST /scrape 200 (74051ms)
+2026-03-22 22:57:31 [INFO    ] scraper_api.requests — [88e92d93] → GET /feedback (client=127.0.0.1)
+2026-03-22 22:57:31 [INFO    ] scraper_api.requests — [88e92d93] ← GET /feedback 200 (7ms)
+2026-03-22 22:57:49 [INFO    ] scraper_api.requests — [ac3e8348] → GET /favicon.ico (client=127.0.0.1)
+2026-03-22 22:57:49 [WARNING ] scraper_api.requests — [ac3e8348] ← GET /favicon.ico 404 (3ms)
+2026-03-22 22:57:54 [INFO    ] scraper_api.requests — [3814d364] → GET /favicon.ico (client=127.0.0.1)
+2026-03-22 22:57:54 [WARNING ] scraper_api.requests — [3814d364] ← GET /favicon.ico 404 (3ms)
+2026-03-22 22:58:10 [INFO    ] scraper_api.requests — [f8db9d63] → POST /scrape (client=127.0.0.1)
+2026-03-22 22:58:10 [INFO    ] scraper — Classifying URL: https://eksisozluk.com/
+2026-03-22 22:58:15 [INFO    ] uc — setting properties for headless
+2026-03-22 22:58:26 [INFO    ] scraper_api.requests — [f8db9d63] ← POST /scrape 200 (15784ms)
+2026-03-22 22:58:26 [INFO    ] scraper_api.requests — [2cc10045] → GET /feedback (client=127.0.0.1)
+2026-03-22 22:58:26 [INFO    ] scraper_api.requests — [2cc10045] ← GET /feedback 200 (6ms)
+2026-03-22 22:58:39 [INFO    ] scraper_api.requests — [9ff18c4e] → POST /scrape (client=127.0.0.1)
+2026-03-22 22:58:39 [INFO    ] scraper_api.requests — [9ff18c4e] ← POST /scrape 200 (8ms)
+2026-03-22 22:58:46 [INFO    ] scraper_api.requests — [e2dcc040] → POST /scrape (client=127.0.0.1)
+2026-03-22 22:58:46 [INFO    ] scraper — Classifying URL: https://eksisozluk.com/
+2026-03-22 22:58:55 [INFO    ] scraper_api.requests — [b26a3d65] → GET /feedback (client=127.0.0.1)
+2026-03-22 22:58:55 [INFO    ] scraper_api.requests — [b26a3d65] ← GET /feedback 200 (11ms)
+2026-03-22 22:58:56 [INFO    ] uc — setting properties for headless
+2026-03-22 22:59:08 [INFO    ] scraper — force_strategy override for https://eksisozluk.com/: blocked → tor
+2026-03-22 22:59:08 [INFO    ] scraper — Scrape attempt 1/3 — strategy=tor profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 22:59:14 [INFO    ] tor_scraper — Starting Tor Browser: C:\Users\Pc\Desktop\Tor Browser\Browser\firefox.exe
+2026-03-22 22:59:21 [INFO    ] tor_scraper — Tor Browser SOCKS port 9150 open after 1s — waiting for circuit…
+2026-03-22 22:59:22 [INFO    ] tor_scraper — Tor circuit ready — fully connected.
+2026-03-22 22:59:24 [WARNING ] scraper — Attempt 1 failed: Client error '403 Forbidden' for url 'https://eksisozluk.com/'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403
+2026-03-22 22:59:25 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 22:59:25 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 22:59:35 [INFO    ] scraper — Scrape attempt 2/3 — strategy=tor profile=desktop_chrome_windows url=https://eksisozluk.com/
+2026-03-22 22:59:39 [WARNING ] scraper — Attempt 2 failed: Client error '403 Forbidden' for url 'https://eksisozluk.com/'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403
+2026-03-22 22:59:39 [INFO    ] scraper_api.requests — [14214e38] → POST /scrape (client=127.0.0.1)
+2026-03-22 22:59:39 [INFO    ] scraper_api.requests — [14214e38] ← POST /scrape 200 (7ms)
+2026-03-22 22:59:41 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 22:59:41 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 22:59:51 [INFO    ] scraper — Scrape attempt 3/3 — strategy=tor profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 22:59:55 [WARNING ] scraper — Attempt 3 failed: Client error '403 Forbidden' for url 'https://eksisozluk.com/'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403
+2026-03-22 22:59:55 [INFO    ] scraper_api.requests — [e2dcc040] ← POST /scrape 200 (68412ms)
+2026-03-22 22:59:55 [INFO    ] scraper_api.requests — [19e033a2] → GET /feedback (client=127.0.0.1)
+2026-03-22 22:59:55 [INFO    ] scraper_api.requests — [19e033a2] ← GET /feedback 200 (9ms)
+2026-03-22 22:59:55 [INFO    ] scraper_api.requests — [290ac595] → GET /feedback (client=127.0.0.1)
+2026-03-22 22:59:55 [INFO    ] scraper_api.requests — [290ac595] ← GET /feedback 200 (8ms)
+2026-03-22 23:00:55 [INFO    ] scraper_api.requests — [98d7d118] → GET /feedback (client=127.0.0.1)
+2026-03-22 23:00:55 [INFO    ] scraper_api.requests — [98d7d118] ← GET /feedback 200 (8ms)
+2026-03-22 23:01:39 [INFO    ] scraper_api.requests — [d29c8f6b] → POST /scrape (client=127.0.0.1)
+2026-03-22 23:01:39 [INFO    ] scraper_api.requests — [d29c8f6b] ← POST /scrape 200 (6ms)
+2026-03-22 23:01:39 [INFO    ] scraper_api.requests — [aa0a2d3f] → POST /classify (client=127.0.0.1)
+2026-03-22 23:01:48 [INFO    ] uc — setting properties for headless
+2026-03-22 23:01:55 [INFO    ] scraper_api.requests — [fc190d07] → GET /feedback (client=127.0.0.1)
+2026-03-22 23:01:55 [INFO    ] scraper_api.requests — [fc190d07] ← GET /feedback 200 (10ms)
+2026-03-22 23:02:00 [INFO    ] scraper_api.requests — [aa0a2d3f] ← POST /classify 200 (21102ms)
+2026-03-22 23:02:55 [INFO    ] scraper_api.requests — [b04145b9] → GET /feedback (client=127.0.0.1)
+2026-03-22 23:02:55 [INFO    ] scraper_api.requests — [b04145b9] ← GET /feedback 200 (10ms)
+2026-03-22 23:03:32 [INFO    ] scraper_api.requests — [cf2a5003] → GET /favicon.ico (client=127.0.0.1)
+2026-03-22 23:03:32 [WARNING ] scraper_api.requests — [cf2a5003] ← GET /favicon.ico 404 (3ms)
+2026-03-22 23:04:33 [INFO    ] scraper_api.requests — [88a47c03] → GET /feedback (client=127.0.0.1)
+2026-03-22 23:04:33 [INFO    ] scraper_api.requests — [88a47c03] ← GET /feedback 200 (8ms)
+2026-03-22 23:04:39 [INFO    ] scraper_api.requests — [63dd1a4c] → POST /scrape (client=127.0.0.1)
+2026-03-22 23:04:39 [INFO    ] scraper_api.requests — [63dd1a4c] ← POST /scrape 200 (7ms)
+2026-03-22 23:04:39 [INFO    ] scraper_api.requests — [028dec03] → POST /classify (client=127.0.0.1)
+2026-03-22 23:04:43 [INFO    ] scraper_api.requests — [028dec03] ← POST /classify 200 (4147ms)
+2026-03-22 23:05:00 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 23:05:00 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 23:05:00 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 23:05:00 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 23:05:05 [INFO    ] scraper_api.requests — [ab22a108] → POST /scrape (client=127.0.0.1)
+2026-03-22 23:05:05 [INFO    ] scraper — Classifying URL: https://eksisozluk.com/
+2026-03-22 23:05:15 [INFO    ] uc — setting properties for headless
+2026-03-22 23:05:33 [INFO    ] scraper_api.requests — [0175a7e7] → GET /feedback (client=127.0.0.1)
+2026-03-22 23:05:33 [INFO    ] scraper_api.requests — [0175a7e7] ← GET /feedback 200 (11ms)
+2026-03-22 23:05:58 [INFO    ] classifier — Domain override applied for https://eksisozluk.com/: blocked → browser
+2026-03-22 23:05:58 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 23:06:03 [INFO    ] uc — setting properties for headless
+2026-03-22 23:06:33 [INFO    ] scraper_api.requests — [93012229] → GET /feedback (client=127.0.0.1)
+2026-03-22 23:06:33 [INFO    ] scraper_api.requests — [93012229] ← GET /feedback 200 (9ms)
+2026-03-22 23:06:45 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 23:06:50 [INFO    ] uc — setting properties for headless
+2026-03-22 23:07:28 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 23:07:28 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 23:07:28 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 23:07:28 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 23:07:32 [INFO    ] scraper_api.requests — [8e2b9b6c] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:07:32 [INFO    ] scraper_api.requests — [8e2b9b6c] < GET /feedback 200 (7ms)
+2026-03-22 23:07:32 [INFO    ] scraper_api.requests — [e15cfb52] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:07:32 [INFO    ] scraper — Classifying URL: https://eksisozluk.com/
+2026-03-22 23:07:37 [INFO    ] classifier — Domain override applied for https://eksisozluk.com/: browser → browser
+2026-03-22 23:07:37 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 23:07:43 [INFO    ] uc — setting properties for headless
+2026-03-22 23:08:23 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_chrome_windows url=https://eksisozluk.com/
+2026-03-22 23:08:27 [INFO    ] uc — setting properties for headless
+2026-03-22 23:08:33 [INFO    ] scraper_api.requests — [0877b187] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:08:33 [INFO    ] scraper_api.requests — [0877b187] < GET /feedback 200 (8ms)
+2026-03-22 23:09:11 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 23:09:17 [INFO    ] uc — setting properties for headless
+2026-03-22 23:09:32 [INFO    ] scraper_api.requests — [d2cb6d53] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:09:32 [INFO    ] scraper_api.requests — [d2cb6d53] < GET /feedback 200 (5ms)
+2026-03-22 23:09:59 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 23:10:00 [INFO    ] scraper_api.requests — [e15cfb52] < POST /scrape 200 (147521ms)
+2026-03-22 23:10:00 [INFO    ] scraper_api.requests — [b4bea5e2] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:10:00 [INFO    ] scraper_api.requests — [b4bea5e2] < GET /feedback 200 (5ms)
+2026-03-22 23:10:12 [INFO    ] scraper_api.requests — [f27ed83c] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:10:12 [INFO    ] scraper — Classifying URL: https://eksisozluk.com/
+2026-03-22 23:10:16 [INFO    ] classifier — Domain override applied for https://eksisozluk.com/: browser → browser
+2026-03-22 23:10:16 [INFO    ] scraper — force_strategy override for https://eksisozluk.com/: browser → tor
+2026-03-22 23:10:16 [INFO    ] scraper — Auto-escalating strategy for https://eksisozluk.com/: tor → hybrid (domain requires a browser for JS rendering).
+2026-03-22 23:10:16 [INFO    ] scraper — Scrape attempt 1/3 — strategy=hybrid profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 23:10:22 [INFO    ] tor_scraper — Starting Tor Browser: C:\Users\Pc\Desktop\Tor Browser\Browser\firefox.exe
+2026-03-22 23:10:28 [INFO    ] tor_scraper — Tor Browser SOCKS port 9150 open after 1s — waiting for circuit…
+2026-03-22 23:10:29 [INFO    ] tor_scraper — Tor circuit ready — fully connected.
+2026-03-22 23:10:33 [INFO    ] scraper_api.requests — [77ef8804] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:10:33 [INFO    ] scraper_api.requests — [77ef8804] < GET /feedback 200 (11ms)
+2026-03-22 23:10:39 [INFO    ] scraper_api.requests — [af1bc2d1] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:10:39 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_chrome_windows url=https://eksisozluk.com/
+2026-03-22 23:10:44 [INFO    ] uc — setting properties for headless
+2026-03-22 23:10:46 [WARNING ] scraper — Attempt 1 failed: Alert Text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Message: Unexpected confirmEx dialog detected. Performed handler "dismiss". Dialog text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Stacktrace:
+RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
+WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:199:5
+UnexpectedAlertOpenError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:876:5
+GeckoDriver.prototype._handleUserPrompts@chrome://remote/content/marionette/driver.sys.mjs:3130:11
+openPromptSync@resource://gre/modules/Prompter.sys.mjs:1082:17
+confirmEx@resource://gre/modules/Prompter.sys.mjs:1526:10
+confirmEx@resource://gre/modules/Prompter.sys.mjs:303:14
+showConfirm@resource://gre/modules/TorLauncherUtil.sys.mjs:372:25
+showRestartPrompt@resource://gre/modules/TorLauncherUtil.sys.mjs:415:17
+firstWindowLoaded@resource://gre/modules/TorProviderBuilder.sys.mjs:290:45
+
+2026-03-22 23:10:48 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 23:10:48 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 23:10:58 [INFO    ] scraper — Scrape attempt 2/3 — strategy=hybrid profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 23:11:14 [WARNING ] scraper — Attempt 2 failed: Alert Text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Message: Unexpected confirmEx dialog detected. Performed handler "dismiss". Dialog text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Stacktrace:
+RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
+WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:199:5
+UnexpectedAlertOpenError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:876:5
+GeckoDriver.prototype._handleUserPrompts@chrome://remote/content/marionette/driver.sys.mjs:3130:11
+openPromptSync@resource://gre/modules/Prompter.sys.mjs:1082:17
+confirmEx@resource://gre/modules/Prompter.sys.mjs:1526:10
+confirmEx@resource://gre/modules/Prompter.sys.mjs:303:14
+showConfirm@resource://gre/modules/TorLauncherUtil.sys.mjs:372:25
+showRestartPrompt@resource://gre/modules/TorLauncherUtil.sys.mjs:415:17
+firstWindowLoaded@resource://gre/modules/TorProviderBuilder.sys.mjs:290:45
+
+2026-03-22 23:11:20 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 23:11:20 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 23:11:25 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_chrome_windows url=https://eksisozluk.com/
+2026-03-22 23:11:30 [INFO    ] scraper — Scrape attempt 3/3 — strategy=hybrid profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 23:11:31 [INFO    ] uc — setting properties for headless
+2026-03-22 23:11:39 [INFO    ] scraper_api.requests — [f8f0cc14] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:11:39 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 23:11:39 [WARNING ] uc — could not detect version_main.therefore, we are assuming it is chrome 108 or higher
+2026-03-22 23:11:40 [INFO    ] uc — setting properties for headless
+2026-03-22 23:11:48 [WARNING ] scraper — Attempt 3 failed: Alert Text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Message: Unexpected confirmEx dialog detected. Performed handler "dismiss". Dialog text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Stacktrace:
+RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
+WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:199:5
+UnexpectedAlertOpenError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:876:5
+GeckoDriver.prototype._handleUserPrompts@chrome://remote/content/marionette/driver.sys.mjs:3130:11
+openPromptSync@resource://gre/modules/Prompter.sys.mjs:1082:17
+confirmEx@resource://gre/modules/Prompter.sys.mjs:1526:10
+confirmEx@resource://gre/modules/Prompter.sys.mjs:303:14
+showConfirm@resource://gre/modules/TorLauncherUtil.sys.mjs:372:25
+showRestartPrompt@resource://gre/modules/TorLauncherUtil.sys.mjs:415:17
+firstWindowLoaded@resource://gre/modules/TorProviderBuilder.sys.mjs:290:45
+
+2026-03-22 23:12:25 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 23:12:25 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 23:12:25 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 23:12:25 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 23:12:28 [INFO    ] scraper_api.requests — [be1cdd78] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:12:28 [INFO    ] scraper — Classifying URL: https://eksisozluk.com/
+2026-03-22 23:12:28 [INFO    ] classifier — Domain override applied for https://eksisozluk.com/: browser -> browser
+2026-03-22 23:12:28 [INFO    ] scraper — force_strategy override for https://eksisozluk.com/: browser -> tor
+2026-03-22 23:12:28 [INFO    ] scraper — Auto-escalating strategy for https://eksisozluk.com/: tor -> hybrid (domain requires a browser for JS rendering).
+2026-03-22 23:12:28 [INFO    ] scraper — Scrape attempt 1/3 — strategy=hybrid profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 23:12:33 [INFO    ] scraper_api.requests — [d266c8b4] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:12:33 [INFO    ] scraper_api.requests — [d266c8b4] < GET /feedback 200 (7ms)
+2026-03-22 23:12:34 [INFO    ] tor_scraper — Starting Tor Browser: C:\Users\Pc\Desktop\Tor Browser\Browser\firefox.exe
+2026-03-22 23:12:40 [INFO    ] tor_scraper — Tor Browser SOCKS port 9150 open after 1s — waiting for circuit…
+2026-03-22 23:12:42 [INFO    ] tor_scraper — Tor circuit ready — fully connected.
+2026-03-22 23:12:48 [INFO    ] scraper_api.requests — [f62969db] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:12:48 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 23:12:48 [INFO    ] scraper_api.requests — [f35df9ab] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:12:50 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 23:12:53 [WARNING ] scraper — Attempt 1 failed: [WinError 183] Halen varolan bir dosya oluşturulamaz: 'C:\\Users\\Pc\\appdata\\roaming\\undetected_chromedriver\\undetected\\chromedriver-win32\\chromedriver.exe' -> 'C:\\Users\\Pc\\appdata\\roaming\\undetected_chromedriver\\undetected_chromedriver.exe'
+2026-03-22 23:12:55 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 23:13:00 [WARNING ] scraper — Attempt 1 failed: Alert Text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Message: Unexpected confirmEx dialog detected. Performed handler "dismiss". Dialog text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Stacktrace:
+RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
+WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:199:5
+UnexpectedAlertOpenError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:876:5
+GeckoDriver.prototype._handleUserPrompts@chrome://remote/content/marionette/driver.sys.mjs:3130:11
+openPromptSync@resource://gre/modules/Prompter.sys.mjs:1082:17
+confirmEx@resource://gre/modules/Prompter.sys.mjs:1526:10
+confirmEx@resource://gre/modules/Prompter.sys.mjs:303:14
+showConfirm@resource://gre/modules/TorLauncherUtil.sys.mjs:372:25
+showRestartPrompt@resource://gre/modules/TorLauncherUtil.sys.mjs:415:17
+firstWindowLoaded@resource://gre/modules/TorProviderBuilder.sys.mjs:290:45
+
+2026-03-22 23:13:02 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 23:13:02 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 23:13:06 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 23:13:12 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 23:13:12 [INFO    ] scraper — Scrape attempt 2/3 — strategy=hybrid profile=desktop_chrome_windows url=https://eksisozluk.com/
+2026-03-22 23:13:14 [WARNING ] browser_scraper — Browser scraper: chromedriver crash detected (Message: Service C:\Users\Pc\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe unexpectedly exited. Status code was: 3221225477
+). Clearing UC cache and retrying with a fresh binary.
+2026-03-22 23:13:14 [INFO    ] browser_scraper — Cleared undetected_chromedriver cache at C:\Users\Pc\AppData\Roaming\undetected_chromedriver — a fresh binary will be downloaded on next launch.
+2026-03-22 23:13:17 [WARNING ] scraper — Attempt 2 failed: [WinError 183] Halen varolan bir dosya oluşturulamaz: 'C:\\Users\\Pc\\appdata\\roaming\\undetected_chromedriver\\undetected\\chromedriver-win32\\chromedriver.exe' -> 'C:\\Users\\Pc\\appdata\\roaming\\undetected_chromedriver\\undetected_chromedriver.exe'
+2026-03-22 23:13:21 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=desktop_chrome_windows url=https://eksisozluk.com/
+2026-03-22 23:13:31 [WARNING ] scraper — Attempt 2 failed: Alert Text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Message: Unexpected confirmEx dialog detected. Performed handler "dismiss". Dialog text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Stacktrace:
+RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
+WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:199:5
+UnexpectedAlertOpenError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:876:5
+GeckoDriver.prototype._handleUserPrompts@chrome://remote/content/marionette/driver.sys.mjs:3130:11
+openPromptSync@resource://gre/modules/Prompter.sys.mjs:1082:17
+confirmEx@resource://gre/modules/Prompter.sys.mjs:1526:10
+confirmEx@resource://gre/modules/Prompter.sys.mjs:303:14
+showConfirm@resource://gre/modules/TorLauncherUtil.sys.mjs:372:25
+showRestartPrompt@resource://gre/modules/TorLauncherUtil.sys.mjs:415:17
+firstWindowLoaded@resource://gre/modules/TorProviderBuilder.sys.mjs:290:45
+
+2026-03-22 23:13:32 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 23:13:33 [INFO    ] scraper_api.requests — [f62969db] < POST /scrape 200 (45192ms)
+2026-03-22 23:13:33 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 23:13:33 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 23:13:40 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 23:13:41 [INFO    ] scraper_api.requests — [f35df9ab] < POST /scrape 200 (53168ms)
+2026-03-22 23:13:43 [INFO    ] scraper — Scrape attempt 3/3 — strategy=hybrid profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 23:13:58 [INFO    ] scraper_api.requests — [2a9a7324] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:13:58 [INFO    ] scraper_api.requests — [2a9a7324] < GET /feedback 200 (6ms)
+2026-03-22 23:14:00 [WARNING ] scraper — Attempt 3 failed: Alert Text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Message: Unexpected confirmEx dialog detected. Performed handler "dismiss". Dialog text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Stacktrace:
+RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
+WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:199:5
+UnexpectedAlertOpenError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:876:5
+GeckoDriver.prototype._handleUserPrompts@chrome://remote/content/marionette/driver.sys.mjs:3130:11
+openPromptSync@resource://gre/modules/Prompter.sys.mjs:1082:17
+confirmEx@resource://gre/modules/Prompter.sys.mjs:1526:10
+confirmEx@resource://gre/modules/Prompter.sys.mjs:303:14
+showConfirm@resource://gre/modules/TorLauncherUtil.sys.mjs:372:25
+showRestartPrompt@resource://gre/modules/TorLauncherUtil.sys.mjs:415:17
+firstWindowLoaded@resource://gre/modules/TorProviderBuilder.sys.mjs:290:45
+
+2026-03-22 23:14:00 [INFO    ] scraper_api.requests — [be1cdd78] < POST /scrape 200 (92025ms)
+2026-03-22 23:14:00 [INFO    ] scraper_api.requests — [e1ed6ea5] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:14:00 [INFO    ] scraper_api.requests — [e1ed6ea5] < GET /feedback 200 (6ms)
+2026-03-22 23:14:48 [INFO    ] scraper_api.requests — [63805167] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:14:48 [INFO    ] scraper_api.requests — [63805167] < GET /feedback 200 (4ms)
+2026-03-22 23:14:55 [INFO    ] scraper_api.requests — [4709d00f] > DELETE /feedback (client=127.0.0.1)
+2026-03-22 23:14:55 [INFO    ] scraper_api.requests — [4709d00f] < DELETE /feedback 200 (12ms)
+2026-03-22 23:14:55 [INFO    ] scraper_api.requests — [ef28de0a] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:14:55 [INFO    ] scraper_api.requests — [ef28de0a] < GET /feedback 200 (6ms)
+2026-03-22 23:15:33 [INFO    ] scraper_api.requests — [e2a4eb3b] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:15:33 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 23:15:33 [INFO    ] scraper_api.requests — [329372de] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:15:33 [INFO    ] scraper_api.requests — [329372de] < GET /feedback 200 (5ms)
+2026-03-22 23:15:41 [INFO    ] scraper_api.requests — [46d699c6] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:15:41 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 23:15:51 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 23:15:53 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 23:16:08 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 23:16:09 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 23:16:13 [WARNING ] scraper — Attempt 3 failed: [WinError 183] Halen varolan bir dosya oluşturulamaz: 'C:\\Users\\Pc\\appdata\\roaming\\undetected_chromedriver\\undetected\\chromedriver-win32\\chromedriver.exe' -> 'C:\\Users\\Pc\\appdata\\roaming\\undetected_chromedriver\\undetected_chromedriver.exe'
+2026-03-22 23:16:13 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 23:16:14 [INFO    ] scraper_api.requests — [e2a4eb3b] < POST /scrape 200 (40949ms)
+2026-03-22 23:16:14 [INFO    ] scraper_api.requests — [06fb34dc] > POST /classify (client=127.0.0.1)
+2026-03-22 23:16:14 [INFO    ] classifier — Domain override applied for https://eksisozluk.com/: browser -> browser
+2026-03-22 23:16:14 [INFO    ] scraper_api.requests — [06fb34dc] < POST /classify 200 (131ms)
+2026-03-22 23:16:34 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 23:16:35 [INFO    ] scraper_api.requests — [46d699c6] < POST /scrape 200 (53933ms)
+2026-03-22 23:16:35 [INFO    ] scraper_api.requests — [f9dbef76] > POST /classify (client=127.0.0.1)
+2026-03-22 23:16:35 [INFO    ] classifier — Domain override applied for https://eksisozluk.com/: browser -> browser
+2026-03-22 23:16:35 [INFO    ] scraper_api.requests — [f9dbef76] < POST /classify 200 (116ms)
+2026-03-22 23:16:36 [INFO    ] scraper_api.requests — [d6aac030] > POST /classify (client=127.0.0.1)
+2026-03-22 23:16:36 [INFO    ] classifier — Domain override applied for https://eksisozluk.com/: browser -> browser
+2026-03-22 23:16:36 [INFO    ] scraper_api.requests — [d6aac030] < POST /classify 200 (103ms)
+2026-03-22 23:16:58 [INFO    ] scraper_api.requests — [97b40fec] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:16:58 [INFO    ] scraper_api.requests — [97b40fec] < GET /feedback 200 (12ms)
+2026-03-22 23:17:05 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 23:17:05 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 23:17:05 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 23:17:05 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 23:17:07 [INFO    ] scraper_api.requests — [62f9379b] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:17:07 [INFO    ] scraper — Classifying URL: https://eksisozluk.com/
+2026-03-22 23:17:08 [INFO    ] classifier — Domain override applied for https://eksisozluk.com/: browser -> browser
+2026-03-22 23:17:08 [INFO    ] scraper — force_strategy override for https://eksisozluk.com/: browser -> tor
+2026-03-22 23:17:08 [INFO    ] scraper — Auto-escalating strategy for https://eksisozluk.com/: tor -> hybrid (domain requires a browser for JS rendering).
+2026-03-22 23:17:08 [INFO    ] scraper — Scrape attempt 1/3 — strategy=hybrid profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 23:17:15 [INFO    ] tor_scraper — Tor browser driver created (port=9150, headless=False).
+2026-03-22 23:17:20 [WARNING ] scraper — Attempt 1 failed: Alert Text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Message: Unexpected confirmEx dialog detected. Performed handler "dismiss". Dialog text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Stacktrace:
+RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
+WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:199:5
+UnexpectedAlertOpenError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:876:5
+GeckoDriver.prototype._handleUserPrompts@chrome://remote/content/marionette/driver.sys.mjs:3130:11
+openPromptSync@resource://gre/modules/Prompter.sys.mjs:1082:17
+confirmEx@resource://gre/modules/Prompter.sys.mjs:1526:10
+confirmEx@resource://gre/modules/Prompter.sys.mjs:303:14
+showConfirm@resource://gre/modules/TorLauncherUtil.sys.mjs:372:25
+showRestartPrompt@resource://gre/modules/TorLauncherUtil.sys.mjs:415:17
+firstWindowLoaded@resource://gre/modules/TorProviderBuilder.sys.mjs:290:45
+
+2026-03-22 23:17:22 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 23:17:22 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 23:17:32 [INFO    ] scraper — Scrape attempt 2/3 — strategy=hybrid profile=desktop_chrome_windows url=https://eksisozluk.com/
+2026-03-22 23:17:32 [INFO    ] scraper_api.requests — [29a61a64] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:17:32 [INFO    ] scraper_api.requests — [29a61a64] < GET /feedback 200 (7ms)
+2026-03-22 23:17:38 [INFO    ] tor_scraper — Tor browser driver created (port=9150, headless=False).
+2026-03-22 23:17:46 [WARNING ] scraper — Attempt 2 failed: Message: TypeError: can't access property "scrollHeight", document.body is null
+Stacktrace:
+@https://eksisozluk.com/:2:26
+@https://eksisozluk.com/:3:8
+
+2026-03-22 23:17:50 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 23:17:50 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 23:18:00 [INFO    ] scraper — Scrape attempt 3/3 — strategy=hybrid profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 23:18:07 [INFO    ] tor_scraper — Tor browser driver created (port=9150, headless=False).
+2026-03-22 23:18:14 [WARNING ] scraper — Attempt 3 failed: Alert Text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Message: Unexpected confirmEx dialog detected. Performed handler "dismiss". Dialog text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Stacktrace:
+RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
+WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:199:5
+UnexpectedAlertOpenError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:876:5
+GeckoDriver.prototype._handleUserPrompts@chrome://remote/content/marionette/driver.sys.mjs:3130:11
+openPromptSync@resource://gre/modules/Prompter.sys.mjs:1082:17
+confirmEx@resource://gre/modules/Prompter.sys.mjs:1526:10
+confirmEx@resource://gre/modules/Prompter.sys.mjs:303:14
+showConfirm@resource://gre/modules/TorLauncherUtil.sys.mjs:372:25
+showRestartPrompt@resource://gre/modules/TorLauncherUtil.sys.mjs:415:17
+firstWindowLoaded@resource://gre/modules/TorProviderBuilder.sys.mjs:290:45
+
+2026-03-22 23:18:14 [INFO    ] scraper_api.requests — [62f9379b] < POST /scrape 200 (66306ms)
+2026-03-22 23:18:14 [INFO    ] scraper_api.requests — [d43ef614] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:18:14 [INFO    ] scraper_api.requests — [d43ef614] < GET /feedback 200 (6ms)
+2026-03-22 23:18:24 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 23:18:24 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 23:18:24 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 23:18:24 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 23:18:33 [INFO    ] scraper_api.requests — [a1dc1f21] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:18:33 [INFO    ] scraper_api.requests — [a1dc1f21] < GET /feedback 200 (6ms)
+2026-03-22 23:19:06 [INFO    ] scraper_api.requests — [80118835] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:19:06 [INFO    ] scraper — Classifying URL: https://eksisozluk.com/
+2026-03-22 23:19:07 [INFO    ] classifier — Domain override applied for https://eksisozluk.com/: browser -> browser
+2026-03-22 23:19:07 [INFO    ] scraper — force_strategy override for https://eksisozluk.com/: browser -> tor
+2026-03-22 23:19:07 [INFO    ] scraper — Auto-escalating strategy for https://eksisozluk.com/: tor -> hybrid (domain requires a browser for JS rendering).
+2026-03-22 23:19:07 [INFO    ] scraper — Scrape attempt 1/3 — strategy=hybrid profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 23:19:13 [INFO    ] tor_scraper — Starting Tor Browser: C:\Users\Pc\Desktop\Tor Browser\Browser\firefox.exe
+2026-03-22 23:19:14 [INFO    ] scraper_api.requests — [37c05eb9] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:19:14 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 23:19:19 [INFO    ] tor_scraper — Tor Browser SOCKS port 9150 open after 1s — waiting for circuit…
+2026-03-22 23:19:20 [INFO    ] tor_scraper — Tor circuit ready — fully connected.
+2026-03-22 23:19:20 [INFO    ] browser_scraper — Chrome driver created (headless=False).
+2026-03-22 23:19:27 [INFO    ] tor_scraper — Tor browser driver created (port=9150, headless=False).
+2026-03-22 23:19:32 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 23:19:33 [INFO    ] scraper_api.requests — [809a1be2] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:19:33 [INFO    ] scraper_api.requests — [809a1be2] < GET /feedback 200 (9ms)
+2026-03-22 23:19:33 [WARNING ] scraper — Attempt 1 failed: Alert Text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Message: Unexpected confirmEx dialog detected. Performed handler "dismiss". Dialog text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Stacktrace:
+RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
+WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:199:5
+UnexpectedAlertOpenError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:876:5
+GeckoDriver.prototype._handleUserPrompts@chrome://remote/content/marionette/driver.sys.mjs:3130:11
+openPromptSync@resource://gre/modules/Prompter.sys.mjs:1082:17
+confirmEx@resource://gre/modules/Prompter.sys.mjs:1526:10
+confirmEx@resource://gre/modules/Prompter.sys.mjs:303:14
+showConfirm@resource://gre/modules/TorLauncherUtil.sys.mjs:372:25
+showRestartPrompt@resource://gre/modules/TorLauncherUtil.sys.mjs:415:17
+firstWindowLoaded@resource://gre/modules/TorProviderBuilder.sys.mjs:290:45
+
+2026-03-22 23:19:35 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 23:19:35 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 23:19:35 [INFO    ] scraper_api.requests — [eb0b40ea] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:19:35 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 23:19:37 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:19:43 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 23:19:45 [INFO    ] scraper — Scrape attempt 2/3 — strategy=hybrid profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 23:19:45 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 23:19:47 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:19:50 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:19:52 [INFO    ] tor_scraper — Tor browser driver created (port=9150, headless=False).
+2026-03-22 23:19:52 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 23:19:53 [INFO    ] scraper_api.requests — [37c05eb9] < POST /scrape 200 (39166ms)
+2026-03-22 23:19:53 [INFO    ] scraper_api.requests — [8b88cfa6] > POST /classify (client=127.0.0.1)
+2026-03-22 23:19:53 [INFO    ] classifier — Domain override applied for https://eksisozluk.com/: browser -> browser
+2026-03-22 23:19:53 [INFO    ] scraper_api.requests — [8b88cfa6] < POST /classify 200 (112ms)
+2026-03-22 23:19:56 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 23:19:58 [WARNING ] scraper — Attempt 2 failed: Alert Text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Message: Unexpected confirmEx dialog detected. Performed handler "dismiss". Dialog text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Stacktrace:
+RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
+WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:199:5
+UnexpectedAlertOpenError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:876:5
+GeckoDriver.prototype._handleUserPrompts@chrome://remote/content/marionette/driver.sys.mjs:3130:11
+openPromptSync@resource://gre/modules/Prompter.sys.mjs:1082:17
+confirmEx@resource://gre/modules/Prompter.sys.mjs:1526:10
+confirmEx@resource://gre/modules/Prompter.sys.mjs:303:14
+showConfirm@resource://gre/modules/TorLauncherUtil.sys.mjs:372:25
+showRestartPrompt@resource://gre/modules/TorLauncherUtil.sys.mjs:415:17
+firstWindowLoaded@resource://gre/modules/TorProviderBuilder.sys.mjs:290:45
+
+2026-03-22 23:20:02 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 23:20:02 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "read of closed file"
+2026-03-22 23:20:05 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 23:20:06 [INFO    ] scraper_api.requests — [eb0b40ea] < POST /scrape 200 (31285ms)
+2026-03-22 23:20:06 [INFO    ] scraper_api.requests — [3c896d04] > POST /classify (client=127.0.0.1)
+2026-03-22 23:20:07 [INFO    ] classifier — Domain override applied for https://eksisozluk.com/: browser -> browser
+2026-03-22 23:20:07 [INFO    ] scraper_api.requests — [3c896d04] < POST /classify 200 (126ms)
+2026-03-22 23:28:39 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 23:28:39 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 23:28:39 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 23:28:39 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 23:28:39 [INFO    ] scraper_api.requests — [4b3dde34] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:28:39 [INFO    ] scraper — Classifying URL: https://jp.mercari.com/search?keyword=%E3%81%93%E3%81%AE%E3%81%BF%E3%82%A6%E3%82%A3%E3%83%83%E3%83%81%20%E3%82%B2%E3%83%BC%E3%83%9E%E3%82%AC
+2026-03-22 23:28:40 [INFO    ] scraper_api.requests — [872857a0] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:28:40 [INFO    ] scraper_api.requests — [93b07bb4] > POST /classify (client=127.0.0.1)
+2026-03-22 23:28:40 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 23:28:45 [INFO    ] scraper_api.requests — [0b0d3c98] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:28:45 [INFO    ] scraper_api.requests — [e20c29bb] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:28:45 [INFO    ] browser_scraper — Chrome driver created (headless=False).
+2026-03-22 23:28:45 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:28:49 [INFO    ] scraper_api.requests — [0b0d3c98] < GET /feedback 200 (4344ms)
+2026-03-22 23:28:49 [INFO    ] scraper — Classifying URL: https://eksisozluk.com/
+2026-03-22 23:28:49 [INFO    ] classifier — Domain override applied for https://eksisozluk.com/: browser -> browser
+2026-03-22 23:28:49 [INFO    ] scraper — force_strategy override for https://eksisozluk.com/: browser -> tor
+2026-03-22 23:28:49 [INFO    ] scraper — Auto-escalating strategy for https://eksisozluk.com/: tor -> hybrid (domain requires a browser for JS rendering).
+2026-03-22 23:28:49 [INFO    ] scraper — Scrape attempt 1/3 — strategy=hybrid profile=desktop_chrome_windows url=https://eksisozluk.com/
+2026-03-22 23:28:54 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:28:54 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:28:55 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:28:55 [INFO    ] tor_scraper — Starting Tor Browser: C:\Users\Pc\Desktop\Tor Browser\Browser\firefox.exe
+2026-03-22 23:28:57 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:28:58 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:28:58 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=mobile_safari_ios url=https://jp.mercari.com/search?keyword=%E3%81%93%E3%81%AE%E3%81%BF%E3%82%A6%E3%82%A3%E3%83%83%E3%83%81%20%E3%82%B2%E3%83%BC%E3%83%9E%E3%82%AC
+2026-03-22 23:28:59 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:28:59 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:29:02 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:29:03 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:29:04 [INFO    ] scraper_api.requests — [93b07bb4] < POST /classify 200 (24029ms)
+2026-03-22 23:29:04 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:29:04 [INFO    ] tor_scraper — Tor Browser SOCKS port 9150 open after 2s — waiting for circuit…
+2026-03-22 23:29:05 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 23:29:06 [INFO    ] tor_scraper — Tor circuit ready — fully connected.
+2026-03-22 23:29:06 [INFO    ] browser_scraper — Tor-proxied Chrome driver created (port=9150, headless=False).
+2026-03-22 23:29:08 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:29:23 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:29:26 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_chrome_windows url=https://jp.mercari.com/search?keyword=%E3%81%93%E3%81%AE%E3%81%BF%E3%82%A6%E3%82%A3%E3%83%83%E3%83%81%20%E3%82%B2%E3%83%BC%E3%83%9E%E3%82%AC
+2026-03-22 23:29:29 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:29:30 [INFO    ] scraper_api.requests — [e20c29bb] < POST /scrape 200 (45019ms)
+2026-03-22 23:29:30 [INFO    ] scraper_api.requests — [f0bbda5a] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:29:30 [INFO    ] scraper_api.requests — [f0bbda5a] < GET /feedback 200 (9ms)
+2026-03-22 23:29:32 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:29:32 [INFO    ] scraper_api.requests — [06991c74] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:29:32 [INFO    ] scraper_api.requests — [06991c74] < GET /feedback 200 (5ms)
+2026-03-22 23:29:35 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 23:29:38 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:29:38 [INFO    ] scraper_api.requests — [9cd054f7] > GET /Content/img/new-logos/pena-logo.svg (client=127.0.0.1)
+2026-03-22 23:29:38 [INFO    ] scraper_api.requests — [cf9ca1e7] > GET /Content/img/new-logos/eksiseyler-logo.svg (client=127.0.0.1)
+2026-03-22 23:29:38 [WARNING ] scraper_api.requests — [9cd054f7] < GET /Content/img/new-logos/pena-logo.svg 404 (2ms)
+2026-03-22 23:29:38 [WARNING ] scraper_api.requests — [cf9ca1e7] < GET /Content/img/new-logos/eksiseyler-logo.svg 404 (2ms)
+2026-03-22 23:29:45 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:29:48 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 23:29:48 [INFO    ] scraper_api.requests — [872857a0] < POST /scrape 200 (68647ms)
+2026-03-22 23:29:48 [INFO    ] scraper_api.requests — [0af5308a] > POST /classify (client=127.0.0.1)
+2026-03-22 23:29:48 [INFO    ] classifier — Domain override applied for https://eksisozluk.com/: browser -> browser
+2026-03-22 23:29:48 [INFO    ] scraper_api.requests — [0af5308a] < POST /classify 200 (117ms)
+2026-03-22 23:29:51 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=desktop_chrome_linux url=https://jp.mercari.com/search?keyword=%E3%81%93%E3%81%AE%E3%81%BF%E3%82%A6%E3%82%A3%E3%83%83%E3%83%81%20%E3%82%B2%E3%83%BC%E3%83%9E%E3%82%AC
+2026-03-22 23:30:07 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://jp.mercari.com/search?keyword=%E3%81%93%E3%81%AE%E3%81%BF%E3%82%A6%E3%82%A3%E3%83%83%E3%83%81%20%E3%82%B2%E3%83%BC%E3%83%9E%E3%82%AC
+2026-03-22 23:30:09 [INFO    ] scraper_api.requests — [4b3dde34] < POST /scrape 200 (89274ms)
+2026-03-22 23:30:09 [INFO    ] scraper_api.requests — [a87e997e] > POST /classify (client=127.0.0.1)
+2026-03-22 23:30:18 [INFO    ] scraper_api.requests — [5f03d942] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:30:18 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 23:30:33 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:30:35 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:30:35 [INFO    ] scraper_api.requests — [a87e997e] < POST /classify 200 (26572ms)
+2026-03-22 23:30:47 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 23:30:58 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=mobile_chrome_android url=https://eksisozluk.com/
+2026-03-22 23:31:06 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 23:31:06 [INFO    ] scraper_api.requests — [5f03d942] < POST /scrape 200 (48510ms)
+2026-03-22 23:31:37 [INFO    ] scraper_api.requests — [6895e40b] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:31:37 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_chrome_windows url=https://eksisozluk.com/
+2026-03-22 23:31:45 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 23:32:06 [INFO    ] scraper_api.requests — [c9e9ad3a] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:32:06 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 23:32:06 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 23:32:08 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:32:43 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:32:44 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:32:44 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 23:32:45 [INFO    ] scraper_api.requests — [6895e40b] < POST /scrape 200 (68263ms)
+2026-03-22 23:32:46 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_chrome_windows url=https://eksisozluk.com/
+2026-03-22 23:32:48 [INFO    ] scraper_api.requests — [b4ff33a0] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:32:48 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 23:32:50 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:33:18 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:33:22 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=mobile_safari_ios url=https://eksisozluk.com/
+2026-03-22 23:33:30 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:33:31 [WARNING ] urllib3.connectionpool — Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-22 23:33:33 [INFO    ] scraper_api.requests — [b4ff33a0] < POST /scrape 200 (44399ms)
+2026-03-22 23:33:45 [INFO    ] scraper_api.requests — [798e2a55] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:33:46 [INFO    ] scraper — Returning cached HTML for https://eksisozluk.com/
+2026-03-22 23:33:46 [INFO    ] scraper_api.requests — [798e2a55] < POST /scrape 200 (313ms)
+2026-03-22 23:33:51 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 23:33:52 [INFO    ] scraper_api.requests — [c9e9ad3a] < POST /scrape 200 (105311ms)
+2026-03-22 23:35:52 [INFO    ] scraper_api.requests — [33597953] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:35:52 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 23:35:53 [INFO    ] browser_scraper — Chrome driver created (headless=False).
+2026-03-22 23:36:05 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_firefox_windows url=https://eksisozluk.com/
+2026-03-22 23:36:14 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=desktop_chrome_linux url=https://eksisozluk.com/
+2026-03-22 23:36:30 [INFO    ] scraper — All 3 retries failed with strategy=browser — trying static fallback for https://eksisozluk.com/
+2026-03-22 23:36:32 [INFO    ] scraper_api.requests — [33597953] < POST /scrape 200 (40028ms)
+2026-03-22 23:36:32 [INFO    ] scraper_api.requests — [8c46684b] > POST /classify (client=127.0.0.1)
+2026-03-22 23:36:32 [INFO    ] classifier — Domain override applied for https://eksisozluk.com/: browser -> browser
+2026-03-22 23:36:32 [INFO    ] scraper_api.requests — [8c46684b] < POST /classify 200 (142ms)
+2026-03-22 23:49:41 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 23:49:41 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 23:49:41 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 23:49:41 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 23:49:45 [INFO    ] scraper_api.requests — [f279a782] > GET /ui/ (client=127.0.0.1)
+2026-03-22 23:49:45 [INFO    ] scraper_api.requests — [f279a782] < GET /ui/ 304 (44ms)
+2026-03-22 23:49:45 [INFO    ] scraper_api.requests — [7efda5f9] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:49:45 [INFO    ] scraper_api.requests — [7efda5f9] < GET /feedback 200 (8ms)
+2026-03-22 23:49:57 [INFO    ] scraper_api.requests — [e54d1871] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:49:57 [INFO    ] scraper — Classifying URL: https://x.com/ConflictTR
+2026-03-22 23:49:58 [INFO    ] classifier — Domain override applied for https://x.com/ConflictTR: browser -> browser
+2026-03-22 23:49:58 [INFO    ] scraper — force_strategy override for https://x.com/ConflictTR: browser -> tor
+2026-03-22 23:49:58 [INFO    ] scraper — Auto-escalating strategy for https://x.com/ConflictTR: tor -> hybrid (domain requires a browser for JS rendering).
+2026-03-22 23:49:58 [INFO    ] scraper — Scrape attempt 1/3 — strategy=hybrid profile=mobile_safari_ios url=https://x.com/ConflictTR
+2026-03-22 23:50:04 [INFO    ] browser_scraper — Chrome started; CDP at 127.0.0.1:50494 (headless=False).
+2026-03-22 23:50:20 [WARNING ] tor_scraper — Tor identity rotation failed on all control ports: [WinError 10061] Hedef makine etkin olarak reddettiğinden bağlantı kurulamadı
+2026-03-22 23:50:20 [INFO    ] scraper — Scrape attempt 2/3 — strategy=hybrid profile=desktop_firefox_windows url=https://x.com/ConflictTR
+2026-03-22 23:50:37 [WARNING ] tor_scraper — Tor identity rotation failed on all control ports: [WinError 10061] Hedef makine etkin olarak reddettiğinden bağlantı kurulamadı
+2026-03-22 23:50:37 [INFO    ] scraper — Scrape attempt 3/3 — strategy=hybrid profile=mobile_safari_ios url=https://x.com/ConflictTR
+2026-03-22 23:50:46 [INFO    ] scraper_api.requests — [e54d1871] < POST /scrape 200 (48831ms)
+2026-03-22 23:50:46 [INFO    ] scraper_api.requests — [0facbaeb] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:50:46 [INFO    ] scraper_api.requests — [0facbaeb] < GET /feedback 200 (8ms)
+2026-03-22 23:50:46 [INFO    ] scraper_api.requests — [d9b227c1] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:50:46 [INFO    ] scraper_api.requests — [d9b227c1] < GET /feedback 200 (5ms)
+2026-03-22 23:51:04 [INFO    ] scraper_api.requests — [6846bbfc] > GET /ui/ (client=127.0.0.1)
+2026-03-22 23:51:04 [INFO    ] scraper_api.requests — [6846bbfc] < GET /ui/ 304 (3ms)
+2026-03-22 23:51:04 [INFO    ] scraper_api.requests — [d0aee7dc] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:51:04 [INFO    ] scraper_api.requests — [d0aee7dc] < GET /feedback 200 (13ms)
+2026-03-22 23:51:20 [INFO    ] scraper_api.requests — [1bb065f3] > POST /scrape (client=127.0.0.1)
+2026-03-22 23:51:20 [INFO    ] scraper — Classifying URL: https://x.com/ConflictTR
+2026-03-22 23:51:21 [INFO    ] classifier — Domain override applied for https://x.com/ConflictTR: browser -> browser
+2026-03-22 23:51:21 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_chrome_linux url=https://x.com/ConflictTR
+2026-03-22 23:51:30 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=mobile_safari_ios url=https://x.com/ConflictTR
+2026-03-22 23:51:41 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=mobile_chrome_android url=https://x.com/ConflictTR
+2026-03-22 23:51:50 [INFO    ] scraper_api.requests — [1bb065f3] < POST /scrape 200 (29639ms)
+2026-03-22 23:51:50 [INFO    ] scraper_api.requests — [7ad5bf5c] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:51:50 [INFO    ] scraper_api.requests — [7ad5bf5c] < GET /feedback 200 (5ms)
+2026-03-22 23:52:05 [INFO    ] scraper_api.requests — [eea96bc4] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:52:05 [INFO    ] scraper_api.requests — [eea96bc4] < GET /feedback 200 (7ms)
+2026-03-22 23:52:51 [INFO    ] browser_scraper — Chrome stopped (idle timeout).
+2026-03-22 23:53:05 [INFO    ] scraper_api.requests — [1e69c23c] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:53:05 [INFO    ] scraper_api.requests — [1e69c23c] < GET /feedback 200 (5ms)
+2026-03-22 23:54:05 [INFO    ] scraper_api.requests — [63d97d8a] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:54:05 [INFO    ] scraper_api.requests — [63d97d8a] < GET /feedback 200 (5ms)
+2026-03-22 23:55:05 [INFO    ] scraper_api.requests — [cc4e90bf] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:55:05 [INFO    ] scraper_api.requests — [cc4e90bf] < GET /feedback 200 (4ms)
+2026-03-22 23:56:05 [INFO    ] scraper_api.requests — [42b1a62a] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:56:05 [INFO    ] scraper_api.requests — [42b1a62a] < GET /feedback 200 (6ms)
+2026-03-22 23:57:05 [INFO    ] scraper_api.requests — [c55ee4f4] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:57:05 [INFO    ] scraper_api.requests — [c55ee4f4] < GET /feedback 200 (8ms)
+2026-03-22 23:58:58 [INFO    ] scraper_api.requests — [27d247c4] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:58:58 [INFO    ] scraper_api.requests — [27d247c4] < GET /feedback 200 (11ms)
+2026-03-22 23:59:58 [INFO    ] scraper_api.requests — [e364b501] > GET /feedback (client=127.0.0.1)
+2026-03-22 23:59:58 [INFO    ] scraper_api.requests — [e364b501] < GET /feedback 200 (5ms)
+2026-03-23 00:00:58 [INFO    ] scraper_api.requests — [a4acb1d3] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:00:58 [INFO    ] scraper_api.requests — [a4acb1d3] < GET /feedback 200 (8ms)
+2026-03-23 00:01:58 [INFO    ] scraper_api.requests — [b42fc220] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:01:58 [INFO    ] scraper_api.requests — [b42fc220] < GET /feedback 200 (6ms)
+2026-03-23 00:02:58 [INFO    ] scraper_api.requests — [c7dd2498] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:02:58 [INFO    ] scraper_api.requests — [c7dd2498] < GET /feedback 200 (5ms)
+2026-03-23 00:03:34 [INFO    ] scraper_api.requests — [fe72b725] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:03:34 [INFO    ] scraper_api.requests — [fe72b725] < GET /feedback 200 (6ms)
+2026-03-23 00:03:36 [INFO    ] scraper_api.requests — [e5959e22] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:03:36 [INFO    ] scraper — Classifying URL: https://x.com/ConflictTR
+2026-03-23 00:03:37 [INFO    ] classifier — Domain override applied for https://x.com/ConflictTR: browser -> browser
+2026-03-23 00:03:37 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=mobile_chrome_android url=https://x.com/ConflictTR
+2026-03-23 00:03:42 [INFO    ] browser_scraper — Chrome started; CDP at 127.0.0.1:51284 (headless=False).
+2026-03-23 00:03:56 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_firefox_windows url=https://x.com/ConflictTR
+2026-03-23 00:04:04 [INFO    ] scraper_api.requests — [539d3012] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:04:04 [INFO    ] scraper_api.requests — [539d3012] < GET /feedback 200 (6ms)
+2026-03-23 00:04:09 [INFO    ] scraper — Scrape attempt 3/3 — strategy=browser profile=mobile_safari_ios url=https://x.com/ConflictTR
+2026-03-23 00:04:29 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-23 00:04:29 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-23 00:04:29 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-23 00:04:29 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-23 00:04:38 [INFO    ] scraper_api.requests — [00c3f2c4] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:04:38 [INFO    ] scraper — Classifying URL: https://x.com/ConflictTR
+2026-03-23 00:04:39 [INFO    ] classifier — Domain override applied for https://x.com/ConflictTR: browser -> browser
+2026-03-23 00:04:39 [INFO    ] scraper — Scrape attempt 1/3 — strategy=browser profile=desktop_firefox_windows url=https://x.com/ConflictTR
+2026-03-23 00:04:44 [INFO    ] browser_scraper — Chrome started; CDP at 127.0.0.1:51453 (headless=False).
+2026-03-23 00:05:04 [INFO    ] scraper_api.requests — [9116c70d] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:05:04 [INFO    ] scraper_api.requests — [9116c70d] < GET /feedback 200 (7ms)
+2026-03-23 00:05:13 [INFO    ] scraper — Scrape attempt 2/3 — strategy=browser profile=desktop_chrome_linux url=https://x.com/ConflictTR
+2026-03-23 00:23:22 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-23 00:25:18 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-23 00:25:18 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-23 00:25:18 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-23 00:25:18 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-23 00:25:19 [INFO    ] scraper_api.requests — [ad1e2ad6] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:25:19 [INFO    ] scraper_api.requests — [ad1e2ad6] < GET /feedback 200 (7ms)
+2026-03-23 00:25:20 [INFO    ] scraper_api.requests — [6d0cfcbb] > GET /ui/ (client=127.0.0.1)
+2026-03-23 00:25:20 [INFO    ] scraper_api.requests — [6d0cfcbb] < GET /ui/ 304 (54ms)
+2026-03-23 00:25:20 [INFO    ] scraper_api.requests — [bb5fd9ae] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:25:20 [INFO    ] scraper_api.requests — [bb5fd9ae] < GET /feedback 200 (8ms)
+2026-03-23 00:25:36 [INFO    ] scraper_api.requests — [ca4f7b7d] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:25:36 [INFO    ] scraper — Scrape attempt 1/3 strategy=browser url=https://x.com/ConflictTR
+2026-03-23 00:25:42 [INFO    ] browser_scraper — Chrome started; CDP at 127.0.0.1:53003 (headless=False).
+2026-03-23 00:26:10 [INFO    ] scraper — Scrape attempt 2/3 strategy=browser url=https://x.com/ConflictTR
+2026-03-23 00:30:38 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-23 00:31:21 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-23 00:31:21 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-23 00:31:21 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-23 00:31:23 [INFO    ] scraper_api.requests — [7344798b] > GET /ui/ (client=127.0.0.1)
+2026-03-23 00:31:23 [INFO    ] scraper_api.requests — [7344798b] < GET /ui/ 200 (55ms)
+2026-03-23 00:31:24 [INFO    ] scraper_api.requests — [532e8543] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:31:24 [INFO    ] scraper_api.requests — [532e8543] < GET /feedback 200 (7ms)
+2026-03-23 00:31:30 [INFO    ] scraper_api.requests — [dc0c2e54] > GET /ui/ (client=127.0.0.1)
+2026-03-23 00:31:30 [INFO    ] scraper_api.requests — [dc0c2e54] < GET /ui/ 304 (2ms)
+2026-03-23 00:31:30 [INFO    ] scraper_api.requests — [7c6b5de3] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:31:30 [INFO    ] scraper_api.requests — [7c6b5de3] < GET /feedback 200 (9ms)
+2026-03-23 00:31:40 [INFO    ] scraper_api.requests — [250e3df3] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:31:40 [INFO    ] scraper — Scrape attempt 1/3 strategy=browser url=https://jp.mercari.com/search?keyword=%E3%81%93%E3%81%AE%E3%81%BF%E3%82%A6%E3%82%A3%E3%83%83%E3%83%81%20%E3%82%B2%E3%83%BC%E3%83%9E%E3%82%AC
+2026-03-23 00:31:43 [INFO    ] scraper_api.requests — [2a29751c] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:31:43 [INFO    ] scraper — Scrape attempt 1/3 strategy=browser url=https://eksisozluk.com/
+2026-03-23 00:31:47 [INFO    ] browser_scraper — Chrome started; CDP at 127.0.0.1:53810 (headless=False).
+2026-03-23 00:32:01 [INFO    ] scraper — Scrape attempt 2/3 strategy=browser url=https://eksisozluk.com/
+2026-03-23 00:32:01 [INFO    ] scraper — Scrape attempt 2/3 strategy=browser url=https://jp.mercari.com/search?keyword=%E3%81%93%E3%81%AE%E3%81%BF%E3%82%A6%E3%82%A3%E3%83%83%E3%83%81%20%E3%82%B2%E3%83%BC%E3%83%9E%E3%82%AC
+2026-03-23 00:32:16 [INFO    ] scraper — Scrape attempt 3/3 strategy=browser url=https://eksisozluk.com/
+2026-03-23 00:32:23 [INFO    ] scraper — Scrape attempt 3/3 strategy=browser url=https://jp.mercari.com/search?keyword=%E3%81%93%E3%81%AE%E3%81%BF%E3%82%A6%E3%82%A3%E3%83%83%E3%83%81%20%E3%82%B2%E3%83%BC%E3%83%9E%E3%82%AC
+2026-03-23 00:32:25 [INFO    ] scraper — Scrape attempt 1/3 strategy=tor url=https://eksisozluk.com/
+2026-03-23 00:32:31 [INFO    ] scraper_api.requests — [9c494105] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:32:31 [INFO    ] scraper_api.requests — [9c494105] < GET /feedback 200 (5ms)
+2026-03-23 00:32:31 [WARNING ] scraper — Attempt 1/3 failed (tor): 'Config' object has no attribute 'firefox_binary_path'
+2026-03-23 00:32:32 [INFO    ] scraper — Scrape attempt 1/3 strategy=tor url=https://jp.mercari.com/search?keyword=%E3%81%93%E3%81%AE%E3%81%BF%E3%82%A6%E3%82%A3%E3%83%83%E3%83%81%20%E3%82%B2%E3%83%BC%E3%83%9E%E3%82%AC
+2026-03-23 00:32:37 [WARNING ] tor_scraper — Tor identity rotation failed on all control ports: [WinError 10061] Hedef makine etkin olarak reddettiğinden bağlantı kurulamadı
+2026-03-23 00:32:37 [INFO    ] scraper — Scrape attempt 2/3 strategy=tor url=https://eksisozluk.com/
+2026-03-23 00:32:38 [WARNING ] scraper — Attempt 1/3 failed (tor): 'Config' object has no attribute 'firefox_binary_path'
+2026-03-23 00:35:07 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-23 00:35:47 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-23 00:35:47 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-23 00:35:47 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-23 00:35:53 [INFO    ] scraper_api.requests — [d1829c33] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:35:53 [INFO    ] scraper — Scrape attempt 1/3 strategy=browser url=https://eksisozluk.com/
+2026-03-23 00:35:58 [INFO    ] browser_scraper — Chrome started; CDP at 127.0.0.1:54867 (headless=False).
+2026-03-23 00:36:21 [INFO    ] scraper — Scrape attempt 2/3 strategy=browser url=https://eksisozluk.com/
+2026-03-23 00:36:30 [INFO    ] scraper_api.requests — [57ef5818] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:36:30 [INFO    ] scraper_api.requests — [57ef5818] < GET /feedback 200 (10ms)
+2026-03-23 00:36:45 [INFO    ] scraper — Scrape attempt 3/3 strategy=browser url=https://eksisozluk.com/
+2026-03-23 00:37:03 [INFO    ] scraper — Scrape attempt 1/3 strategy=tor url=https://eksisozluk.com/
+2026-03-23 00:37:09 [WARNING ] scraper — Attempt 1/3 failed (tor): 'Config' object has no attribute 'firefox_binary_path'
+2026-03-23 00:37:16 [WARNING ] tor_scraper — Tor identity rotation failed on all control ports: [WinError 10061] Hedef makine etkin olarak reddettiğinden bağlantı kurulamadı
+2026-03-23 00:37:16 [INFO    ] scraper — Scrape attempt 2/3 strategy=tor url=https://eksisozluk.com/
+2026-03-23 00:37:22 [WARNING ] scraper — Attempt 2/3 failed (tor): 'Config' object has no attribute 'firefox_binary_path'
+2026-03-23 00:37:30 [WARNING ] tor_scraper — Tor identity rotation failed on all control ports: [WinError 10061] Hedef makine etkin olarak reddettiğinden bağlantı kurulamadı
+2026-03-23 00:37:30 [INFO    ] scraper — Scrape attempt 3/3 strategy=tor url=https://eksisozluk.com/
+2026-03-23 00:37:31 [INFO    ] scraper_api.requests — [47c96177] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:37:31 [INFO    ] scraper_api.requests — [47c96177] < GET /feedback 200 (43ms)
+2026-03-23 00:37:36 [WARNING ] scraper — Attempt 3/3 failed (tor): 'Config' object has no attribute 'firefox_binary_path'
+2026-03-23 00:37:36 [INFO    ] scraper_api.requests — [d1829c33] < POST /scrape 200 (103081ms)
+2026-03-23 00:37:36 [INFO    ] scraper_api.requests — [d6563799] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:37:36 [INFO    ] scraper_api.requests — [d6563799] < GET /feedback 200 (5ms)
+2026-03-23 00:37:42 [INFO    ] scraper_api.requests — [3b341652] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:37:42 [INFO    ] scraper — Scrape attempt 1/3 strategy=browser url=https://jp.mercari.com/search?keyword=%E3%81%93%E3%81%AE%E3%81%BF%E3%82%A6%E3%82%A3%E3%83%83%E3%83%81%20%E3%82%B2%E3%83%BC%E3%83%9E%E3%82%AC
+2026-03-23 00:37:42 [INFO    ] scraper_api.requests — [a1bfbecc] > POST /classify (client=127.0.0.1)
+2026-03-23 00:37:42 [WARNING ] scraper_api.requests — [a1bfbecc] < POST /classify 404 (1ms)
+2026-03-23 00:40:27 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-23 00:40:27 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-23 00:40:27 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-23 00:40:30 [INFO    ] scraper_api.requests — [4fb8ef74] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:40:30 [INFO    ] scraper — Scrape attempt 1/3 strategy=browser url=https://eksisozluk.com/
+2026-03-23 00:40:30 [INFO    ] scraper_api.requests — [7c1105aa] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:40:30 [INFO    ] scraper_api.requests — [7c1105aa] < GET /feedback 200 (6ms)
+2026-03-23 00:40:35 [INFO    ] browser_scraper — Chrome started; CDP at 127.0.0.1:55525 (headless=False).
+2026-03-23 00:40:45 [INFO    ] scraper_api.requests — [d61415e6] > POST /classify (client=127.0.0.1)
+2026-03-23 00:40:45 [WARNING ] scraper_api.requests — [d61415e6] < POST /classify 404 (1ms)
+2026-03-23 00:40:57 [INFO    ] scraper_api.requests — [4fb8ef74] < POST /scrape 200 (27653ms)
+2026-03-23 00:40:58 [INFO    ] scraper_api.requests — [c306a5f7] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:40:58 [INFO    ] scraper_api.requests — [c306a5f7] < GET /feedback 200 (8ms)
+2026-03-23 00:41:00 [INFO    ] scraper_api.requests — [d98c505f] > GET /Content/img/new-logos/pena-logo.svg (client=127.0.0.1)
+2026-03-23 00:41:00 [WARNING ] scraper_api.requests — [d98c505f] < GET /Content/img/new-logos/pena-logo.svg 404 (1ms)
+2026-03-23 00:41:00 [INFO    ] scraper_api.requests — [7bf82565] > GET /Content/img/new-logos/eksiseyler-logo.svg (client=127.0.0.1)
+2026-03-23 00:41:00 [WARNING ] scraper_api.requests — [7bf82565] < GET /Content/img/new-logos/eksiseyler-logo.svg 404 (1ms)
+2026-03-23 00:41:17 [INFO    ] scraper_api.requests — [d2fc1a69] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:41:17 [INFO    ] scraper — Scrape attempt 1/3 strategy=browser url=https://x.com/ConflictTR
+2026-03-23 00:41:31 [INFO    ] scraper_api.requests — [47cf04bf] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:41:31 [INFO    ] scraper_api.requests — [47cf04bf] < GET /feedback 200 (7ms)
+2026-03-23 00:41:53 [INFO    ] scraper_api.requests — [d2fc1a69] < POST /scrape 200 (36077ms)
+2026-03-23 00:41:53 [INFO    ] scraper_api.requests — [83dabcbb] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:41:53 [INFO    ] scraper_api.requests — [83dabcbb] < GET /feedback 200 (12ms)
+2026-03-23 00:42:07 [INFO    ] scraper_api.requests — [bd41ae43] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:42:07 [INFO    ] scraper — Returning cached HTML for https://x.com/ConflictTR
+2026-03-23 00:42:07 [INFO    ] scraper_api.requests — [bd41ae43] < POST /scrape 200 (58ms)
+2026-03-23 00:42:07 [INFO    ] scraper_api.requests — [8a6f147a] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:42:07 [INFO    ] scraper_api.requests — [8a6f147a] < GET /feedback 200 (5ms)
+2026-03-23 00:42:14 [INFO    ] scraper_api.requests — [6ff46588] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:42:14 [INFO    ] scraper — Scrape attempt 1/3 strategy=browser url=https://x.com/ConflictTR
+2026-03-23 00:42:31 [INFO    ] scraper_api.requests — [53b8d532] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:42:31 [INFO    ] scraper_api.requests — [53b8d532] < GET /feedback 200 (6ms)
+2026-03-23 00:42:46 [INFO    ] scraper_api.requests — [6ff46588] < POST /scrape 200 (32644ms)
+2026-03-23 00:42:46 [INFO    ] scraper_api.requests — [8598419a] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:42:46 [INFO    ] scraper_api.requests — [8598419a] < GET /feedback 200 (10ms)
+2026-03-23 00:43:31 [INFO    ] scraper_api.requests — [0a6b9676] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:43:31 [INFO    ] scraper_api.requests — [0a6b9676] < GET /feedback 200 (6ms)
+2026-03-23 00:43:47 [INFO    ] browser_scraper — Chrome stopped (idle timeout).
+2026-03-23 00:44:31 [INFO    ] scraper_api.requests — [25e36d01] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:44:31 [INFO    ] scraper_api.requests — [25e36d01] < GET /feedback 200 (5ms)
+2026-03-23 00:44:54 [INFO    ] scraper_api.requests — [a8e2ca93] > GET /ui/ (client=127.0.0.1)
+2026-03-23 00:44:55 [INFO    ] scraper_api.requests — [a8e2ca93] < GET /ui/ 304 (51ms)
+2026-03-23 00:44:55 [INFO    ] scraper_api.requests — [d62dfbbb] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:44:55 [INFO    ] scraper_api.requests — [d62dfbbb] < GET /feedback 200 (6ms)
+2026-03-23 00:45:00 [INFO    ] scraper_api.requests — [ea04b862] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:45:00 [INFO    ] scraper — Returning cached HTML for https://x.com/ConflictTR
+2026-03-23 00:45:00 [INFO    ] scraper_api.requests — [ea04b862] < POST /scrape 200 (57ms)
+2026-03-23 00:45:00 [INFO    ] scraper_api.requests — [8befea0b] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:45:00 [INFO    ] scraper_api.requests — [8befea0b] < GET /feedback 200 (6ms)
+2026-03-23 00:45:03 [INFO    ] scraper_api.requests — [686c9a88] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:45:03 [INFO    ] scraper — Scrape attempt 1/3 strategy=browser url=https://x.com/ConflictTR
+2026-03-23 00:45:09 [INFO    ] browser_scraper — Chrome started; CDP at 127.0.0.1:56026 (headless=False).
+2026-03-23 00:45:46 [INFO    ] scraper_api.requests — [686c9a88] < POST /scrape 200 (42772ms)
+2026-03-23 00:45:46 [INFO    ] scraper_api.requests — [0821a3dc] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:45:46 [INFO    ] scraper_api.requests — [0821a3dc] < GET /feedback 200 (8ms)
+2026-03-23 00:45:55 [INFO    ] scraper_api.requests — [56129207] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:45:55 [INFO    ] scraper_api.requests — [56129207] < GET /feedback 200 (5ms)
+2026-03-23 00:46:46 [INFO    ] browser_scraper — Chrome stopped (idle timeout).
+2026-03-23 00:46:55 [INFO    ] scraper_api.requests — [04dab030] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:46:55 [INFO    ] scraper_api.requests — [04dab030] < GET /feedback 200 (7ms)
+2026-03-23 00:47:55 [INFO    ] scraper_api.requests — [fcd7c326] > GET /ui/ (client=127.0.0.1)
+2026-03-23 00:47:55 [INFO    ] scraper_api.requests — [fcd7c326] < GET /ui/ 304 (3ms)
+2026-03-23 00:47:55 [INFO    ] scraper_api.requests — [eb2baa62] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:47:55 [INFO    ] scraper_api.requests — [eb2baa62] < GET /feedback 200 (13ms)
+2026-03-23 00:47:55 [INFO    ] scraper_api.requests — [f01d22a3] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:47:55 [INFO    ] scraper_api.requests — [f01d22a3] < GET /feedback 200 (4ms)
+2026-03-23 00:50:14 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-23 00:50:41 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-23 00:50:41 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-23 00:50:41 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-23 00:50:42 [INFO    ] scraper_api.requests — [ca977bce] > GET /ui/ (client=127.0.0.1)
+2026-03-23 00:50:42 [INFO    ] scraper_api.requests — [ca977bce] < GET /ui/ 200 (46ms)
+2026-03-23 00:50:42 [INFO    ] scraper_api.requests — [6072c2be] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:50:42 [INFO    ] scraper_api.requests — [6072c2be] < GET /feedback 200 (8ms)
+2026-03-23 00:50:50 [INFO    ] scraper_api.requests — [bee237dc] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:50:50 [INFO    ] scraper — Scrape attempt 1/3 strategy=browser url=https://x.com/ConflictTR
+2026-03-23 00:50:55 [INFO    ] browser_scraper — Chrome started; CDP at 127.0.0.1:56453 (headless=False).
+2026-03-23 00:51:31 [INFO    ] scraper_api.requests — [bee237dc] < POST /scrape 200 (41268ms)
+2026-03-23 00:51:31 [INFO    ] scraper_api.requests — [5f704f67] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:51:31 [INFO    ] scraper_api.requests — [5f704f67] < GET /feedback 200 (7ms)
+2026-03-23 00:51:43 [INFO    ] scraper_api.requests — [bfb13a8e] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:51:43 [INFO    ] scraper_api.requests — [bfb13a8e] < GET /feedback 200 (8ms)
+2026-03-23 00:52:31 [INFO    ] browser_scraper — Chrome stopped (idle timeout).
+2026-03-23 00:52:43 [INFO    ] scraper_api.requests — [e310e992] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:52:43 [INFO    ] scraper_api.requests — [e310e992] < GET /feedback 200 (7ms)
+2026-03-23 00:53:08 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-23 00:53:08 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-23 00:53:08 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-23 00:53:09 [INFO    ] scraper_api.requests — [91ff2552] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:53:09 [INFO    ] scraper — Scrape attempt 1/3 strategy=browser url=https://x.com/ConflictTR
+2026-03-23 00:53:15 [INFO    ] browser_scraper — Chrome started; CDP at 127.0.0.1:56667 (headless=False).
+2026-03-23 00:53:42 [INFO    ] scraper_api.requests — [5688593a] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:53:42 [INFO    ] scraper_api.requests — [5688593a] < GET /feedback 200 (8ms)
+2026-03-23 00:53:48 [INFO    ] scraper_api.requests — [91ff2552] < POST /scrape 200 (38211ms)
+2026-03-23 00:53:48 [INFO    ] scraper_api.requests — [8cb11965] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:53:48 [INFO    ] scraper_api.requests — [8cb11965] < GET /feedback 200 (52ms)
+2026-03-23 00:54:42 [INFO    ] scraper_api.requests — [78906f1a] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:54:42 [INFO    ] scraper_api.requests — [78906f1a] < GET /feedback 200 (7ms)
+2026-03-23 00:54:48 [INFO    ] browser_scraper — Chrome stopped (idle timeout).
+2026-03-23 00:54:58 [INFO    ] scraper_api.requests — [76b8c6ac] > GET /index.html (client=127.0.0.1)
+2026-03-23 00:54:58 [WARNING ] scraper_api.requests — [76b8c6ac] < GET /index.html 404 (1ms)
+2026-03-23 00:55:43 [INFO    ] scraper_api.requests — [dded06ac] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:55:43 [INFO    ] scraper_api.requests — [dded06ac] < GET /feedback 200 (10ms)
+2026-03-23 00:56:43 [INFO    ] scraper_api.requests — [c784b589] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:56:43 [INFO    ] scraper_api.requests — [c784b589] < GET /feedback 200 (8ms)
+2026-03-23 00:57:04 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-23 00:57:04 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-23 00:57:04 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-23 00:57:06 [INFO    ] scraper_api.requests — [a04bef42] > POST /scrape (client=127.0.0.1)
+2026-03-23 00:57:06 [INFO    ] scraper — Scrape attempt 1/3 strategy=browser url=https://x.com/ConflictTR
+2026-03-23 00:57:11 [INFO    ] browser_scraper — Chrome started; CDP at 127.0.0.1:57088 (headless=False).
+2026-03-23 00:57:42 [INFO    ] scraper_api.requests — [661ff1c4] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:57:42 [INFO    ] scraper_api.requests — [661ff1c4] < GET /feedback 200 (5ms)
+2026-03-23 00:57:44 [INFO    ] scraper_api.requests — [a04bef42] < POST /scrape 200 (38409ms)
+2026-03-23 00:57:44 [INFO    ] scraper_api.requests — [1b146abb] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:57:44 [INFO    ] scraper_api.requests — [1b146abb] < GET /feedback 200 (9ms)
+2026-03-23 00:58:43 [INFO    ] scraper_api.requests — [e29a74ae] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:58:43 [INFO    ] scraper_api.requests — [e29a74ae] < GET /feedback 200 (5ms)
+2026-03-23 00:58:45 [INFO    ] browser_scraper — Chrome stopped (idle timeout).
+2026-03-23 00:59:25 [INFO    ] scraper_api.requests — [252c7506] > GET /ui/ (client=127.0.0.1)
+2026-03-23 00:59:25 [INFO    ] scraper_api.requests — [252c7506] < GET /ui/ 304 (51ms)
+2026-03-23 00:59:25 [INFO    ] scraper_api.requests — [0f49ff6a] > GET /feedback (client=127.0.0.1)
+2026-03-23 00:59:25 [INFO    ] scraper_api.requests — [0f49ff6a] < GET /feedback 200 (6ms)
+2026-03-23 01:00:26 [INFO    ] scraper_api.requests — [0e22a995] > GET /feedback (client=127.0.0.1)
+2026-03-23 01:00:26 [INFO    ] scraper_api.requests — [0e22a995] < GET /feedback 200 (5ms)
+2026-03-23 01:01:26 [INFO    ] scraper_api.requests — [39dd460d] > GET /feedback (client=127.0.0.1)
+2026-03-23 01:01:26 [INFO    ] scraper_api.requests — [39dd460d] < GET /feedback 200 (6ms)
+2026-03-23 01:02:26 [INFO    ] scraper_api.requests — [ccb3c34d] > GET /feedback (client=127.0.0.1)
+2026-03-23 01:02:26 [INFO    ] scraper_api.requests — [ccb3c34d] < GET /feedback 200 (4ms)
+2026-03-23 01:03:26 [INFO    ] scraper_api.requests — [d3dc7204] > GET /feedback (client=127.0.0.1)
+2026-03-23 01:03:26 [INFO    ] scraper_api.requests — [d3dc7204] < GET /feedback 200 (5ms)
+2026-03-23 01:04:26 [INFO    ] scraper_api.requests — [4a45eb4c] > GET /feedback (client=127.0.0.1)
+2026-03-23 01:04:26 [INFO    ] scraper_api.requests — [4a45eb4c] < GET /feedback 200 (7ms)

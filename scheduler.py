@@ -1,130 +1,38 @@
 """
-scheduler.py — Lightweight background task scheduler.
+scheduler.py -- Lightweight background task scheduler.
 
-Responsibilities
-----------------
-- Periodically reclassify URLs whose classification_confidence is below
-  CONFIG.low_confidence_threshold.
-- Periodically refresh metadata for URLs not checked within
-  CONFIG.metadata_max_age_hours hours.
-
-The scheduler runs as a single asyncio background task started during
-FastAPI application lifespan.  It never raises — errors are logged and
-the scheduler continues on the next cycle.
+No active reclassification tasks. The loop is kept alive so the
+application lifespan contract (start_scheduler / stop_scheduler) remains
+intact for future extension.
 
 Public API
 ----------
-start_scheduler() → asyncio.Task   (call once at startup)
+start_scheduler() -> asyncio.Task   (call once at startup)
 stop_scheduler()                    (call at shutdown)
 """
 from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import datetime, timezone
 from typing import Optional
 
 from config import CONFIG
-from database import (
-    get_low_confidence_urls,
-    get_stale_urls,
-    upsert_url_record,
-)
-from models import URLRecord
 
 logger = logging.getLogger(__name__)
 
 _scheduler_task: Optional[asyncio.Task] = None
 
 
-# ── Internal worker ───────────────────────────────────────────────────────────
-
-async def _reclassify_url(url: str) -> None:
-    """Run the classifier on *url* and persist the updated record."""
-    try:
-        from classifier import classify_url
-        from database import get_url_record
-
-        logger.info("Scheduler: reclassifying %s", url)
-        classification = await classify_url(url)
-        existing = await get_url_record(url)
-
-        updated = URLRecord(
-            url=url,
-            content_type=classification.content_type.value,
-            antiscraping_protection=classification.antiscraping_protection.value,
-            tor_network_available=classification.tor_network_available.value,
-            undetected_browser_available=classification.undetected_browser_available.value,
-            is_public_page=classification.is_public_page.value,
-            scraping_strategy=classification.scraping_strategy.value,
-            classification_confidence=classification.classification_confidence,
-            last_checked=datetime.now(timezone.utc),
-            last_scrape_status=existing.last_scrape_status if existing else None,
-            last_success_html=existing.last_success_html if existing else None,
-        )
-        await upsert_url_record(updated)
-        logger.info(
-            "Scheduler: updated %s — strategy=%s confidence=%.2f",
-            url,
-            classification.scraping_strategy.value,
-            classification.classification_confidence,
-        )
-    except Exception as exc:
-        logger.warning("Scheduler: reclassification failed for %s: %s", url, exc)
-
-
-async def _run_one_cycle() -> None:
-    """Run a single scheduler cycle."""
-    # 1. Low-confidence URLs
-    low_conf_urls = await get_low_confidence_urls(CONFIG.low_confidence_threshold)
-    # 2. Stale metadata URLs — deduplicated against the low-confidence list so a
-    #    URL that qualifies for both is only reclassified once per cycle.
-    stale_urls = await get_stale_urls(CONFIG.metadata_max_age_hours)
-    stale_urls = [u for u in stale_urls if u not in set(low_conf_urls)]
-
-    # Cap batch size to avoid a cycle running for hours when the DB is large.
-    _BATCH_CAP = 50
-    combined = (low_conf_urls + stale_urls)[:_BATCH_CAP]
-
-    if not combined:
-        return
-
-    logger.info(
-        "Scheduler: %d URL(s) to reclassify this cycle "
-        "(%d low-confidence, %d stale, cap=%d).",
-        len(combined),
-        len(low_conf_urls),
-        len(stale_urls),
-        _BATCH_CAP,
-    )
-    for url in combined:
-        await _reclassify_url(url)
-        # Brief pause between classifications to avoid hammering sites
-        await asyncio.sleep(2.0)
-
-
 async def _scheduler_loop() -> None:
-    """Main scheduler loop — runs indefinitely until cancelled."""
-    logger.info(
-        "Scheduler started (interval=%ds).", CONFIG.scheduler_interval_seconds
-    )
+    """Main scheduler loop -- sleeps until cancelled."""
+    logger.info("Scheduler started (interval=%ds).", CONFIG.scheduler_interval_seconds)
     while True:
-        try:
-            await _run_one_cycle()
-        except asyncio.CancelledError:
-            logger.info("Scheduler: cancellation received — stopping.")
-            return
-        except Exception as exc:
-            logger.error("Scheduler: unexpected error in cycle: %s", exc)
-
         try:
             await asyncio.sleep(CONFIG.scheduler_interval_seconds)
         except asyncio.CancelledError:
-            logger.info("Scheduler: cancelled during sleep — stopping.")
+            logger.info("Scheduler: cancelled -- stopping.")
             return
 
-
-# ── Public control functions ──────────────────────────────────────────────────
 
 def start_scheduler() -> asyncio.Task:
     """

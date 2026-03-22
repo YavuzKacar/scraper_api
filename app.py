@@ -3,10 +3,10 @@ app.py — FastAPI application entry point for the Scraper API.
 
 Endpoints
 ---------
-POST /scrape        Scrape a URL using the adaptive strategy engine.
-POST /classify      Classify a URL without scraping.
+POST /scrape        Scrape a URL (browser first, Tor fallback).
 GET  /status/{url}  Retrieve stored metadata for a URL.
 GET  /health        Liveness + readiness check.
+POST /feedback      Save / list / delete URL comments.
 
 Security
 --------
@@ -29,7 +29,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from classifier import classify_url
 from config import CONFIG
 from database import (
     add_feedback,
@@ -39,24 +38,19 @@ from database import (
     get_feedback_for_url,
     get_url_record,
     init_db,
-    upsert_url_record,
 )
 from logging_setup import setup_logging
 from models import (
-    ClassifyRequest,
-    ClassifyResponse,
     FeedbackCreate,
     FeedbackItem,
     FeedbackListResponse,
     HealthResponse,
-    ScrapingStrategy,
     ScrapeRequest,
     ScrapeResponse,
     StatusResponse,
     URLRecord,
 )
 from scraper import scrape
-from scheduler import start_scheduler, stop_scheduler
 from security import require_api_key
 
 # ── Logging setup ─────────────────────────────────────────────────────────────
@@ -70,13 +64,7 @@ async def _lifespan(application: FastAPI):
     """Startup and shutdown logic."""
     logger.info("Scraper API starting on %s:%d", CONFIG.host, CONFIG.port)
     await init_db()
-    task = start_scheduler()
     yield
-    stop_scheduler()
-    # Await the cancelled task so in-progress coroutines can clean up
-    # before the process exits.
-    with contextlib.suppress(asyncio.CancelledError):
-        await task
     logger.info("Scraper API shut down cleanly.")
 
 
@@ -85,9 +73,8 @@ async def _lifespan(application: FastAPI):
 app = FastAPI(
     title="Scraper API",
     description=(
-        "Production-ready adaptive web scraping API with automatic "
-        "site classification, Tor support, undetected browser rendering, "
-        "and persistent URL metadata storage."
+        "Adaptive web scraping API. Tries browser first, falls back to Tor. "
+        "Learns the working strategy per domain and caches results."
     ),
     version="1.0.0",
     lifespan=_lifespan,
@@ -121,7 +108,7 @@ async def _request_logging_middleware(request, call_next):
     start = time.perf_counter()
 
     _req_logger.info(
-        "[%s] → %s %s (client=%s)",
+        "[%s] > %s %s (client=%s)",
         request_id,
         request.method,
         request.url.path,
@@ -133,7 +120,7 @@ async def _request_logging_middleware(request, call_next):
     except Exception as exc:
         duration_ms = (time.perf_counter() - start) * 1000
         _req_logger.error(
-            "[%s] ✗ %s %s — unhandled exception after %.0fms: %s",
+            "[%s] FAIL %s %s -- unhandled exception after %.0fms: %s",
             request_id,
             request.method,
             request.url.path,
@@ -147,7 +134,7 @@ async def _request_logging_middleware(request, call_next):
     level = logging.WARNING if response.status_code >= 400 else logging.INFO
     _req_logger.log(
         level,
-        "[%s] ← %s %s %d (%.0fms)",
+        "[%s] < %s %s %d (%.0fms)",
         request_id,
         request.method,
         request.url.path,
@@ -180,75 +167,12 @@ async def _generic_exception_handler(request, exc):
 )
 async def scrape_endpoint(request: ScrapeRequest) -> ScrapeResponse:
     """
-    Scrape the given URL using the adaptive strategy engine.
+    Scrape the given URL.
 
-    Workflow:
-    1. Load or generate URL classification.
-    2. Enforce public-page and blocked-strategy policies.
-    3. Return cached HTML if still fresh (< 10 minutes).
-    4. Apply domain rate limiting.
-    5. Scrape using the selected strategy (static / browser / tor / hybrid).
-    6. Retry up to 3 times with rotated fingerprints on failure.
-
-    Returns the scraped HTML or an informative failure message.
+    Strategy order: browser first, then Tor. The working strategy is stored
+    per root domain and reused on subsequent requests.
     """
     return await scrape(request)
-
-
-@app.post(
-    "/classify",
-    response_model=ClassifyResponse,
-    summary="Classify a URL",
-    dependencies=[Depends(require_api_key)],
-)
-async def classify_endpoint(request: ClassifyRequest) -> ClassifyResponse:
-    """
-    Classify a URL and persist the result.
-
-    Always reads from the database first unless ``force=true`` is set.
-    Classification includes content type, anti-scraping protection,
-    Tor / browser availability, public-page status, recommended strategy,
-    and a confidence score.
-    """
-    from_cache = False
-
-    if not request.force:
-        record = await get_url_record(request.url)
-        if record and record.is_classified():
-            classification = record.to_classification()
-            if classification:
-                return ClassifyResponse(
-                    url=request.url,
-                    classification=classification,
-                    from_cache=True,
-                )
-
-    classification = await classify_url(request.url)
-
-    # Persist the fresh classification
-    from datetime import datetime, timezone
-
-    record = await get_url_record(request.url)
-    updated = URLRecord(
-        url=request.url,
-        content_type=classification.content_type.value,
-        antiscraping_protection=classification.antiscraping_protection.value,
-        tor_network_available=classification.tor_network_available.value,
-        undetected_browser_available=classification.undetected_browser_available.value,
-        is_public_page=classification.is_public_page.value,
-        scraping_strategy=classification.scraping_strategy.value,
-        classification_confidence=classification.classification_confidence,
-        last_checked=datetime.now(timezone.utc),
-        last_scrape_status=record.last_scrape_status if record else None,
-        last_success_html=record.last_success_html if record else None,
-    )
-    await upsert_url_record(updated)
-
-    return ClassifyResponse(
-        url=request.url,
-        classification=classification,
-        from_cache=from_cache,
-    )
 
 
 @app.get(
@@ -264,8 +188,6 @@ async def status_endpoint(url: str) -> StatusResponse:
     The URL must be URL-encoded if it contains special characters.
     Returns ``found: false`` (HTTP 200) when the URL has no stored record.
 
-    Note: ``last_success_html`` is excluded from the response to keep
-    payloads manageable—use ``/scrape`` to retrieve HTML.
     """
     decoded_url = unquote(url)
     record = await get_url_record(decoded_url)
@@ -273,9 +195,7 @@ async def status_endpoint(url: str) -> StatusResponse:
     if not record:
         return StatusResponse(url=decoded_url, found=False)
 
-    # Exclude cached HTML from status responses
-    sanitised = record.model_copy(update={"last_success_html": None})
-    return StatusResponse(url=decoded_url, record=sanitised, found=True)
+    return StatusResponse(url=decoded_url, record=record, found=True)
 
 
 @app.get(

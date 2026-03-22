@@ -148,7 +148,18 @@ _STRONG_LOGIN_WALL_RE = re.compile(
     r"x'e giriş yap|twitter'a giriş yap)",  # Turkish X/Twitter login prompts
     re.IGNORECASE,
 )
+# Strip inline <script> and <style> block contents so that server-side JSON
+# blobs (e.g. Next.js __NEXT_DATA__) that contain translated UI strings such
+# as "Sign in to X" do not cause false-positive login-wall detections.
+_SCRIPT_TAG_RE = re.compile(r"<script[^>]*>.*?</script>", re.DOTALL | re.IGNORECASE)
+_STYLE_TAG_RE  = re.compile(r"<style[^>]*>.*?</style>",  re.DOTALL | re.IGNORECASE)
 
+
+def _strip_embedded_code(html: str) -> str:
+    """Remove <script> and <style> block contents from *html*."""
+    html = _SCRIPT_TAG_RE.sub("", html)
+    html = _STYLE_TAG_RE.sub("", html)
+    return html
 
 def detect_challenge_page(html: str, headers: dict[str, str] | None = None) -> bool:
     """Return True if *html* looks like a Cloudflare or bot-detection challenge."""
@@ -186,12 +197,19 @@ def detect_login_wall(html: str) -> bool:
        unconditionally regardless of page size.
     2. General patterns — require short stripped text (< 800 chars) to
        avoid false positives on content pages that mention logging in.
+
+    Script and style block contents are stripped before matching so that
+    server-side JSON blobs (e.g. Next.js __NEXT_DATA__) containing
+    translated UI strings do not trigger false positives.
     """
-    if _STRONG_LOGIN_WALL_RE.search(html):
+    # Work on tag-only HTML: drop inline JS/CSS that may contain
+    # translated strings like "Sign in to X" as dictionary values.
+    visible = _strip_embedded_code(html)
+    if _STRONG_LOGIN_WALL_RE.search(visible):
         return True
-    if not _LOGIN_WALL_RE.search(html):
+    if not _LOGIN_WALL_RE.search(visible):
         return False
-    stripped = re.sub(r"<[^>]+>", "", html).strip()
+    stripped = re.sub(r"<[^>]+>", "", visible).strip()
     return len(stripped) < 800
 
 
@@ -228,19 +246,27 @@ def detect_js_required(html: str) -> bool:
 
 def is_scrape_failure(html: str, status_code: int, headers: dict[str, str] | None = None) -> bool:
     """
-    Aggregate check: return True when any failure mode is detected.
+    Return True only when the page has no usable content or contains an
+    active CAPTCHA / bot-challenge that is blocking access to the content.
 
-    Used by the retry engine to decide whether to retry.
+    Captcha is only treated as blocking when the page also has minimal visible
+    content (i.e., the captcha IS the page, not just incidentally present on a
+    rich page such as in a login form or a script import like reCAPTCHA).
+    Login walls, block pages, app errors, and JS-required messages are treated
+    as successful scrapes — the caller received real page content.
     """
-    return (
-        is_empty_dom(html)
-        or detect_challenge_page(html, headers)
-        or detect_captcha(html)
-        or detect_login_wall(html)
-        or detect_block_page(html, status_code)
-        or detect_app_error_page(html)
-        or detect_js_required(html)
-    )
+    if is_empty_dom(html):
+        return True
+    if detect_challenge_page(html, headers):
+        return True
+    # Gate captcha on visible content size.  Real captcha challenge pages have
+    # very little visible text (< 1500 chars stripped).  A successfully loaded
+    # rich page (forum, news site, etc.) will have far more, even if it happens
+    # to include reCAPTCHA scripts or captcha form fields for its login form.
+    visible = re.sub(r"<[^>]+>", "", _strip_embedded_code(html)).strip()
+    if len(visible) < 1500 and detect_captcha(html):
+        return True
+    return False
 
 
 # ── URL helpers ───────────────────────────────────────────────────────────────

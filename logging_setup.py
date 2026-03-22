@@ -49,6 +49,14 @@ def setup_logging(log_level: str = "INFO", log_dir: str = "logs") -> None:
     formatter = logging.Formatter(_LOG_FORMAT, datefmt=_DATE_FORMAT)
 
     # ── Console handler ───────────────────────────────────────────────────────
+    # Force UTF-8 on the console stream so that non-ASCII characters in log
+    # messages (arrows, special symbols) don't crash on Windows terminals
+    # that use a legacy code page (e.g. CP1254 Turkish).
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
     console = logging.StreamHandler(sys.stdout)
     console.setLevel(numeric_level)
     console.setFormatter(formatter)

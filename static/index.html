@@ -199,21 +199,18 @@
                onkeydown="if(event.key==='Enter')testUrl('scrape')">
         <div class="test-buttons">
           <button class="btn btn-primary" id="scrapeBtn" onclick="testUrl('scrape')">▶ Scrape</button>
-          <button class="btn btn-secondary" id="classifyBtn" onclick="testUrl('classify')">Classify</button>
+
           <button class="btn btn-secondary btn-sm" title="Retrieve stored metadata" onclick="testUrl('status')">Status</button>
         </div>
       </div>
       <div class="options-row">
-        <label class="option-label"><input type="checkbox" id="forceReclassify"> Force reclassify</label>
-        <label class="option-label"><input type="checkbox" id="forceScrape"> Bypass HTML cache</label>
         <label class="option-label" style="gap:6px;">
           <span style="white-space:nowrap;">Force strategy:</span>
           <select id="forceStrategy" style="padding:3px 7px;font-size:12px;">
-            <option value="">— auto —</option>
+            <option value="">&#8212; auto &#8212;</option>
             <option value="static">static</option>
             <option value="browser">browser</option>
             <option value="tor">tor</option>
-            <option value="hybrid">hybrid</option>
           </select>
         </label>
       </div>
@@ -369,18 +366,9 @@ async function testUrl(mode) {
       const forceStrategy = document.getElementById('forceStrategy').value || undefined;
       result = await api('POST', '/scrape', {
         url,
-        force_reclassify: document.getElementById('forceReclassify').checked,
-        force_scrape:     document.getElementById('forceScrape').checked,
         ...(forceStrategy ? { force_strategy: forceStrategy } : {}),
       });
       renderScrape(url, result);
-
-    } else if (mode === 'classify') {
-      result = await api('POST', '/classify', {
-        url,
-        force: document.getElementById('forceReclassify').checked,
-      });
-      renderClassify(url, result);
 
     } else if (mode === 'status') {
       result = await api('GET', '/status/' + encodeURIComponent(url));
@@ -400,69 +388,16 @@ async function testUrl(mode) {
 
 // ── Renderers ─────────────────────────────────────────────────────────────────
 
-function clsGrid(cls) {
-  if (!cls) return '<p class="text-muted">No classification available.</p>';
-  const conf = Math.round(cls.classification_confidence * 100);
-  const confColor = conf >= 80 ? 'var(--success)' : conf >= 60 ? 'var(--warning)' : 'var(--error)';
-  const stratClass = { static:'badge-info', browser:'badge-warn', tor:'badge-warn', hybrid:'badge-warn', blocked:'badge-fail' }[cls.scraping_strategy] || 'badge-muted';
-
-  function yesNo(val, good = 'yes') {
-    return val === good
-      ? `<span class="text-ok">${val}</span>`
-      : `<span class="text-muted">${val}</span>`;
-  }
-
-  return `
-    <div class="cls-grid">
-      <div class="cls-item">
-        <div class="cls-label">Strategy</div>
-        <div class="cls-value"><span class="badge ${stratClass}">${esc(cls.scraping_strategy)}</span></div>
-      </div>
-      <div class="cls-item">
-        <div class="cls-label">Confidence</div>
-        <div class="cls-value" style="color:${confColor}">${conf}%</div>
-        <div class="conf-bar"><div class="conf-fill" style="width:${conf}%"></div></div>
-      </div>
-      <div class="cls-item">
-        <div class="cls-label">Content Type</div>
-        <div class="cls-value">${esc(cls.content_type)}</div>
-      </div>
-      <div class="cls-item">
-        <div class="cls-label">Anti-Scraping</div>
-        <div class="cls-value">${cls.antiscraping_protection === 'none'
-          ? '<span class="text-ok">none</span>'
-          : '<span class="text-fail">protected</span>'}</div>
-      </div>
-      <div class="cls-item">
-        <div class="cls-label">Tor Available</div>
-        <div class="cls-value">${yesNo(cls.tor_network_available)}</div>
-      </div>
-      <div class="cls-item">
-        <div class="cls-label">Browser Available</div>
-        <div class="cls-value">${yesNo(cls.undetected_browser_available)}</div>
-      </div>
-      <div class="cls-item">
-        <div class="cls-label">Public Page</div>
-        <div class="cls-value">${yesNo(cls.is_public_page)}</div>
-      </div>
-    </div>`;
-}
-
 function renderScrape(url, r) {
   const ok = r.scraping_success;
-  const cachedBadge = r.cached ? ' <span class="badge badge-info">cached</span>' : '';
   const stratText = r.strategy_used ? ` · strategy: <b>${esc(r.strategy_used)}</b>` : '';
 
   let html = `
     <div class="status-bar">
       <span class="badge ${ok ? 'badge-ok' : 'badge-fail'}">${ok ? '✓ Success' : '✗ Failed'}</span>
-      <span class="text-muted">${esc(r.message)}${stratText}${cachedBadge}</span>
+      <span class="text-muted">${esc(r.message)}${stratText}</span>
     </div>`;
 
-  if (r.classification) {
-    html += `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:8px;">Classification</div>`;
-    html += clsGrid(r.classification);
-  }
 
   if (r.html) {
     lastHtml = r.html;
@@ -494,19 +429,6 @@ function renderScrape(url, r) {
   setResults(url, html);
 }
 
-function renderClassify(url, r) {
-  const freshBadge = r.from_cache
-    ? '<span class="badge badge-info">from cache</span>'
-    : '<span class="badge badge-ok">fresh</span>';
-
-  const html = `
-    <div class="status-bar">
-      <span class="badge badge-ok">✓ Classified</span> ${freshBadge}
-    </div>
-    ${clsGrid(r.classification)}`;
-
-  setResults(url, html);
-}
 
 function renderStatus(url, r) {
   if (!r.found) {
@@ -590,7 +512,7 @@ async function saveComment() {
 
   // Attach context from the last scrape/classify result
   if (lastResult) {
-    body.strategy_used  = lastResult.strategy_used || (lastResult.classification && lastResult.classification.scraping_strategy) || null;
+    body.strategy_used  = lastResult.strategy_used || null;
     body.scrape_success = lastResult.scraping_success !== undefined ? lastResult.scraping_success : null;
   }
 
@@ -690,8 +612,7 @@ function fillUrl(url) {
 }
 
 function setBusy(on) {
-  document.getElementById('scrapeBtn').disabled   = on;
-  document.getElementById('classifyBtn').disabled = on;
+  document.getElementById('scrapeBtn').disabled = on;
   const msg = document.getElementById('loadingMsg');
   on ? msg.classList.remove('hidden') : msg.classList.add('hidden');
 }
