@@ -98,19 +98,18 @@ async def _dispatch(
         return await scrape_with_tor(url, profile)
 
     if strategy == ScrapingStrategy.hybrid:
-        # Tor for transport anonymity; browser for JS rendering via Tor Firefox.
-        # Do NOT call rotate_tor_identity here — the retry loop calls it between
-        # retries, which is sufficient and avoids a double rotation on attempt 1.
-        from tor_scraper import scrape_with_tor_browser
-        import asyncio
+        # Hybrid = undetected Chrome routed through Tor SOCKS5.
+        # This is more reliable than launching Tor Browser's own Firefox
+        # via Selenium, which has compatibility issues with headless mode
+        # and geckodriver versioning.
+        from tor_scraper import _ensure_tor_running
+        from browser_scraper import scrape_with_browser_async
         loop = asyncio.get_running_loop()
-        return await loop.run_in_executor(
-            None,
-            scrape_with_tor_browser,
-            url,
-            profile,
-            CONFIG.headless_browser,
-            None,
+        tor_port = await loop.run_in_executor(None, _ensure_tor_running)
+        return await scrape_with_browser_async(
+            url, profile,
+            headless=CONFIG.headless_browser,
+            tor_socks_port=tor_port,
         )
 
     raise ValueError(f"Cannot dispatch strategy: {strategy}")

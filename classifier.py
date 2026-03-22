@@ -219,7 +219,7 @@ def _tor_port_open() -> Optional[int]:
     for port in dict.fromkeys([CONFIG.tor_socks_port, 9150, 9050]):  # deduped, ordered
         with contextlib.suppress(OSError):
             with socket.create_connection(
-                (CONFIG.tor_socks_host, CONFIG.tor_socks_port), timeout=2.0
+                (CONFIG.tor_socks_host, port), timeout=2.0
             ):
                 return port
     return None
