@@ -20,7 +20,6 @@ import asyncio
 import contextlib
 import logging
 import random
-from typing import Optional
 
 from fingerprint import FingerprintProfile, build_browser_js_overrides
 from utils import human_delay_sync
@@ -38,14 +37,10 @@ _browser_semaphore = asyncio.Semaphore(3)
 def _uc_driver(
     profile: FingerprintProfile,
     headless: bool = True,
-    tor_socks_port: Optional[int] = None,
 ):
     """
     Context manager that yields a configured undetected-chromedriver instance
     and guarantees driver.quit() on exit.
-
-    When *tor_socks_port* is given, Chrome routes all traffic through
-    the Tor SOCKS5 proxy at 127.0.0.1:<tor_socks_port> (hybrid strategy).
     """
     import undetected_chromedriver as uc
 
@@ -65,13 +60,6 @@ def _uc_driver(
     if headless:
         # New headless mode — harder to detect than "--headless"
         options.add_argument("--headless=new")
-
-    if tor_socks_port:
-        # Route all Chrome traffic through Tor SOCKS5 proxy.
-        # --proxy-bypass-list=<-loopback> also prevents bypassing for localhost.
-        options.add_argument(f"--proxy-server=socks5://127.0.0.1:{tor_socks_port}")
-        options.add_argument("--host-resolver-rules=MAP * ~NOTFOUND , EXCLUDE 127.0.0.1")
-        logger.debug("Browser scraper: routing through Tor SOCKS5 port %d", tor_socks_port)
 
     driver = uc.Chrome(options=options, version_main=None)
 
@@ -138,16 +126,12 @@ def scrape_with_browser(
     url: str,
     profile: FingerprintProfile,
     headless: bool = True,
-    tor_socks_port: Optional[int] = None,
 ) -> str:
     """
     Load *url* with an undetected Chrome instance, simulate human browsing,
     and return the fully rendered page source.
 
     Blocking — intended to run inside asyncio.get_event_loop().run_in_executor().
-
-    When *tor_socks_port* is given, Chrome routes through the Tor SOCKS5 proxy
-    (hybrid strategy: full browser rendering with Tor transport).
 
     Raises RuntimeError if undetected_chromedriver is not installed.
     Returns empty string on any navigation failure.
@@ -162,7 +146,7 @@ def scrape_with_browser(
 
     logger.debug("Browser scraper: loading %s", url)
 
-    with _uc_driver(profile, headless=headless, tor_socks_port=tor_socks_port) as driver:
+    with _uc_driver(profile, headless=headless) as driver:
         # Prevent indefinite hang on pages that never finish loading.
         driver.set_page_load_timeout(30)
         human_delay_sync(0.5, 1.5)
@@ -186,14 +170,10 @@ async def scrape_with_browser_async(
     url: str,
     profile: FingerprintProfile,
     headless: bool = True,
-    tor_socks_port: Optional[int] = None,
 ) -> str:
     """
     Async wrapper — dispatches ``scrape_with_browser`` to the default
     thread-pool executor so it does not block the event loop.
-
-    When *tor_socks_port* is given, Chrome routes through the Tor SOCKS5 proxy
-    (hybrid strategy: full browser rendering with Tor transport).
 
     Acquires ``_browser_semaphore`` before launching to cap concurrent
     Chrome instances and prevent out-of-memory crashes under load.
@@ -206,5 +186,4 @@ async def scrape_with_browser_async(
             url,
             profile,
             headless,
-            tor_socks_port,
         )

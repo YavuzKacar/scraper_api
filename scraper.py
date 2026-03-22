@@ -98,18 +98,18 @@ async def _dispatch(
         return await scrape_with_tor(url, profile)
 
     if strategy == ScrapingStrategy.hybrid:
-        # Hybrid = undetected Chrome routed through Tor SOCKS5.
-        # This is more reliable than launching Tor Browser's own Firefox
-        # via Selenium, which has compatibility issues with headless mode
-        # and geckodriver versioning.
-        from tor_scraper import _ensure_tor_running
-        from browser_scraper import scrape_with_browser_async
+        # Hybrid = Firefox (via geckodriver) routed through Tor SOCKS5.
+        # Runs in HEADED mode — headless browsers are more easily detected
+        # by aggressive anti-bot systems like Amazon and X.com.
+        from tor_scraper import scrape_with_tor_browser
         loop = asyncio.get_running_loop()
-        tor_port = await loop.run_in_executor(None, _ensure_tor_running)
-        return await scrape_with_browser_async(
-            url, profile,
-            headless=CONFIG.headless_browser,
-            tor_socks_port=tor_port,
+        return await loop.run_in_executor(
+            None,
+            scrape_with_tor_browser,
+            url,
+            profile,
+            False,   # headless=False  → headed mode
+            None,
         )
 
     raise ValueError(f"Cannot dispatch strategy: {strategy}")
@@ -244,6 +244,29 @@ async def scrape(request: ScrapeRequest) -> ScrapeResponse:
                 request.force_strategy, url,
             )
 
+    # ── Strategy compatibility escalation ─────────────────────────────────────
+    # When a non-browser strategy (static or tor) is set for a domain that
+    # requires a real browser (JS rendering), auto-escalate so the user gets
+    # the anonymity they asked for without the certain failure.
+    #   static  + browser-required domain → browser  (honour the domain override)
+    #   tor     + browser-required domain → hybrid   (UC Chrome through Tor)
+    if domain_override in (ScrapingStrategy.browser, ScrapingStrategy.hybrid):
+        if strategy == ScrapingStrategy.tor:
+            logger.info(
+                "Auto-escalating strategy for %s: tor → hybrid "
+                "(domain requires a browser for JS rendering).",
+                url,
+            )
+            strategy = ScrapingStrategy.hybrid
+        elif strategy == ScrapingStrategy.static and not request.force_strategy:
+            # Only auto-escalate static when the user didn't explicitly force it.
+            logger.info(
+                "Auto-escalating strategy for %s: static → %s "
+                "(domain requires a browser).",
+                url, domain_override.value,
+            )
+            strategy = domain_override
+
     # ── Step 2: private-page guard ────────────────────────────────────────────
     from models import PublicPage
     if record.is_public_page == PublicPage.no.value:
@@ -269,16 +292,28 @@ async def scrape(request: ScrapeRequest) -> ScrapeResponse:
     # actually worked.
     bypass_cache = request.force_reclassify or request.force_scrape or bool(request.force_strategy)
     if not bypass_cache and _is_cache_valid(record):
-        logger.info("Returning cached HTML for %s", url)
-        return ScrapeResponse(
-            url=url,
-            scraping_success=True,
-            message="Returned from cache.",
-            html=record.last_success_html,
-            classification=classification,
-            cached=True,
-            strategy_used=strategy.value,
-        )
+        cached_html = record.last_success_html or ""
+        # Validate the cached content — detection rules may have improved since
+        # the HTML was stored (e.g. detect_js_required added after an Amazon
+        # "JavaScript required" page was cached as a success).  If the cached
+        # HTML is now detected as a failure, fall through and re-scrape instead
+        # of serving stale bad content.
+        if cached_html and not is_scrape_failure(cached_html, 200):
+            logger.info("Returning cached HTML for %s", url)
+            return ScrapeResponse(
+                url=url,
+                scraping_success=True,
+                message="Returned from cache.",
+                html=cached_html,
+                classification=classification,
+                cached=True,
+                strategy_used=strategy.value,
+            )
+        elif cached_html:
+            logger.info(
+                "Cached HTML for %s is now detected as a failure page — bypassing cache.",
+                url,
+            )
 
     # ── Step 5: domain rate limit ─────────────────────────────────────────────
     await enforce_domain_rate_limit(url, CONFIG.domain_rate_limit_seconds)
@@ -379,7 +414,11 @@ async def scrape(request: ScrapeRequest) -> ScrapeResponse:
             strategy_used=strategy.value,
         )
 
-    await update_scrape_result(url, "failed", None)
+    # Clear last_success_html if we got a detectable failure page (not a blank
+    # network error), so the cache doesn't perpetually serve bad content.
+    # Passing "" stores an empty string — _is_cache_valid treats it as "no cache".
+    stale_clear = "" if (html and is_scrape_failure(html, 200)) else None
+    await update_scrape_result(url, "failed", stale_clear)
     return ScrapeResponse(
         url=url,
         scraping_success=False,

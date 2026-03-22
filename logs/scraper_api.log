@@ -2239,3 +2239,854 @@ For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/St
 2026-03-22 17:10:58 [INFO    ] scraper_api.requests — [8a780bf4] ← GET /feedback 200 (34ms)
 2026-03-22 17:11:09 [INFO    ] scraper_api.requests — [21c57c44] → GET /feedback (client=127.0.0.1)
 2026-03-22 17:11:10 [INFO    ] scraper_api.requests — [21c57c44] ← GET /feedback 200 (50ms)
+2026-03-22 17:11:52 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 17:11:52 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 17:11:52 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 17:11:52 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 17:11:52 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 17:11:58 [INFO    ] scraper_api.requests — [e3a21170] → GET /ui/ (client=127.0.0.1)
+2026-03-22 17:11:58 [INFO    ] scraper_api.requests — [e3a21170] ← GET /ui/ 304 (51ms)
+2026-03-22 17:11:58 [INFO    ] scraper_api.requests — [1ac9092b] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:11:58 [INFO    ] scraper_api.requests — [1ac9092b] ← GET /feedback 200 (10ms)
+2026-03-22 17:12:16 [INFO    ] scraper_api.requests — [cdaf2c00] → GET /health (client=127.0.0.1)
+2026-03-22 17:12:17 [INFO    ] scraper_api.requests — [cdaf2c00] ← GET /health 200 (1123ms)
+2026-03-22 17:12:20 [INFO    ] scraper_api.requests — [713a0709] → POST /scrape (client=127.0.0.1)
+2026-03-22 17:12:20 [INFO    ] scraper — Classifying URL: https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 17:12:26 [INFO    ] uc — setting properties for headless
+2026-03-22 17:12:41 [INFO    ] classifier — Domain override applied for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: static → browser
+2026-03-22 17:12:41 [INFO    ] scraper — force_strategy override for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: browser → tor
+2026-03-22 17:12:41 [INFO    ] scraper — Scrape attempt 1/3 — strategy=tor profile=desktop_chrome_linux url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 17:12:48 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 17:12:48 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 17:12:58 [INFO    ] scraper — Scrape attempt 2/3 — strategy=tor profile=mobile_chrome_android url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 17:12:58 [INFO    ] scraper_api.requests — [d124bf4b] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:12:59 [INFO    ] scraper_api.requests — [d124bf4b] ← GET /feedback 200 (13ms)
+2026-03-22 17:13:02 [WARNING ] scraper — Attempt 2 failed: 
+2026-03-22 17:13:12 [WARNING ] tor_scraper — Tor identity rotation failed on all control ports: [WinError 10061] Hedef makine etkin olarak reddettiğinden bağlantı kurulamadı
+2026-03-22 17:13:12 [INFO    ] scraper — Scrape attempt 3/3 — strategy=tor profile=desktop_firefox_windows url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 17:13:18 [INFO    ] tor_scraper — Tor not running — launching: C:\Users\Pc\Desktop\Tor Browser\Browser\TorBrowser\Tor\tor.exe
+2026-03-22 17:13:19 [INFO    ] tor_scraper — Tor started — SOCKS port 9150 is open.
+2026-03-22 17:13:25 [WARNING ] scraper — Attempt 3 failed: Server error '503 Service Unavailable' for url 'https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503
+2026-03-22 17:13:25 [INFO    ] scraper_api.requests — [713a0709] ← POST /scrape 200 (65280ms)
+2026-03-22 17:13:25 [INFO    ] scraper_api.requests — [deb08a90] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:13:25 [INFO    ] scraper_api.requests — [deb08a90] ← GET /feedback 200 (7ms)
+2026-03-22 17:13:33 [INFO    ] scraper_api.requests — [4fd414b3] → POST /scrape (client=127.0.0.1)
+2026-03-22 17:13:33 [INFO    ] scraper — Classifying URL: https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 17:13:35 [INFO    ] scraper_api.requests — [85aa5a1c] → GET /health (client=127.0.0.1)
+2026-03-22 17:13:36 [INFO    ] scraper_api.requests — [85aa5a1c] ← GET /health 200 (738ms)
+2026-03-22 17:13:40 [INFO    ] uc — setting properties for headless
+2026-03-22 17:13:52 [INFO    ] classifier — Domain override applied for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: static → browser
+2026-03-22 17:13:52 [INFO    ] scraper — force_strategy override for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: browser → tor
+2026-03-22 17:13:52 [INFO    ] scraper — Scrape attempt 1/3 — strategy=tor profile=desktop_chrome_linux url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 17:13:58 [INFO    ] scraper_api.requests — [fd556eef] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:13:58 [INFO    ] scraper_api.requests — [fd556eef] ← GET /feedback 200 (12ms)
+2026-03-22 17:14:00 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 17:14:00 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 17:14:10 [INFO    ] scraper — Scrape attempt 2/3 — strategy=tor profile=desktop_chrome_linux url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 17:14:18 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 17:14:18 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 17:14:28 [INFO    ] scraper — Scrape attempt 3/3 — strategy=tor profile=desktop_firefox_windows url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 17:14:30 [WARNING ] scraper — Attempt 3 failed: Server error '503 Service Unavailable' for url 'https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503
+2026-03-22 17:14:30 [INFO    ] scraper_api.requests — [4fd414b3] ← POST /scrape 200 (57425ms)
+2026-03-22 17:14:30 [INFO    ] scraper_api.requests — [4909a2e0] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:14:30 [INFO    ] scraper_api.requests — [4909a2e0] ← GET /feedback 200 (10ms)
+2026-03-22 17:14:36 [INFO    ] scraper_api.requests — [89437a49] → POST /feedback (client=127.0.0.1)
+2026-03-22 17:14:36 [INFO    ] scraper_api.requests — [89437a49] ← POST /feedback 200 (11ms)
+2026-03-22 17:14:36 [INFO    ] scraper_api.requests — [c5b9f5e4] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:14:36 [INFO    ] scraper_api.requests — [c5b9f5e4] ← GET /feedback 200 (5ms)
+2026-03-22 17:14:36 [INFO    ] scraper_api.requests — [c0e177c9] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:14:36 [INFO    ] scraper_api.requests — [c0e177c9] ← GET /feedback 200 (4ms)
+2026-03-22 17:14:43 [INFO    ] scraper_api.requests — [ed0a4b03] → GET /health (client=127.0.0.1)
+2026-03-22 17:14:43 [INFO    ] scraper_api.requests — [ed0a4b03] ← GET /health 200 (806ms)
+2026-03-22 17:14:59 [INFO    ] scraper_api.requests — [f987d767] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:14:59 [INFO    ] scraper_api.requests — [f987d767] ← GET /feedback 200 (6ms)
+2026-03-22 17:15:59 [INFO    ] scraper_api.requests — [b8c40f07] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:15:59 [INFO    ] scraper_api.requests — [b8c40f07] ← GET /feedback 200 (8ms)
+2026-03-22 17:16:59 [INFO    ] scraper_api.requests — [d9c441f3] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:16:59 [INFO    ] scraper_api.requests — [d9c441f3] ← GET /feedback 200 (8ms)
+2026-03-22 17:17:59 [INFO    ] scraper_api.requests — [7c1b7454] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:17:59 [INFO    ] scraper_api.requests — [7c1b7454] ← GET /feedback 200 (9ms)
+2026-03-22 17:19:58 [INFO    ] scraper_api.requests — [2a2a9973] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:19:58 [INFO    ] scraper_api.requests — [2a2a9973] ← GET /feedback 200 (9ms)
+2026-03-22 17:21:58 [INFO    ] scraper_api.requests — [e1ace4eb] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:21:58 [INFO    ] scraper_api.requests — [e1ace4eb] ← GET /feedback 200 (12ms)
+2026-03-22 17:23:58 [INFO    ] scraper_api.requests — [9faa2b17] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:23:58 [INFO    ] scraper_api.requests — [9faa2b17] ← GET /feedback 200 (13ms)
+2026-03-22 17:24:20 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 17:24:20 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 17:24:20 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 17:24:20 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 17:24:20 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 17:24:20 [INFO    ] scheduler — Scheduler: 8 URL(s) to reclassify this cycle (0 low-confidence, 8 stale, cap=50).
+2026-03-22 17:24:20 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/naborsky
+2026-03-22 17:24:25 [INFO    ] scraper_api.requests — [5c41631b] → GET /ui/ (client=127.0.0.1)
+2026-03-22 17:24:25 [INFO    ] scraper_api.requests — [5c41631b] ← GET /ui/ 304 (48ms)
+2026-03-22 17:24:25 [INFO    ] scraper_api.requests — [d129c0df] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:24:25 [INFO    ] scraper_api.requests — [d129c0df] ← GET /feedback 200 (12ms)
+2026-03-22 17:24:31 [INFO    ] uc — setting properties for headless
+2026-03-22 17:24:37 [INFO    ] scraper_api.requests — [596002d4] → GET /health (client=127.0.0.1)
+2026-03-22 17:24:45 [INFO    ] classifier — Domain override applied for https://x.com/naborsky: static → hybrid
+2026-03-22 17:24:45 [INFO    ] scheduler — Scheduler: updated https://x.com/naborsky — strategy=hybrid confidence=0.70
+2026-03-22 17:24:45 [INFO    ] scraper_api.requests — [596002d4] ← GET /health 200 (8034ms)
+2026-03-22 17:24:45 [INFO    ] scraper_api.requests — [7779a6f8] → GET /health (client=127.0.0.1)
+2026-03-22 17:24:47 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/BBCBreaking
+2026-03-22 17:24:54 [INFO    ] scraper_api.requests — [7779a6f8] ← GET /health 200 (8427ms)
+2026-03-22 17:24:58 [INFO    ] uc — setting properties for headless
+2026-03-22 17:25:05 [INFO    ] scraper_api.requests — [42691c45] → GET /health (client=127.0.0.1)
+2026-03-22 17:25:05 [INFO    ] scraper_api.requests — [42691c45] ← GET /health 200 (474ms)
+2026-03-22 17:25:07 [INFO    ] scraper_api.requests — [74f7b492] → POST /scrape (client=127.0.0.1)
+2026-03-22 17:25:07 [INFO    ] scraper — Classifying URL: https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 17:25:09 [WARNING ] uc — could not detect version_main.therefore, we are assuming it is chrome 108 or higher
+2026-03-22 17:25:10 [INFO    ] uc — setting properties for headless
+2026-03-22 17:25:15 [INFO    ] classifier — Domain override applied for https://x.com/BBCBreaking: static → hybrid
+2026-03-22 17:25:15 [INFO    ] scheduler — Scheduler: updated https://x.com/BBCBreaking — strategy=hybrid confidence=0.70
+2026-03-22 17:25:17 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/Reuters
+2026-03-22 17:25:17 [WARNING ] uc — could not detect version_main.therefore, we are assuming it is chrome 108 or higher
+2026-03-22 17:25:18 [INFO    ] uc — setting properties for headless
+2026-03-22 17:25:22 [INFO    ] classifier — Domain override applied for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: static → browser
+2026-03-22 17:25:22 [INFO    ] scraper — force_strategy override for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: browser → tor
+2026-03-22 17:25:22 [INFO    ] scraper — Scrape attempt 1/3 — strategy=tor profile=mobile_chrome_android url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 17:25:25 [INFO    ] scraper_api.requests — [992ad2fd] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:25:25 [INFO    ] scraper_api.requests — [992ad2fd] ← GET /feedback 200 (7ms)
+2026-03-22 17:25:30 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 17:25:30 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 17:25:33 [INFO    ] classifier — Domain override applied for https://x.com/Reuters: static → hybrid
+2026-03-22 17:25:33 [INFO    ] scheduler — Scheduler: updated https://x.com/Reuters — strategy=hybrid confidence=0.68
+2026-03-22 17:25:35 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/AP
+2026-03-22 17:25:40 [INFO    ] scraper — Scrape attempt 2/3 — strategy=tor profile=mobile_chrome_android url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 17:25:41 [INFO    ] uc — setting properties for headless
+2026-03-22 17:25:49 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 17:25:49 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 17:25:57 [INFO    ] classifier — Domain override applied for https://x.com/AP: static → hybrid
+2026-03-22 17:25:57 [INFO    ] scheduler — Scheduler: updated https://x.com/AP — strategy=hybrid confidence=0.68
+2026-03-22 17:25:59 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/CNN
+2026-03-22 17:25:59 [INFO    ] scraper — Scrape attempt 3/3 — strategy=tor profile=mobile_chrome_android url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 17:26:04 [INFO    ] uc — setting properties for headless
+2026-03-22 17:26:08 [INFO    ] scraper_api.requests — [74f7b492] ← POST /scrape 200 (60605ms)
+2026-03-22 17:26:08 [INFO    ] scraper_api.requests — [a33d22f4] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:26:08 [INFO    ] scraper_api.requests — [a33d22f4] ← GET /feedback 200 (12ms)
+2026-03-22 17:26:21 [INFO    ] classifier — Domain override applied for https://x.com/CNN: static → hybrid
+2026-03-22 17:26:21 [INFO    ] scheduler — Scheduler: updated https://x.com/CNN — strategy=hybrid confidence=0.68
+2026-03-22 17:26:23 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/WSJ
+2026-03-22 17:26:25 [INFO    ] scraper_api.requests — [e44068f3] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:26:25 [INFO    ] scraper_api.requests — [e44068f3] ← GET /feedback 200 (7ms)
+2026-03-22 17:26:28 [INFO    ] uc — setting properties for headless
+2026-03-22 17:26:42 [INFO    ] classifier — Domain override applied for https://x.com/WSJ: browser → hybrid
+2026-03-22 17:26:42 [INFO    ] scheduler — Scheduler: updated https://x.com/WSJ — strategy=hybrid confidence=0.72
+2026-03-22 17:26:44 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/TheEconomist
+2026-03-22 17:26:50 [INFO    ] uc — setting properties for headless
+2026-03-22 17:27:06 [INFO    ] classifier — Domain override applied for https://x.com/TheEconomist: browser → hybrid
+2026-03-22 17:27:06 [INFO    ] scheduler — Scheduler: updated https://x.com/TheEconomist — strategy=hybrid confidence=0.72
+2026-03-22 17:27:08 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/FT
+2026-03-22 17:27:17 [INFO    ] uc — setting properties for headless
+2026-03-22 17:27:26 [INFO    ] scraper_api.requests — [973570ae] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:27:26 [INFO    ] scraper_api.requests — [973570ae] ← GET /feedback 200 (12ms)
+2026-03-22 17:27:34 [INFO    ] classifier — Domain override applied for https://x.com/FT: browser → hybrid
+2026-03-22 17:27:35 [INFO    ] scheduler — Scheduler: updated https://x.com/FT — strategy=hybrid confidence=0.75
+2026-03-22 17:28:26 [INFO    ] scraper_api.requests — [50598f2c] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:28:26 [INFO    ] scraper_api.requests — [50598f2c] ← GET /feedback 200 (10ms)
+2026-03-22 17:29:26 [INFO    ] scraper_api.requests — [f2f56e6f] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:29:26 [INFO    ] scraper_api.requests — [f2f56e6f] ← GET /feedback 200 (7ms)
+2026-03-22 17:30:26 [INFO    ] scraper_api.requests — [b333fc47] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:30:26 [INFO    ] scraper_api.requests — [b333fc47] ← GET /feedback 200 (6ms)
+2026-03-22 17:31:58 [INFO    ] scraper_api.requests — [e63926b7] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:31:58 [INFO    ] scraper_api.requests — [e63926b7] ← GET /feedback 200 (15ms)
+2026-03-22 17:32:58 [INFO    ] scraper_api.requests — [2466a22e] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:32:58 [INFO    ] scraper_api.requests — [2466a22e] ← GET /feedback 200 (7ms)
+2026-03-22 17:33:58 [INFO    ] scraper_api.requests — [2eea3110] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:33:58 [INFO    ] scraper_api.requests — [2eea3110] ← GET /feedback 200 (9ms)
+2026-03-22 17:34:58 [INFO    ] scraper_api.requests — [0232ba78] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:34:58 [INFO    ] scraper_api.requests — [0232ba78] ← GET /feedback 200 (8ms)
+2026-03-22 17:35:58 [INFO    ] scraper_api.requests — [4f795917] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:35:58 [INFO    ] scraper_api.requests — [4f795917] ← GET /feedback 200 (9ms)
+2026-03-22 17:36:58 [INFO    ] scraper_api.requests — [bcc39c34] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:36:58 [INFO    ] scraper_api.requests — [bcc39c34] ← GET /feedback 200 (8ms)
+2026-03-22 17:37:58 [INFO    ] scraper_api.requests — [fbc90959] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:37:58 [INFO    ] scraper_api.requests — [fbc90959] ← GET /feedback 200 (8ms)
+2026-03-22 17:38:58 [INFO    ] scraper_api.requests — [92dac86c] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:38:58 [INFO    ] scraper_api.requests — [92dac86c] ← GET /feedback 200 (8ms)
+2026-03-22 17:39:58 [INFO    ] scraper_api.requests — [433b5617] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:39:58 [INFO    ] scraper_api.requests — [433b5617] ← GET /feedback 200 (8ms)
+2026-03-22 17:40:58 [INFO    ] scraper_api.requests — [d48d8134] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:40:58 [INFO    ] scraper_api.requests — [d48d8134] ← GET /feedback 200 (10ms)
+2026-03-22 17:41:58 [INFO    ] scraper_api.requests — [196b0986] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:41:58 [INFO    ] scraper_api.requests — [196b0986] ← GET /feedback 200 (8ms)
+2026-03-22 17:42:58 [INFO    ] scraper_api.requests — [4b32620c] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:42:58 [INFO    ] scraper_api.requests — [4b32620c] ← GET /feedback 200 (6ms)
+2026-03-22 17:43:58 [INFO    ] scraper_api.requests — [21200e01] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:43:58 [INFO    ] scraper_api.requests — [21200e01] ← GET /feedback 200 (7ms)
+2026-03-22 17:44:58 [INFO    ] scraper_api.requests — [af7d8cee] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:44:58 [INFO    ] scraper_api.requests — [af7d8cee] ← GET /feedback 200 (11ms)
+2026-03-22 17:45:58 [INFO    ] scraper_api.requests — [e55e5e34] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:45:58 [INFO    ] scraper_api.requests — [e55e5e34] ← GET /feedback 200 (8ms)
+2026-03-22 17:46:58 [INFO    ] scraper_api.requests — [6c54f737] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:46:58 [INFO    ] scraper_api.requests — [6c54f737] ← GET /feedback 200 (8ms)
+2026-03-22 17:47:58 [INFO    ] scraper_api.requests — [d520d590] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:47:58 [INFO    ] scraper_api.requests — [d520d590] ← GET /feedback 200 (7ms)
+2026-03-22 17:48:58 [INFO    ] scraper_api.requests — [2b0074a3] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:48:58 [INFO    ] scraper_api.requests — [2b0074a3] ← GET /feedback 200 (7ms)
+2026-03-22 17:49:58 [INFO    ] scraper_api.requests — [015bb8ea] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:49:58 [INFO    ] scraper_api.requests — [015bb8ea] ← GET /feedback 200 (7ms)
+2026-03-22 17:50:58 [INFO    ] scraper_api.requests — [9a8228f1] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:50:58 [INFO    ] scraper_api.requests — [9a8228f1] ← GET /feedback 200 (9ms)
+2026-03-22 17:51:58 [INFO    ] scraper_api.requests — [728e92b4] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:51:58 [INFO    ] scraper_api.requests — [728e92b4] ← GET /feedback 200 (9ms)
+2026-03-22 17:52:58 [INFO    ] scraper_api.requests — [4c7977ea] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:52:58 [INFO    ] scraper_api.requests — [4c7977ea] ← GET /feedback 200 (8ms)
+2026-03-22 17:53:58 [INFO    ] scraper_api.requests — [f97e059f] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:53:58 [INFO    ] scraper_api.requests — [f97e059f] ← GET /feedback 200 (10ms)
+2026-03-22 17:54:58 [INFO    ] scraper_api.requests — [45bd1d91] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:54:58 [INFO    ] scraper_api.requests — [45bd1d91] ← GET /feedback 200 (9ms)
+2026-03-22 17:55:58 [INFO    ] scraper_api.requests — [6f47273e] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:55:58 [INFO    ] scraper_api.requests — [6f47273e] ← GET /feedback 200 (7ms)
+2026-03-22 17:56:58 [INFO    ] scraper_api.requests — [538434cb] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:56:58 [INFO    ] scraper_api.requests — [538434cb] ← GET /feedback 200 (8ms)
+2026-03-22 17:57:58 [INFO    ] scraper_api.requests — [6bea97c9] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:57:58 [INFO    ] scraper_api.requests — [6bea97c9] ← GET /feedback 200 (8ms)
+2026-03-22 17:58:58 [INFO    ] scraper_api.requests — [ebde6000] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:58:58 [INFO    ] scraper_api.requests — [ebde6000] ← GET /feedback 200 (7ms)
+2026-03-22 17:59:58 [INFO    ] scraper_api.requests — [5616d0e6] → GET /feedback (client=127.0.0.1)
+2026-03-22 17:59:58 [INFO    ] scraper_api.requests — [5616d0e6] ← GET /feedback 200 (9ms)
+2026-03-22 18:00:58 [INFO    ] scraper_api.requests — [fafb075f] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:00:58 [INFO    ] scraper_api.requests — [fafb075f] ← GET /feedback 200 (9ms)
+2026-03-22 18:01:58 [INFO    ] scraper_api.requests — [a9b6df74] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:01:58 [INFO    ] scraper_api.requests — [a9b6df74] ← GET /feedback 200 (9ms)
+2026-03-22 18:02:58 [INFO    ] scraper_api.requests — [4ad9b679] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:02:58 [INFO    ] scraper_api.requests — [4ad9b679] ← GET /feedback 200 (8ms)
+2026-03-22 18:03:58 [INFO    ] scraper_api.requests — [52270afe] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:03:58 [INFO    ] scraper_api.requests — [52270afe] ← GET /feedback 200 (13ms)
+2026-03-22 18:04:58 [INFO    ] scraper_api.requests — [111c0647] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:04:58 [INFO    ] scraper_api.requests — [111c0647] ← GET /feedback 200 (8ms)
+2026-03-22 18:05:58 [INFO    ] scraper_api.requests — [e06b0fb1] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:05:58 [INFO    ] scraper_api.requests — [e06b0fb1] ← GET /feedback 200 (10ms)
+2026-03-22 18:06:58 [INFO    ] scraper_api.requests — [03e60d47] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:06:58 [INFO    ] scraper_api.requests — [03e60d47] ← GET /feedback 200 (9ms)
+2026-03-22 18:07:58 [INFO    ] scraper_api.requests — [309dcb80] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:07:58 [INFO    ] scraper_api.requests — [309dcb80] ← GET /feedback 200 (8ms)
+2026-03-22 18:08:58 [INFO    ] scraper_api.requests — [495efa6a] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:08:58 [INFO    ] scraper_api.requests — [495efa6a] ← GET /feedback 200 (7ms)
+2026-03-22 18:09:58 [INFO    ] scraper_api.requests — [e48b2cc1] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:09:58 [INFO    ] scraper_api.requests — [e48b2cc1] ← GET /feedback 200 (7ms)
+2026-03-22 18:10:58 [INFO    ] scraper_api.requests — [6e67534a] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:10:58 [INFO    ] scraper_api.requests — [6e67534a] ← GET /feedback 200 (7ms)
+2026-03-22 18:11:58 [INFO    ] scraper_api.requests — [74c6b106] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:11:58 [INFO    ] scraper_api.requests — [74c6b106] ← GET /feedback 200 (11ms)
+2026-03-22 18:12:58 [INFO    ] scraper_api.requests — [8e046169] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:12:58 [INFO    ] scraper_api.requests — [8e046169] ← GET /feedback 200 (8ms)
+2026-03-22 18:13:58 [INFO    ] scraper_api.requests — [8f3c457b] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:13:58 [INFO    ] scraper_api.requests — [8f3c457b] ← GET /feedback 200 (10ms)
+2026-03-22 18:14:58 [INFO    ] scraper_api.requests — [f2e27524] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:14:58 [INFO    ] scraper_api.requests — [f2e27524] ← GET /feedback 200 (10ms)
+2026-03-22 18:15:58 [INFO    ] scraper_api.requests — [05699f90] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:15:58 [INFO    ] scraper_api.requests — [05699f90] ← GET /feedback 200 (10ms)
+2026-03-22 18:16:58 [INFO    ] scraper_api.requests — [ecc5505b] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:16:58 [INFO    ] scraper_api.requests — [ecc5505b] ← GET /feedback 200 (9ms)
+2026-03-22 18:17:58 [INFO    ] scraper_api.requests — [513fb8c3] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:17:58 [INFO    ] scraper_api.requests — [513fb8c3] ← GET /feedback 200 (7ms)
+2026-03-22 18:18:58 [INFO    ] scraper_api.requests — [e753717f] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:18:58 [INFO    ] scraper_api.requests — [e753717f] ← GET /feedback 200 (9ms)
+2026-03-22 18:19:58 [INFO    ] scraper_api.requests — [6289b298] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:19:58 [INFO    ] scraper_api.requests — [6289b298] ← GET /feedback 200 (7ms)
+2026-03-22 18:20:58 [INFO    ] scraper_api.requests — [fc908eab] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:20:58 [INFO    ] scraper_api.requests — [fc908eab] ← GET /feedback 200 (8ms)
+2026-03-22 18:21:58 [INFO    ] scraper_api.requests — [075644a4] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:21:58 [INFO    ] scraper_api.requests — [075644a4] ← GET /feedback 200 (9ms)
+2026-03-22 18:22:58 [INFO    ] scraper_api.requests — [84e05ec9] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:22:58 [INFO    ] scraper_api.requests — [84e05ec9] ← GET /feedback 200 (8ms)
+2026-03-22 18:23:58 [INFO    ] scraper_api.requests — [6268ed2a] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:23:58 [INFO    ] scraper_api.requests — [6268ed2a] ← GET /feedback 200 (8ms)
+2026-03-22 18:24:58 [INFO    ] scraper_api.requests — [38870d90] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:24:58 [INFO    ] scraper_api.requests — [38870d90] ← GET /feedback 200 (9ms)
+2026-03-22 18:25:58 [INFO    ] scraper_api.requests — [a50ee649] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:25:58 [INFO    ] scraper_api.requests — [a50ee649] ← GET /feedback 200 (8ms)
+2026-03-22 18:26:58 [INFO    ] scraper_api.requests — [9a5ddc14] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:26:58 [INFO    ] scraper_api.requests — [9a5ddc14] ← GET /feedback 200 (9ms)
+2026-03-22 18:27:37 [INFO    ] scheduler — Scheduler: 42 URL(s) to reclassify this cycle (0 low-confidence, 42 stale, cap=50).
+2026-03-22 18:27:37 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/markets
+2026-03-22 18:27:48 [INFO    ] uc — setting properties for headless
+2026-03-22 18:27:58 [INFO    ] scraper_api.requests — [d3305ef6] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:27:58 [INFO    ] scraper_api.requests — [d3305ef6] ← GET /feedback 200 (10ms)
+2026-03-22 18:28:02 [INFO    ] classifier — Domain override applied for https://x.com/markets: browser → hybrid
+2026-03-22 18:28:02 [INFO    ] scheduler — Scheduler: updated https://x.com/markets — strategy=hybrid confidence=0.75
+2026-03-22 18:28:04 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/business
+2026-03-22 18:28:14 [INFO    ] uc — setting properties for headless
+2026-03-22 18:28:29 [INFO    ] classifier — Domain override applied for https://x.com/business: browser → hybrid
+2026-03-22 18:28:29 [INFO    ] scheduler — Scheduler: updated https://x.com/business — strategy=hybrid confidence=0.75
+2026-03-22 18:28:31 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/Bloomberg
+2026-03-22 18:28:41 [INFO    ] uc — setting properties for headless
+2026-03-22 18:28:56 [INFO    ] classifier — Domain override applied for https://x.com/Bloomberg: browser → hybrid
+2026-03-22 18:28:56 [INFO    ] scheduler — Scheduler: updated https://x.com/Bloomberg — strategy=hybrid confidence=0.75
+2026-03-22 18:28:58 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/CNBC
+2026-03-22 18:28:58 [INFO    ] scraper_api.requests — [6bcbd730] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:28:58 [INFO    ] scraper_api.requests — [6bcbd730] ← GET /feedback 200 (13ms)
+2026-03-22 18:29:07 [INFO    ] uc — setting properties for headless
+2026-03-22 18:29:23 [INFO    ] classifier — Domain override applied for https://x.com/CNBC: browser → hybrid
+2026-03-22 18:29:23 [INFO    ] scheduler — Scheduler: updated https://x.com/CNBC — strategy=hybrid confidence=0.75
+2026-03-22 18:29:25 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/ReutersBiz
+2026-03-22 18:29:35 [INFO    ] uc — setting properties for headless
+2026-03-22 18:29:52 [INFO    ] classifier — Domain override applied for https://x.com/ReutersBiz: browser → hybrid
+2026-03-22 18:29:52 [INFO    ] scheduler — Scheduler: updated https://x.com/ReutersBiz — strategy=hybrid confidence=0.75
+2026-03-22 18:29:54 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/FinancialTimes
+2026-03-22 18:29:58 [INFO    ] scraper_api.requests — [dfb80fa7] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:29:58 [INFO    ] scraper_api.requests — [dfb80fa7] ← GET /feedback 200 (14ms)
+2026-03-22 18:30:01 [INFO    ] uc — setting properties for headless
+2026-03-22 18:30:17 [INFO    ] classifier — Domain override applied for https://x.com/FinancialTimes: browser → hybrid
+2026-03-22 18:30:17 [INFO    ] scheduler — Scheduler: updated https://x.com/FinancialTimes — strategy=hybrid confidence=0.72
+2026-03-22 18:30:19 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/zaborsky
+2026-03-22 18:30:26 [INFO    ] uc — setting properties for headless
+2026-03-22 18:30:41 [INFO    ] classifier — Domain override applied for https://x.com/zaborsky: browser → hybrid
+2026-03-22 18:30:41 [INFO    ] scheduler — Scheduler: updated https://x.com/zaborsky — strategy=hybrid confidence=0.72
+2026-03-22 18:30:43 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/CoinDesk
+2026-03-22 18:30:49 [INFO    ] uc — setting properties for headless
+2026-03-22 18:30:58 [INFO    ] scraper_api.requests — [84758e70] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:30:58 [INFO    ] scraper_api.requests — [84758e70] ← GET /feedback 200 (8ms)
+2026-03-22 18:31:04 [INFO    ] classifier — Domain override applied for https://x.com/CoinDesk: browser → hybrid
+2026-03-22 18:31:04 [INFO    ] scheduler — Scheduler: updated https://x.com/CoinDesk — strategy=hybrid confidence=0.72
+2026-03-22 18:31:06 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/Cointelegraph
+2026-03-22 18:31:12 [INFO    ] uc — setting properties for headless
+2026-03-22 18:31:30 [INFO    ] classifier — Domain override applied for https://x.com/Cointelegraph: browser → hybrid
+2026-03-22 18:31:30 [INFO    ] scheduler — Scheduler: updated https://x.com/Cointelegraph — strategy=hybrid confidence=0.72
+2026-03-22 18:31:32 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/WatcherGuru
+2026-03-22 18:31:38 [INFO    ] uc — setting properties for headless
+2026-03-22 18:31:55 [INFO    ] classifier — Domain override applied for https://x.com/WatcherGuru: browser → hybrid
+2026-03-22 18:31:55 [INFO    ] scheduler — Scheduler: updated https://x.com/WatcherGuru — strategy=hybrid confidence=0.72
+2026-03-22 18:31:57 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/BitcoinMagazine
+2026-03-22 18:32:02 [INFO    ] scraper_api.requests — [2ca5c244] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:32:02 [INFO    ] scraper_api.requests — [2ca5c244] ← GET /feedback 200 (8ms)
+2026-03-22 18:32:07 [INFO    ] uc — setting properties for headless
+2026-03-22 18:32:22 [INFO    ] classifier — Domain override applied for https://x.com/BitcoinMagazine: browser → hybrid
+2026-03-22 18:32:22 [INFO    ] scheduler — Scheduler: updated https://x.com/BitcoinMagazine — strategy=hybrid confidence=0.75
+2026-03-22 18:32:24 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/whale_alert
+2026-03-22 18:32:35 [INFO    ] uc — setting properties for headless
+2026-03-22 18:32:51 [INFO    ] classifier — Domain override applied for https://x.com/whale_alert: browser → hybrid
+2026-03-22 18:32:51 [INFO    ] scheduler — Scheduler: updated https://x.com/whale_alert — strategy=hybrid confidence=0.75
+2026-03-22 18:32:53 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/elikirios
+2026-03-22 18:32:58 [INFO    ] scraper_api.requests — [6a0877aa] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:32:58 [INFO    ] scraper_api.requests — [6a0877aa] ← GET /feedback 200 (13ms)
+2026-03-22 18:33:03 [INFO    ] uc — setting properties for headless
+2026-03-22 18:33:17 [INFO    ] classifier — Domain override applied for https://x.com/elikirios: browser → hybrid
+2026-03-22 18:33:18 [INFO    ] scheduler — Scheduler: updated https://x.com/elikirios — strategy=hybrid confidence=0.75
+2026-03-22 18:33:20 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/DocumentingBTC
+2026-03-22 18:33:29 [INFO    ] uc — setting properties for headless
+2026-03-22 18:33:45 [INFO    ] classifier — Domain override applied for https://x.com/DocumentingBTC: browser → hybrid
+2026-03-22 18:33:45 [INFO    ] scheduler — Scheduler: updated https://x.com/DocumentingBTC — strategy=hybrid confidence=0.75
+2026-03-22 18:33:47 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/100trillionUSD
+2026-03-22 18:33:57 [INFO    ] uc — setting properties for headless
+2026-03-22 18:33:58 [INFO    ] scraper_api.requests — [bb33adab] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:33:58 [INFO    ] scraper_api.requests — [bb33adab] ← GET /feedback 200 (9ms)
+2026-03-22 18:34:13 [INFO    ] classifier — Domain override applied for https://x.com/100trillionUSD: browser → hybrid
+2026-03-22 18:34:13 [INFO    ] scheduler — Scheduler: updated https://x.com/100trillionUSD — strategy=hybrid confidence=0.75
+2026-03-22 18:34:15 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/APompliano
+2026-03-22 18:34:25 [INFO    ] uc — setting properties for headless
+2026-03-22 18:34:43 [INFO    ] classifier — Domain override applied for https://x.com/APompliano: browser → hybrid
+2026-03-22 18:34:43 [INFO    ] scheduler — Scheduler: updated https://x.com/APompliano — strategy=hybrid confidence=0.75
+2026-03-22 18:34:45 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/VitalikButerin
+2026-03-22 18:34:55 [INFO    ] uc — setting properties for headless
+2026-03-22 18:34:58 [INFO    ] scraper_api.requests — [f9384ce0] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:34:58 [INFO    ] scraper_api.requests — [f9384ce0] ← GET /feedback 200 (10ms)
+2026-03-22 18:35:14 [INFO    ] classifier — Domain override applied for https://x.com/VitalikButerin: browser → hybrid
+2026-03-22 18:35:14 [INFO    ] scheduler — Scheduler: updated https://x.com/VitalikButerin — strategy=hybrid confidence=0.75
+2026-03-22 18:35:16 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/BNONews
+2026-03-22 18:35:25 [INFO    ] uc — setting properties for headless
+2026-03-22 18:35:42 [INFO    ] classifier — Domain override applied for https://x.com/BNONews: browser → hybrid
+2026-03-22 18:35:42 [INFO    ] scheduler — Scheduler: updated https://x.com/BNONews — strategy=hybrid confidence=0.75
+2026-03-22 18:35:44 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/disclosetv
+2026-03-22 18:35:53 [INFO    ] uc — setting properties for headless
+2026-03-22 18:35:58 [INFO    ] scraper_api.requests — [fbf24c78] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:35:58 [INFO    ] scraper_api.requests — [fbf24c78] ← GET /feedback 200 (10ms)
+2026-03-22 18:36:08 [INFO    ] classifier — Domain override applied for https://x.com/disclosetv: browser → hybrid
+2026-03-22 18:36:08 [INFO    ] scheduler — Scheduler: updated https://x.com/disclosetv — strategy=hybrid confidence=0.75
+2026-03-22 18:36:10 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/spectaborindex
+2026-03-22 18:36:19 [INFO    ] uc — setting properties for headless
+2026-03-22 18:36:35 [INFO    ] classifier — Domain override applied for https://x.com/spectaborindex: browser → hybrid
+2026-03-22 18:36:35 [INFO    ] scheduler — Scheduler: updated https://x.com/spectaborindex — strategy=hybrid confidence=0.75
+2026-03-22 18:36:37 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/DeItaone
+2026-03-22 18:36:46 [INFO    ] uc — setting properties for headless
+2026-03-22 18:36:58 [INFO    ] scraper_api.requests — [fced7751] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:36:58 [INFO    ] scraper_api.requests — [fced7751] ← GET /feedback 200 (10ms)
+2026-03-22 18:37:02 [INFO    ] classifier — Domain override applied for https://x.com/DeItaone: browser → hybrid
+2026-03-22 18:37:02 [INFO    ] scheduler — Scheduler: updated https://x.com/DeItaone — strategy=hybrid confidence=0.75
+2026-03-22 18:37:04 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/unusual_whales
+2026-03-22 18:37:14 [INFO    ] uc — setting properties for headless
+2026-03-22 18:37:30 [INFO    ] classifier — Domain override applied for https://x.com/unusual_whales: browser → hybrid
+2026-03-22 18:37:30 [INFO    ] scheduler — Scheduler: updated https://x.com/unusual_whales — strategy=hybrid confidence=0.75
+2026-03-22 18:37:32 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/FirstSquawk
+2026-03-22 18:37:42 [INFO    ] uc — setting properties for headless
+2026-03-22 18:37:58 [INFO    ] scraper_api.requests — [b04f608c] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:37:58 [INFO    ] scraper_api.requests — [b04f608c] ← GET /feedback 200 (9ms)
+2026-03-22 18:37:59 [INFO    ] classifier — Domain override applied for https://x.com/FirstSquawk: browser → hybrid
+2026-03-22 18:37:59 [INFO    ] scheduler — Scheduler: updated https://x.com/FirstSquawk — strategy=hybrid confidence=0.75
+2026-03-22 18:38:01 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/Fxhedgers
+2026-03-22 18:38:10 [INFO    ] uc — setting properties for headless
+2026-03-22 18:38:27 [INFO    ] classifier — Domain override applied for https://x.com/Fxhedgers: browser → hybrid
+2026-03-22 18:38:27 [INFO    ] scheduler — Scheduler: updated https://x.com/Fxhedgers — strategy=hybrid confidence=0.75
+2026-03-22 18:38:29 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/zaborinski
+2026-03-22 18:38:38 [INFO    ] uc — setting properties for headless
+2026-03-22 18:38:54 [INFO    ] classifier — Domain override applied for https://x.com/zaborinski: browser → hybrid
+2026-03-22 18:38:54 [INFO    ] scheduler — Scheduler: updated https://x.com/zaborinski — strategy=hybrid confidence=0.75
+2026-03-22 18:38:56 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/IGSquawk
+2026-03-22 18:39:01 [INFO    ] scraper_api.requests — [863567b8] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:39:01 [INFO    ] scraper_api.requests — [863567b8] ← GET /feedback 200 (6ms)
+2026-03-22 18:39:06 [INFO    ] uc — setting properties for headless
+2026-03-22 18:39:21 [INFO    ] classifier — Domain override applied for https://x.com/IGSquawk: browser → hybrid
+2026-03-22 18:39:21 [INFO    ] scheduler — Scheduler: updated https://x.com/IGSquawk — strategy=hybrid confidence=0.75
+2026-03-22 18:39:23 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/tier10k
+2026-03-22 18:39:33 [INFO    ] uc — setting properties for headless
+2026-03-22 18:39:49 [INFO    ] classifier — Domain override applied for https://x.com/tier10k: browser → hybrid
+2026-03-22 18:39:49 [INFO    ] scheduler — Scheduler: updated https://x.com/tier10k — strategy=hybrid confidence=0.75
+2026-03-22 18:39:51 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/DefenceHQ
+2026-03-22 18:39:58 [INFO    ] scraper_api.requests — [20655ac6] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:39:58 [INFO    ] scraper_api.requests — [20655ac6] ← GET /feedback 200 (16ms)
+2026-03-22 18:40:01 [INFO    ] uc — setting properties for headless
+2026-03-22 18:40:17 [INFO    ] classifier — Domain override applied for https://x.com/DefenceHQ: browser → hybrid
+2026-03-22 18:40:17 [INFO    ] scheduler — Scheduler: updated https://x.com/DefenceHQ — strategy=hybrid confidence=0.75
+2026-03-22 18:40:20 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/KyivIndependent
+2026-03-22 18:40:30 [INFO    ] uc — setting properties for headless
+2026-03-22 18:40:44 [INFO    ] classifier — Domain override applied for https://x.com/KyivIndependent: browser → hybrid
+2026-03-22 18:40:44 [INFO    ] scheduler — Scheduler: updated https://x.com/KyivIndependent — strategy=hybrid confidence=0.75
+2026-03-22 18:40:46 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/wartranslated
+2026-03-22 18:40:56 [INFO    ] uc — setting properties for headless
+2026-03-22 18:40:58 [INFO    ] scraper_api.requests — [97bb0f44] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:40:58 [INFO    ] scraper_api.requests — [97bb0f44] ← GET /feedback 200 (16ms)
+2026-03-22 18:41:12 [INFO    ] classifier — Domain override applied for https://x.com/wartranslated: browser → hybrid
+2026-03-22 18:41:12 [INFO    ] scheduler — Scheduler: updated https://x.com/wartranslated — strategy=hybrid confidence=0.75
+2026-03-22 18:41:14 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/sentdefender
+2026-03-22 18:41:24 [INFO    ] uc — setting properties for headless
+2026-03-22 18:41:38 [INFO    ] classifier — Domain override applied for https://x.com/sentdefender: browser → hybrid
+2026-03-22 18:41:38 [INFO    ] scheduler — Scheduler: updated https://x.com/sentdefender — strategy=hybrid confidence=0.75
+2026-03-22 18:41:40 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/IntelCrab
+2026-03-22 18:41:50 [INFO    ] uc — setting properties for headless
+2026-03-22 18:41:58 [INFO    ] scraper_api.requests — [b72ed307] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:41:58 [INFO    ] scraper_api.requests — [b72ed307] ← GET /feedback 200 (10ms)
+2026-03-22 18:42:07 [INFO    ] classifier — Domain override applied for https://x.com/IntelCrab: browser → hybrid
+2026-03-22 18:42:07 [INFO    ] scheduler — Scheduler: updated https://x.com/IntelCrab — strategy=hybrid confidence=0.75
+2026-03-22 18:42:09 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/GoldTelegraph_
+2026-03-22 18:42:19 [INFO    ] uc — setting properties for headless
+2026-03-22 18:42:34 [INFO    ] classifier — Domain override applied for https://x.com/GoldTelegraph_: browser → hybrid
+2026-03-22 18:42:34 [INFO    ] scheduler — Scheduler: updated https://x.com/GoldTelegraph_ — strategy=hybrid confidence=0.75
+2026-03-22 18:42:36 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/safinator
+2026-03-22 18:42:46 [INFO    ] uc — setting properties for headless
+2026-03-22 18:42:58 [INFO    ] scraper_api.requests — [83fe595e] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:42:58 [INFO    ] scraper_api.requests — [83fe595e] ← GET /feedback 200 (11ms)
+2026-03-22 18:43:01 [INFO    ] classifier — Domain override applied for https://x.com/safinator: browser → hybrid
+2026-03-22 18:43:01 [INFO    ] scheduler — Scheduler: updated https://x.com/safinator — strategy=hybrid confidence=0.75
+2026-03-22 18:43:03 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/Maborsky
+2026-03-22 18:43:12 [INFO    ] uc — setting properties for headless
+2026-03-22 18:43:29 [INFO    ] classifier — Domain override applied for https://x.com/Maborsky: browser → hybrid
+2026-03-22 18:43:29 [INFO    ] scheduler — Scheduler: updated https://x.com/Maborsky — strategy=hybrid confidence=0.75
+2026-03-22 18:43:31 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/aliaborsky
+2026-03-22 18:43:41 [INFO    ] uc — setting properties for headless
+2026-03-22 18:43:55 [INFO    ] classifier — Domain override applied for https://x.com/aliaborsky: browser → hybrid
+2026-03-22 18:43:55 [INFO    ] scheduler — Scheduler: updated https://x.com/aliaborsky — strategy=hybrid confidence=0.75
+2026-03-22 18:43:57 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/NorthmanTrader
+2026-03-22 18:44:02 [INFO    ] scraper_api.requests — [c0f06160] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:44:02 [INFO    ] scraper_api.requests — [c0f06160] ← GET /feedback 200 (7ms)
+2026-03-22 18:44:07 [INFO    ] uc — setting properties for headless
+2026-03-22 18:44:23 [INFO    ] classifier — Domain override applied for https://x.com/NorthmanTrader: browser → hybrid
+2026-03-22 18:44:23 [INFO    ] scheduler — Scheduler: updated https://x.com/NorthmanTrader — strategy=hybrid confidence=0.75
+2026-03-22 18:44:25 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/financialjuice
+2026-03-22 18:44:35 [INFO    ] uc — setting properties for headless
+2026-03-22 18:44:51 [INFO    ] classifier — Domain override applied for https://x.com/financialjuice: browser → hybrid
+2026-03-22 18:44:51 [INFO    ] scheduler — Scheduler: updated https://x.com/financialjuice — strategy=hybrid confidence=0.75
+2026-03-22 18:44:53 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/carlaborsky
+2026-03-22 18:44:58 [INFO    ] scraper_api.requests — [b14ddf24] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:44:58 [INFO    ] scraper_api.requests — [b14ddf24] ← GET /feedback 200 (12ms)
+2026-03-22 18:45:03 [INFO    ] uc — setting properties for headless
+2026-03-22 18:45:18 [INFO    ] classifier — Domain override applied for https://x.com/carlaborsky: browser → hybrid
+2026-03-22 18:45:18 [INFO    ] scheduler — Scheduler: updated https://x.com/carlaborsky — strategy=hybrid confidence=0.75
+2026-03-22 18:45:20 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/RishiSunak
+2026-03-22 18:45:30 [INFO    ] uc — setting properties for headless
+2026-03-22 18:45:47 [INFO    ] classifier — Domain override applied for https://x.com/RishiSunak: browser → hybrid
+2026-03-22 18:45:47 [INFO    ] scheduler — Scheduler: updated https://x.com/RishiSunak — strategy=hybrid confidence=0.75
+2026-03-22 18:45:49 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/ABORSKYTV
+2026-03-22 18:45:58 [INFO    ] scraper_api.requests — [b5645436] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:45:58 [INFO    ] scraper_api.requests — [b5645436] ← GET /feedback 200 (11ms)
+2026-03-22 18:45:59 [INFO    ] uc — setting properties for headless
+2026-03-22 18:46:12 [INFO    ] classifier — Domain override applied for https://x.com/ABORSKYTV: browser → hybrid
+2026-03-22 18:46:12 [INFO    ] scheduler — Scheduler: updated https://x.com/ABORSKYTV — strategy=hybrid confidence=0.75
+2026-03-22 18:46:14 [INFO    ] scheduler — Scheduler: reclassifying https://x.com/MacroScope17
+2026-03-22 18:46:23 [INFO    ] uc — setting properties for headless
+2026-03-22 18:46:40 [INFO    ] classifier — Domain override applied for https://x.com/MacroScope17: browser → hybrid
+2026-03-22 18:46:40 [INFO    ] scheduler — Scheduler: updated https://x.com/MacroScope17 — strategy=hybrid confidence=0.75
+2026-03-22 18:46:58 [INFO    ] scraper_api.requests — [06e048a5] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:46:58 [INFO    ] scraper_api.requests — [06e048a5] ← GET /feedback 200 (10ms)
+2026-03-22 18:47:58 [INFO    ] scraper_api.requests — [e32814cf] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:47:58 [INFO    ] scraper_api.requests — [e32814cf] ← GET /feedback 200 (9ms)
+2026-03-22 18:48:58 [INFO    ] scraper_api.requests — [baff1e26] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:48:58 [INFO    ] scraper_api.requests — [baff1e26] ← GET /feedback 200 (9ms)
+2026-03-22 18:49:58 [INFO    ] scraper_api.requests — [87c162f6] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:49:58 [INFO    ] scraper_api.requests — [87c162f6] ← GET /feedback 200 (9ms)
+2026-03-22 18:50:58 [INFO    ] scraper_api.requests — [20edb621] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:50:58 [INFO    ] scraper_api.requests — [20edb621] ← GET /feedback 200 (7ms)
+2026-03-22 18:51:58 [INFO    ] scraper_api.requests — [61112418] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:51:58 [INFO    ] scraper_api.requests — [61112418] ← GET /feedback 200 (8ms)
+2026-03-22 18:52:58 [INFO    ] scraper_api.requests — [86ab4968] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:52:58 [INFO    ] scraper_api.requests — [86ab4968] ← GET /feedback 200 (7ms)
+2026-03-22 18:53:58 [INFO    ] scraper_api.requests — [f49424de] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:53:58 [INFO    ] scraper_api.requests — [f49424de] ← GET /feedback 200 (8ms)
+2026-03-22 18:54:58 [INFO    ] scraper_api.requests — [30027669] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:54:58 [INFO    ] scraper_api.requests — [30027669] ← GET /feedback 200 (9ms)
+2026-03-22 18:55:58 [INFO    ] scraper_api.requests — [c4a26e8d] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:55:58 [INFO    ] scraper_api.requests — [c4a26e8d] ← GET /feedback 200 (10ms)
+2026-03-22 18:56:58 [INFO    ] scraper_api.requests — [5b01343b] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:56:58 [INFO    ] scraper_api.requests — [5b01343b] ← GET /feedback 200 (9ms)
+2026-03-22 18:57:58 [INFO    ] scraper_api.requests — [4e72eb2f] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:57:58 [INFO    ] scraper_api.requests — [4e72eb2f] ← GET /feedback 200 (8ms)
+2026-03-22 18:58:58 [INFO    ] scraper_api.requests — [3485f073] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:58:58 [INFO    ] scraper_api.requests — [3485f073] ← GET /feedback 200 (8ms)
+2026-03-22 18:59:58 [INFO    ] scraper_api.requests — [eeef283d] → GET /feedback (client=127.0.0.1)
+2026-03-22 18:59:58 [INFO    ] scraper_api.requests — [eeef283d] ← GET /feedback 200 (8ms)
+2026-03-22 19:00:58 [INFO    ] scraper_api.requests — [d29632a2] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:00:59 [INFO    ] scraper_api.requests — [d29632a2] ← GET /feedback 200 (1486ms)
+2026-03-22 19:01:58 [INFO    ] scraper_api.requests — [41b9b628] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:01:58 [INFO    ] scraper_api.requests — [41b9b628] ← GET /feedback 200 (7ms)
+2026-03-22 19:02:58 [INFO    ] scraper_api.requests — [de0bbba9] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:02:58 [INFO    ] scraper_api.requests — [de0bbba9] ← GET /feedback 200 (8ms)
+2026-03-22 19:03:58 [INFO    ] scraper_api.requests — [065687bc] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:03:58 [INFO    ] scraper_api.requests — [065687bc] ← GET /feedback 200 (9ms)
+2026-03-22 19:04:58 [INFO    ] scraper_api.requests — [5b29ec23] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:04:58 [INFO    ] scraper_api.requests — [5b29ec23] ← GET /feedback 200 (7ms)
+2026-03-22 19:05:58 [INFO    ] scraper_api.requests — [cb9580fa] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:05:58 [INFO    ] scraper_api.requests — [cb9580fa] ← GET /feedback 200 (8ms)
+2026-03-22 19:06:58 [INFO    ] scraper_api.requests — [fad36859] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:06:58 [INFO    ] scraper_api.requests — [fad36859] ← GET /feedback 200 (8ms)
+2026-03-22 19:07:58 [INFO    ] scraper_api.requests — [8bf44408] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:07:58 [INFO    ] scraper_api.requests — [8bf44408] ← GET /feedback 200 (7ms)
+2026-03-22 19:08:58 [INFO    ] scraper_api.requests — [43ddb040] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:08:58 [INFO    ] scraper_api.requests — [43ddb040] ← GET /feedback 200 (7ms)
+2026-03-22 19:09:58 [INFO    ] scraper_api.requests — [23b18c14] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:09:58 [INFO    ] scraper_api.requests — [23b18c14] ← GET /feedback 200 (7ms)
+2026-03-22 19:10:58 [INFO    ] scraper_api.requests — [ab4f91ed] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:10:58 [INFO    ] scraper_api.requests — [ab4f91ed] ← GET /feedback 200 (7ms)
+2026-03-22 19:11:58 [INFO    ] scraper_api.requests — [1299d559] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:11:58 [INFO    ] scraper_api.requests — [1299d559] ← GET /feedback 200 (7ms)
+2026-03-22 19:12:58 [INFO    ] scraper_api.requests — [adb68a01] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:12:58 [INFO    ] scraper_api.requests — [adb68a01] ← GET /feedback 200 (7ms)
+2026-03-22 19:13:58 [INFO    ] scraper_api.requests — [0d862e95] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:13:58 [INFO    ] scraper_api.requests — [0d862e95] ← GET /feedback 200 (9ms)
+2026-03-22 19:14:58 [INFO    ] scraper_api.requests — [8eb3d898] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:14:58 [INFO    ] scraper_api.requests — [8eb3d898] ← GET /feedback 200 (7ms)
+2026-03-22 19:15:58 [INFO    ] scraper_api.requests — [7a151fc6] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:15:58 [INFO    ] scraper_api.requests — [7a151fc6] ← GET /feedback 200 (9ms)
+2026-03-22 19:16:58 [INFO    ] scraper_api.requests — [6a9eb30f] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:16:58 [INFO    ] scraper_api.requests — [6a9eb30f] ← GET /feedback 200 (8ms)
+2026-03-22 19:17:58 [INFO    ] scraper_api.requests — [f8e897f5] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:17:58 [INFO    ] scraper_api.requests — [f8e897f5] ← GET /feedback 200 (8ms)
+2026-03-22 19:18:58 [INFO    ] scraper_api.requests — [f5da8f1d] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:18:58 [INFO    ] scraper_api.requests — [f5da8f1d] ← GET /feedback 200 (10ms)
+2026-03-22 19:19:58 [INFO    ] scraper_api.requests — [70920d3d] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:19:58 [INFO    ] scraper_api.requests — [70920d3d] ← GET /feedback 200 (8ms)
+2026-03-22 19:20:58 [INFO    ] scraper_api.requests — [51add7a6] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:20:58 [INFO    ] scraper_api.requests — [51add7a6] ← GET /feedback 200 (8ms)
+2026-03-22 19:21:58 [INFO    ] scraper_api.requests — [e70fddf8] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:21:58 [INFO    ] scraper_api.requests — [e70fddf8] ← GET /feedback 200 (10ms)
+2026-03-22 19:22:58 [INFO    ] scraper_api.requests — [e2f4131e] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:22:58 [INFO    ] scraper_api.requests — [e2f4131e] ← GET /feedback 200 (7ms)
+2026-03-22 19:23:58 [INFO    ] scraper_api.requests — [5b5a667f] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:23:58 [INFO    ] scraper_api.requests — [5b5a667f] ← GET /feedback 200 (7ms)
+2026-03-22 19:24:58 [INFO    ] scraper_api.requests — [a7aae88d] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:24:58 [INFO    ] scraper_api.requests — [a7aae88d] ← GET /feedback 200 (13ms)
+2026-03-22 19:25:58 [INFO    ] scraper_api.requests — [bb2d89c8] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:25:58 [INFO    ] scraper_api.requests — [bb2d89c8] ← GET /feedback 200 (9ms)
+2026-03-22 19:26:58 [INFO    ] scraper_api.requests — [e841cae0] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:26:58 [INFO    ] scraper_api.requests — [e841cae0] ← GET /feedback 200 (8ms)
+2026-03-22 19:27:58 [INFO    ] scraper_api.requests — [5d789b74] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:27:58 [INFO    ] scraper_api.requests — [5d789b74] ← GET /feedback 200 (8ms)
+2026-03-22 19:28:58 [INFO    ] scraper_api.requests — [eeb2f161] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:28:58 [INFO    ] scraper_api.requests — [eeb2f161] ← GET /feedback 200 (8ms)
+2026-03-22 19:29:58 [INFO    ] scraper_api.requests — [67fa3abd] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:29:58 [INFO    ] scraper_api.requests — [67fa3abd] ← GET /feedback 200 (7ms)
+2026-03-22 19:30:58 [INFO    ] scraper_api.requests — [79ea88db] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:30:58 [INFO    ] scraper_api.requests — [79ea88db] ← GET /feedback 200 (8ms)
+2026-03-22 19:31:58 [INFO    ] scraper_api.requests — [c2ab74f4] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:31:58 [INFO    ] scraper_api.requests — [c2ab74f4] ← GET /feedback 200 (7ms)
+2026-03-22 19:32:58 [INFO    ] scraper_api.requests — [300c9e48] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:32:58 [INFO    ] scraper_api.requests — [300c9e48] ← GET /feedback 200 (9ms)
+2026-03-22 19:33:58 [INFO    ] scraper_api.requests — [89faf41f] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:33:58 [INFO    ] scraper_api.requests — [89faf41f] ← GET /feedback 200 (9ms)
+2026-03-22 19:34:58 [INFO    ] scraper_api.requests — [9f136474] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:34:58 [INFO    ] scraper_api.requests — [9f136474] ← GET /feedback 200 (9ms)
+2026-03-22 19:35:58 [INFO    ] scraper_api.requests — [437e863d] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:35:58 [INFO    ] scraper_api.requests — [437e863d] ← GET /feedback 200 (8ms)
+2026-03-22 19:36:58 [INFO    ] scraper_api.requests — [b2ae561c] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:36:58 [INFO    ] scraper_api.requests — [b2ae561c] ← GET /feedback 200 (8ms)
+2026-03-22 19:37:58 [INFO    ] scraper_api.requests — [c2d6b53f] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:37:58 [INFO    ] scraper_api.requests — [c2d6b53f] ← GET /feedback 200 (8ms)
+2026-03-22 19:38:58 [INFO    ] scraper_api.requests — [02ce4799] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:38:58 [INFO    ] scraper_api.requests — [02ce4799] ← GET /feedback 200 (7ms)
+2026-03-22 19:39:58 [INFO    ] scraper_api.requests — [6c8ab982] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:39:58 [INFO    ] scraper_api.requests — [6c8ab982] ← GET /feedback 200 (8ms)
+2026-03-22 19:40:58 [INFO    ] scraper_api.requests — [96f807b7] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:40:58 [INFO    ] scraper_api.requests — [96f807b7] ← GET /feedback 200 (8ms)
+2026-03-22 19:41:58 [INFO    ] scraper_api.requests — [dc3fd6a7] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:41:58 [INFO    ] scraper_api.requests — [dc3fd6a7] ← GET /feedback 200 (9ms)
+2026-03-22 19:42:58 [INFO    ] scraper_api.requests — [acd373d5] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:42:58 [INFO    ] scraper_api.requests — [acd373d5] ← GET /feedback 200 (7ms)
+2026-03-22 19:43:58 [INFO    ] scraper_api.requests — [a57a91bd] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:43:58 [INFO    ] scraper_api.requests — [a57a91bd] ← GET /feedback 200 (9ms)
+2026-03-22 19:44:58 [INFO    ] scraper_api.requests — [732f040f] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:44:58 [INFO    ] scraper_api.requests — [732f040f] ← GET /feedback 200 (9ms)
+2026-03-22 19:45:23 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 19:45:24 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 19:45:24 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 19:45:24 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 19:45:24 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 19:45:26 [INFO    ] scraper_api.requests — [f24e6328] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:45:26 [INFO    ] scraper_api.requests — [f24e6328] ← GET /feedback 200 (6ms)
+2026-03-22 19:46:58 [INFO    ] scraper_api.requests — [d707d417] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:46:58 [INFO    ] scraper_api.requests — [d707d417] ← GET /feedback 200 (7ms)
+2026-03-22 19:47:50 [INFO    ] scraper_api.requests — [992afd87] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:47:50 [INFO    ] scraper_api.requests — [992afd87] ← GET /feedback 200 (8ms)
+2026-03-22 19:47:51 [INFO    ] scraper_api.requests — [54a885bc] → GET /ui/ (client=127.0.0.1)
+2026-03-22 19:47:51 [INFO    ] scraper_api.requests — [54a885bc] ← GET /ui/ 304 (47ms)
+2026-03-22 19:47:51 [INFO    ] scraper_api.requests — [26dd1174] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:47:51 [INFO    ] scraper_api.requests — [26dd1174] ← GET /feedback 200 (8ms)
+2026-03-22 19:48:02 [INFO    ] scraper_api.requests — [ff0a97bf] → GET /health (client=127.0.0.1)
+2026-03-22 19:48:10 [INFO    ] scraper_api.requests — [ff0a97bf] ← GET /health 200 (8050ms)
+2026-03-22 19:48:14 [INFO    ] scraper_api.requests — [3c00cf52] → POST /scrape (client=127.0.0.1)
+2026-03-22 19:48:14 [INFO    ] scraper — Classifying URL: https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 19:48:27 [INFO    ] uc — setting properties for headless
+2026-03-22 19:48:39 [INFO    ] classifier — Domain override applied for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: static → browser
+2026-03-22 19:48:39 [INFO    ] scraper — force_strategy override for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: browser → tor
+2026-03-22 19:48:39 [INFO    ] scraper — Scrape attempt 1/3 — strategy=tor profile=desktop_chrome_windows url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 19:48:45 [INFO    ] tor_scraper — Starting Tor Browser: C:\Users\Pc\Desktop\Tor Browser\Browser\firefox.exe
+2026-03-22 19:48:51 [INFO    ] scraper_api.requests — [c83b1b31] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:48:51 [INFO    ] scraper_api.requests — [c83b1b31] ← GET /feedback 200 (8ms)
+2026-03-22 19:48:53 [INFO    ] tor_scraper — Tor Browser started — SOCKS port 9150 open after 2s.
+2026-03-22 19:49:02 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 19:49:02 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 19:49:12 [INFO    ] scraper — Scrape attempt 2/3 — strategy=tor profile=desktop_chrome_linux url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 19:49:20 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 19:49:20 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 19:49:30 [INFO    ] scraper — Scrape attempt 3/3 — strategy=tor profile=desktop_firefox_windows url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 19:49:33 [WARNING ] scraper — Attempt 3 failed: Server error '503 Service Unavailable' for url 'https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503
+2026-03-22 19:49:33 [INFO    ] scraper_api.requests — [3c00cf52] ← POST /scrape 200 (79263ms)
+2026-03-22 19:49:33 [INFO    ] scraper_api.requests — [0b2df3a9] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:49:33 [INFO    ] scraper_api.requests — [0b2df3a9] ← GET /feedback 200 (18ms)
+2026-03-22 19:49:45 [INFO    ] scraper_api.requests — [1de725b5] → GET /health (client=127.0.0.1)
+2026-03-22 19:49:45 [INFO    ] scraper_api.requests — [1de725b5] ← GET /health 200 (575ms)
+2026-03-22 19:49:49 [INFO    ] scraper_api.requests — [241f71dd] → POST /scrape (client=127.0.0.1)
+2026-03-22 19:49:49 [INFO    ] scraper — Classifying URL: https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 19:49:51 [INFO    ] scraper_api.requests — [2e679f9f] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:49:51 [INFO    ] scraper_api.requests — [2e679f9f] ← GET /feedback 200 (5ms)
+2026-03-22 19:49:57 [INFO    ] uc — setting properties for headless
+2026-03-22 19:50:11 [INFO    ] classifier — Domain override applied for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: static → browser
+2026-03-22 19:50:11 [INFO    ] scraper — force_strategy override for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: browser → tor
+2026-03-22 19:50:11 [INFO    ] scraper — Scrape attempt 1/3 — strategy=tor profile=desktop_chrome_windows url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 19:50:17 [WARNING ] scraper — Attempt 1 failed: Server error '503 Service Unavailable' for url 'https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503
+2026-03-22 19:50:18 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 19:50:18 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 19:50:28 [INFO    ] scraper — Scrape attempt 2/3 — strategy=tor profile=desktop_chrome_linux url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 19:50:37 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 19:50:37 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 19:50:47 [INFO    ] scraper — Scrape attempt 3/3 — strategy=tor profile=desktop_chrome_linux url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 19:50:53 [INFO    ] scraper_api.requests — [7b17fc85] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:50:53 [INFO    ] scraper_api.requests — [241f71dd] ← POST /scrape 200 (64505ms)
+2026-03-22 19:50:53 [INFO    ] scraper_api.requests — [d75d8728] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:50:53 [INFO    ] scraper_api.requests — [7b17fc85] ← GET /feedback 200 (14ms)
+2026-03-22 19:50:53 [INFO    ] scraper_api.requests — [d75d8728] ← GET /feedback 200 (17ms)
+2026-03-22 19:51:05 [INFO    ] scraper_api.requests — [19ade44d] → DELETE /feedback (client=127.0.0.1)
+2026-03-22 19:51:05 [INFO    ] scraper_api.requests — [19ade44d] ← DELETE /feedback 200 (11ms)
+2026-03-22 19:51:05 [INFO    ] scraper_api.requests — [2c883cc0] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:51:05 [INFO    ] scraper_api.requests — [2c883cc0] ← GET /feedback 200 (6ms)
+2026-03-22 19:51:08 [INFO    ] scraper_api.requests — [28d6991d] → POST /feedback (client=127.0.0.1)
+2026-03-22 19:51:08 [INFO    ] scraper_api.requests — [28d6991d] ← POST /feedback 200 (11ms)
+2026-03-22 19:51:08 [INFO    ] scraper_api.requests — [a7804db2] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:51:08 [INFO    ] scraper_api.requests — [a7804db2] ← GET /feedback 200 (10ms)
+2026-03-22 19:51:08 [INFO    ] scraper_api.requests — [681af946] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:51:08 [INFO    ] scraper_api.requests — [681af946] ← GET /feedback 200 (8ms)
+2026-03-22 19:51:52 [INFO    ] scraper_api.requests — [987ca6fd] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:51:52 [INFO    ] scraper_api.requests — [987ca6fd] ← GET /feedback 200 (6ms)
+2026-03-22 19:52:52 [INFO    ] scraper_api.requests — [1166088d] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:52:52 [INFO    ] scraper_api.requests — [1166088d] ← GET /feedback 200 (9ms)
+2026-03-22 19:53:52 [INFO    ] scraper_api.requests — [575b9736] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:53:52 [INFO    ] scraper_api.requests — [575b9736] ← GET /feedback 200 (8ms)
+2026-03-22 19:54:58 [INFO    ] scraper_api.requests — [c476ec8d] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:54:58 [INFO    ] scraper_api.requests — [c476ec8d] ← GET /feedback 200 (9ms)
+2026-03-22 19:55:58 [INFO    ] scraper_api.requests — [4f13d2e4] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:55:58 [INFO    ] scraper_api.requests — [4f13d2e4] ← GET /feedback 200 (11ms)
+2026-03-22 19:56:34 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 19:56:34 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 19:56:34 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 19:56:34 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 19:56:34 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 19:56:47 [INFO    ] scraper_api.requests — [c808d16f] → GET /ui/ (client=127.0.0.1)
+2026-03-22 19:56:47 [INFO    ] scraper_api.requests — [c808d16f] ← GET /ui/ 304 (67ms)
+2026-03-22 19:56:47 [INFO    ] scraper_api.requests — [2e6568f8] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:56:47 [INFO    ] scraper_api.requests — [2e6568f8] ← GET /feedback 200 (13ms)
+2026-03-22 19:56:59 [INFO    ] scraper_api.requests — [7f4ed2e2] → POST /scrape (client=127.0.0.1)
+2026-03-22 19:56:59 [INFO    ] scraper — Classifying URL: https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 19:57:07 [INFO    ] uc — setting properties for headless
+2026-03-22 19:57:19 [INFO    ] classifier — Domain override applied for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: static → browser
+2026-03-22 19:57:19 [INFO    ] scraper — force_strategy override for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: browser → tor
+2026-03-22 19:57:19 [INFO    ] scraper — Auto-escalating strategy for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: tor → hybrid (domain requires a browser for JS rendering).
+2026-03-22 19:57:19 [INFO    ] scraper — Scrape attempt 1/3 — strategy=hybrid profile=mobile_safari_ios url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 19:57:24 [INFO    ] uc — setting properties for headless
+2026-03-22 19:57:25 [INFO    ] scraper_api.requests — [d7ff9ebb] → DELETE /feedback/10 (client=127.0.0.1)
+2026-03-22 19:57:25 [INFO    ] scraper_api.requests — [d7ff9ebb] ← DELETE /feedback/10 200 (13ms)
+2026-03-22 19:57:25 [INFO    ] scraper_api.requests — [3d246d5b] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:57:25 [INFO    ] scraper_api.requests — [3d246d5b] ← GET /feedback 200 (10ms)
+2026-03-22 19:57:47 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 19:57:47 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 19:57:47 [INFO    ] scraper_api.requests — [a6170e14] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:57:47 [INFO    ] scraper_api.requests — [a6170e14] ← GET /feedback 200 (6ms)
+2026-03-22 19:57:57 [INFO    ] scraper — Scrape attempt 2/3 — strategy=hybrid profile=desktop_chrome_linux url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 19:58:01 [INFO    ] uc — setting properties for headless
+2026-03-22 19:58:22 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 19:58:22 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 19:58:32 [INFO    ] scraper — Scrape attempt 3/3 — strategy=hybrid profile=desktop_chrome_linux url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 19:58:37 [INFO    ] uc — setting properties for headless
+2026-03-22 19:58:48 [INFO    ] scraper_api.requests — [d11a8e31] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:58:48 [INFO    ] scraper_api.requests — [d11a8e31] ← GET /feedback 200 (8ms)
+2026-03-22 19:58:56 [INFO    ] scraper_api.requests — [7f4ed2e2] ← POST /scrape 200 (117094ms)
+2026-03-22 19:58:56 [INFO    ] scraper_api.requests — [406379b5] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:58:56 [INFO    ] scraper_api.requests — [406379b5] ← GET /feedback 200 (7ms)
+2026-03-22 19:59:48 [INFO    ] scraper_api.requests — [14353a04] → GET /feedback (client=127.0.0.1)
+2026-03-22 19:59:48 [INFO    ] scraper_api.requests — [14353a04] ← GET /feedback 200 (9ms)
+2026-03-22 20:00:26 [INFO    ] scraper_api.requests — [d511882f] → POST /scrape (client=127.0.0.1)
+2026-03-22 20:00:26 [INFO    ] scraper — Classifying URL: https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 20:00:34 [INFO    ] uc — setting properties for headless
+2026-03-22 20:00:47 [INFO    ] classifier — Domain override applied for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: static → browser
+2026-03-22 20:00:47 [INFO    ] scraper — force_strategy override for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: browser → tor
+2026-03-22 20:00:47 [INFO    ] scraper — Auto-escalating strategy for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: tor → hybrid (domain requires a browser for JS rendering).
+2026-03-22 20:00:47 [INFO    ] scraper — Scrape attempt 1/3 — strategy=hybrid profile=desktop_firefox_windows url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 20:00:48 [INFO    ] scraper_api.requests — [9137d919] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:00:48 [INFO    ] scraper_api.requests — [9137d919] ← GET /feedback 200 (8ms)
+2026-03-22 20:00:52 [INFO    ] uc — setting properties for headless
+2026-03-22 20:01:12 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 20:01:12 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 20:01:22 [INFO    ] scraper — Scrape attempt 2/3 — strategy=hybrid profile=desktop_firefox_windows url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 20:01:27 [INFO    ] uc — setting properties for headless
+2026-03-22 20:01:45 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 20:01:45 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 20:01:48 [INFO    ] scraper_api.requests — [f646b6bf] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:01:48 [INFO    ] scraper_api.requests — [f646b6bf] ← GET /feedback 200 (8ms)
+2026-03-22 20:01:55 [INFO    ] scraper — Scrape attempt 3/3 — strategy=hybrid profile=desktop_chrome_linux url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 20:02:00 [INFO    ] uc — setting properties for headless
+2026-03-22 20:02:17 [INFO    ] scraper_api.requests — [d511882f] ← POST /scrape 200 (110568ms)
+2026-03-22 20:02:17 [INFO    ] scraper_api.requests — [eb8e084c] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:02:17 [INFO    ] scraper_api.requests — [eb8e084c] ← GET /feedback 200 (5ms)
+2026-03-22 20:02:48 [INFO    ] scraper_api.requests — [fc11486a] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:02:48 [INFO    ] scraper_api.requests — [fc11486a] ← GET /feedback 200 (10ms)
+2026-03-22 20:03:42 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 20:03:42 [INFO    ] logging_setup — Logging initialised — level=INFO dir=C:\Users\Pc\Documents\My Repos\scraper_api\logs
+2026-03-22 20:03:42 [INFO    ] app — Scraper API starting on 127.0.0.1:8000
+2026-03-22 20:03:42 [INFO    ] database — Database ready at 'scraper_metadata.db'
+2026-03-22 20:03:42 [INFO    ] scheduler — Scheduler started (interval=3600s).
+2026-03-22 20:03:48 [INFO    ] scraper_api.requests — [ec0282a2] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:03:48 [INFO    ] scraper_api.requests — [ec0282a2] ← GET /feedback 200 (10ms)
+2026-03-22 20:03:49 [INFO    ] scraper_api.requests — [3312f404] → GET /ui/ (client=127.0.0.1)
+2026-03-22 20:03:49 [INFO    ] scraper_api.requests — [3312f404] ← GET /ui/ 304 (58ms)
+2026-03-22 20:03:50 [INFO    ] scraper_api.requests — [3b9f4ae3] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:03:50 [INFO    ] scraper_api.requests — [3b9f4ae3] ← GET /feedback 200 (7ms)
+2026-03-22 20:03:58 [INFO    ] scraper_api.requests — [58414ccf] → POST /scrape (client=127.0.0.1)
+2026-03-22 20:03:58 [INFO    ] scraper — Classifying URL: https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 20:04:06 [INFO    ] uc — setting properties for headless
+2026-03-22 20:04:19 [INFO    ] classifier — Domain override applied for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: static → browser
+2026-03-22 20:04:19 [INFO    ] scraper — force_strategy override for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: browser → tor
+2026-03-22 20:04:19 [INFO    ] scraper — Auto-escalating strategy for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: tor → hybrid (domain requires a browser for JS rendering).
+2026-03-22 20:04:19 [INFO    ] scraper — Scrape attempt 1/3 — strategy=hybrid profile=desktop_chrome_windows url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 20:04:38 [WARNING ] scraper — Attempt 1 failed: Alert Text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Message: Unexpected confirmEx dialog detected. Performed handler "dismiss". Dialog text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Stacktrace:
+RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
+WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:199:5
+UnexpectedAlertOpenError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:876:5
+GeckoDriver.prototype._handleUserPrompts@chrome://remote/content/marionette/driver.sys.mjs:3130:11
+openPromptSync@resource://gre/modules/Prompter.sys.mjs:1082:17
+confirmEx@resource://gre/modules/Prompter.sys.mjs:1526:10
+confirmEx@resource://gre/modules/Prompter.sys.mjs:303:14
+showConfirm@resource://gre/modules/TorLauncherUtil.sys.mjs:372:25
+showRestartPrompt@resource://gre/modules/TorLauncherUtil.sys.mjs:415:17
+firstWindowLoaded@resource://gre/modules/TorProviderBuilder.sys.mjs:290:45
+
+2026-03-22 20:04:41 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 20:04:41 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 20:04:50 [INFO    ] scraper_api.requests — [dacce846] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:04:50 [INFO    ] scraper_api.requests — [dacce846] ← GET /feedback 200 (7ms)
+2026-03-22 20:04:51 [INFO    ] scraper — Scrape attempt 2/3 — strategy=hybrid profile=desktop_chrome_linux url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 20:05:08 [WARNING ] scraper — Attempt 2 failed: Alert Text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Message: Unexpected confirmEx dialog detected. Performed handler "dismiss". Dialog text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Stacktrace:
+RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
+WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:199:5
+UnexpectedAlertOpenError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:876:5
+GeckoDriver.prototype._handleUserPrompts@chrome://remote/content/marionette/driver.sys.mjs:3130:11
+openPromptSync@resource://gre/modules/Prompter.sys.mjs:1082:17
+confirmEx@resource://gre/modules/Prompter.sys.mjs:1526:10
+confirmEx@resource://gre/modules/Prompter.sys.mjs:303:14
+showConfirm@resource://gre/modules/TorLauncherUtil.sys.mjs:372:25
+showRestartPrompt@resource://gre/modules/TorLauncherUtil.sys.mjs:415:17
+firstWindowLoaded@resource://gre/modules/TorProviderBuilder.sys.mjs:290:45
+
+2026-03-22 20:05:13 [INFO    ] tor_scraper — Tor: NEWNYM signal sent via control port 9151.
+2026-03-22 20:05:13 [INFO    ] stem — Error while receiving a control message (SocketClosed): received exception "[WinError 10038] Bir işlem yuva olmayan bir öğe üzerinde denendi"
+2026-03-22 20:05:23 [INFO    ] scraper — Scrape attempt 3/3 — strategy=hybrid profile=desktop_firefox_windows url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 20:05:39 [WARNING ] scraper — Attempt 3 failed: Alert Text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Message: Unexpected confirmEx dialog detected. Performed handler "dismiss". Dialog text: Dil ayarınızı İngilizce olarak değştirmek, kimliğinizin belirlenmesini zorlaştırarak gizliliğinizi artırabilir. Web sayfalarının İngilizce sürümlerini görmek ister misiniz?
+Stacktrace:
+RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
+WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:199:5
+UnexpectedAlertOpenError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:876:5
+GeckoDriver.prototype._handleUserPrompts@chrome://remote/content/marionette/driver.sys.mjs:3130:11
+openPromptSync@resource://gre/modules/Prompter.sys.mjs:1082:17
+confirmEx@resource://gre/modules/Prompter.sys.mjs:1526:10
+confirmEx@resource://gre/modules/Prompter.sys.mjs:303:14
+showConfirm@resource://gre/modules/TorLauncherUtil.sys.mjs:372:25
+showRestartPrompt@resource://gre/modules/TorLauncherUtil.sys.mjs:415:17
+firstWindowLoaded@resource://gre/modules/TorProviderBuilder.sys.mjs:290:45
+
+2026-03-22 20:05:39 [INFO    ] scraper_api.requests — [58414ccf] ← POST /scrape 200 (101197ms)
+2026-03-22 20:05:39 [INFO    ] scraper_api.requests — [0f0358af] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:05:39 [INFO    ] scraper_api.requests — [0f0358af] ← GET /feedback 200 (9ms)
+2026-03-22 20:05:50 [INFO    ] scraper_api.requests — [90bc418a] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:05:50 [INFO    ] scraper_api.requests — [90bc418a] ← GET /feedback 200 (6ms)
+2026-03-22 20:06:50 [INFO    ] scraper_api.requests — [c08c6789] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:06:50 [INFO    ] scraper_api.requests — [c08c6789] ← GET /feedback 200 (8ms)
+2026-03-22 20:07:50 [INFO    ] scraper_api.requests — [1d6e6d7c] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:07:50 [INFO    ] scraper_api.requests — [1d6e6d7c] ← GET /feedback 200 (8ms)
+2026-03-22 20:07:52 [INFO    ] scraper_api.requests — [83783def] → GET /ui/ (client=127.0.0.1)
+2026-03-22 20:07:52 [INFO    ] scraper_api.requests — [83783def] ← GET /ui/ 304 (3ms)
+2026-03-22 20:07:52 [INFO    ] scraper_api.requests — [43bccad8] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:07:52 [INFO    ] scraper_api.requests — [43bccad8] ← GET /feedback 200 (12ms)
+2026-03-22 20:07:56 [INFO    ] scraper_api.requests — [a0606827] → GET /health (client=127.0.0.1)
+2026-03-22 20:08:03 [INFO    ] scraper_api.requests — [40122c9a] → POST /scrape (client=127.0.0.1)
+2026-03-22 20:08:03 [INFO    ] scraper — Classifying URL: https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 20:08:07 [INFO    ] scraper_api.requests — [a0606827] ← GET /health 200 (11387ms)
+2026-03-22 20:08:12 [INFO    ] uc — setting properties for headless
+2026-03-22 20:08:24 [INFO    ] classifier — Domain override applied for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: static → browser
+2026-03-22 20:08:24 [INFO    ] scraper — force_strategy override for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: browser → tor
+2026-03-22 20:08:24 [INFO    ] scraper — Auto-escalating strategy for https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40: tor → hybrid (domain requires a browser for JS rendering).
+2026-03-22 20:08:24 [INFO    ] scraper — Scrape attempt 1/3 — strategy=hybrid profile=desktop_chrome_linux url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 20:08:30 [INFO    ] tor_scraper — Starting Tor Browser: C:\Users\Pc\Desktop\Tor Browser\Browser\firefox.exe
+2026-03-22 20:08:36 [INFO    ] tor_scraper — Tor Browser started — SOCKS port 9150 open after 1s.
+2026-03-22 20:08:52 [INFO    ] scraper_api.requests — [7406caa9] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:08:52 [INFO    ] scraper_api.requests — [7406caa9] ← GET /feedback 200 (7ms)
+2026-03-22 20:08:53 [WARNING ] scraper — Attempt 1 failed: Message: TypeError: can't access property "scrollHeight", document.body is null
+Stacktrace:
+@https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40:2:26
+@https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40:3:8
+
+2026-03-22 20:08:59 [WARNING ] tor_scraper — Tor identity rotation failed on all control ports: [WinError 10061] Hedef makine etkin olarak reddettiğinden bağlantı kurulamadı
+2026-03-22 20:08:59 [INFO    ] scraper — Scrape attempt 2/3 — strategy=hybrid profile=desktop_firefox_windows url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 20:09:05 [INFO    ] tor_scraper — Starting Tor Browser: C:\Users\Pc\Desktop\Tor Browser\Browser\firefox.exe
+2026-03-22 20:09:12 [INFO    ] tor_scraper — Tor Browser started — SOCKS port 9150 open after 1s.
+2026-03-22 20:09:29 [WARNING ] scraper — Attempt 2 failed: Message: Failed to decode response from marionette
+
+2026-03-22 20:09:37 [WARNING ] tor_scraper — Tor identity rotation failed on all control ports: [WinError 10061] Hedef makine etkin olarak reddettiğinden bağlantı kurulamadı
+2026-03-22 20:09:37 [INFO    ] scraper — Scrape attempt 3/3 — strategy=hybrid profile=mobile_chrome_android url=https://www.amazon.com.tr/deals?ref_=stbb_gb&pd_rd_w=9gQig&content-id=amzn1.sym.d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_p=d22fa831-83ed-411c-9e7d-e3a72f52c724&pf_rd_r=1CYGBTSGZ5W3A5DB1NJR&pd_rd_wg=dOxhP&pd_rd_r=a0689046-af60-4a89-8da3-0a53d9387e40
+2026-03-22 20:09:43 [INFO    ] tor_scraper — Starting Tor Browser: C:\Users\Pc\Desktop\Tor Browser\Browser\firefox.exe
+2026-03-22 20:09:52 [INFO    ] scraper_api.requests — [9dbdabdb] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:09:52 [INFO    ] scraper_api.requests — [9dbdabdb] ← GET /feedback 200 (9ms)
+2026-03-22 20:10:52 [INFO    ] scraper_api.requests — [8199f5e6] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:10:52 [INFO    ] scraper_api.requests — [8199f5e6] ← GET /feedback 200 (9ms)
+2026-03-22 20:11:24 [INFO    ] scraper_api.requests — [c803653b] → GET /ui/ (client=127.0.0.1)
+2026-03-22 20:11:24 [INFO    ] scraper_api.requests — [c803653b] ← GET /ui/ 304 (3ms)
+2026-03-22 20:11:24 [INFO    ] scraper_api.requests — [0647651e] → GET /feedback (client=127.0.0.1)
+2026-03-22 20:11:24 [INFO    ] scraper_api.requests — [0647651e] ← GET /feedback 200 (8ms)
+2026-03-22 20:16:44 [WARNING ] scraper — Attempt 3 failed: Tor Browser was launched but the SOCKS port did not open within 60 s.  Make sure 'Connect automatically' is enabled in Tor Browser settings (Settings → Connection → Connect automatically).
+2026-03-22 20:16:44 [INFO    ] scraper_api.requests — [40122c9a] ← POST /scrape 200 (521264ms)

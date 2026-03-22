@@ -1,0 +1,24 @@
+# Python bytecode / caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Database (local state)
+scraper_metadata.db
+
+# Logs
+logs/
+
+# Environment
+.env
+venv/
+.venv/
