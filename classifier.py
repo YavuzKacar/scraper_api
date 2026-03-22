@@ -41,7 +41,7 @@ from models import (
     ScrapingStrategy,
     TorAvailability,
 )
-from strategy import determine_strategy
+from strategy import determine_strategy, get_domain_override
 
 logger = logging.getLogger(__name__)
 
@@ -208,14 +208,21 @@ def _detect_public_page(
 
 # ── Tor availability probe ────────────────────────────────────────────────────
 
-def _tor_port_open() -> bool:
-    """Check if the configured Tor SOCKS port is listening."""
-    with contextlib.suppress(OSError):
-        with socket.create_connection(
-            (CONFIG.tor_socks_host, CONFIG.tor_socks_port), timeout=2.0
-        ):
-            return True
-    return False
+def _tor_port_open() -> Optional[int]:
+    """
+    Return the first reachable Tor SOCKS port from the known candidate list,
+    or None if Tor is not running.
+
+    Tries CONFIG.tor_socks_port first (user-configured), then falls through
+    to the Tor Browser port (9150) and the standalone daemon port (9050).
+    """
+    for port in dict.fromkeys([CONFIG.tor_socks_port, 9150, 9050]):  # deduped, ordered
+        with contextlib.suppress(OSError):
+            with socket.create_connection(
+                (CONFIG.tor_socks_host, CONFIG.tor_socks_port), timeout=2.0
+            ):
+                return port
+    return None
 
 
 async def _probe_tor(url: str) -> tuple[TorAvailability, float]:
@@ -223,11 +230,12 @@ async def _probe_tor(url: str) -> tuple[TorAvailability, float]:
     Attempt a lightweight httpx request through the Tor SOCKS5 proxy.
     Returns (TorAvailability, confidence).
     """
-    if not _tor_port_open():
-        logger.debug("Tor SOCKS port %d not reachable", CONFIG.tor_socks_port)
+    tor_port = _tor_port_open()
+    if tor_port is None:
+        logger.debug("Tor SOCKS not reachable on any known port")
         return TorAvailability.no, 0.9
 
-    proxy_url = f"socks5://{CONFIG.tor_socks_host}:{CONFIG.tor_socks_port}"
+    proxy_url = f"socks5://{CONFIG.tor_socks_host}:{tor_port}"
     profile = get_random_profile()
     headers = build_http_headers(profile)
 
@@ -363,11 +371,29 @@ async def classify_url(url: str) -> Classification:
     is_public, pp_conf = _detect_public_page(html, response_headers, status_code, final_url)
 
     # ── Step 3: probe Tor and browser concurrently ─────────────────────────────
-    tor_task = asyncio.create_task(_probe_tor(url))
-    browser_task = asyncio.create_task(_probe_browser(url, html))
+    # Use gather so both tasks are always awaited even if one raises, preventing
+    # an abandoned task from keeping a Chrome/Firefox process running.
+    results = await asyncio.gather(
+        _probe_tor(url),
+        _probe_browser(url, html),
+        return_exceptions=True,
+    )
 
-    tor_availability, tor_conf = await tor_task
-    browser_availability, br_conf = await browser_task
+    tor_result, browser_result = results
+
+    if isinstance(tor_result, Exception):
+        logger.warning("Tor probe failed during classification of %s: %s", url, tor_result)
+        from models import TorAvailability
+        tor_availability, tor_conf = TorAvailability.no, 0.5
+    else:
+        tor_availability, tor_conf = tor_result
+
+    if isinstance(browser_result, Exception):
+        logger.warning("Browser probe failed during classification of %s: %s", url, browser_result)
+        from models import BrowserAvailability
+        browser_availability, br_conf = BrowserAvailability.no, 0.5
+    else:
+        browser_availability, br_conf = browser_result
 
     # ── Step 4: choose strategy ───────────────────────────────────────────────
     partial = Classification(
@@ -380,6 +406,16 @@ async def classify_url(url: str) -> Classification:
         classification_confidence=0.0,                 # placeholder
     )
     strategy = determine_strategy(partial)
+    # Apply domain override: certain well-known domains require a fixed
+    # strategy regardless of what the probes returned (e.g. X.com hybrid,
+    # Amazon browser).
+    domain_override = get_domain_override(url)
+    if domain_override is not None:
+        logger.info(
+            "Domain override applied for %s: %s → %s",
+            url, strategy.value, domain_override.value,
+        )
+        strategy = domain_override
 
     # ── Step 5: aggregate confidence ─────────────────────────────────────────
     confidence = _aggregate_confidence([ct_conf, as_conf, pp_conf, tor_conf, br_conf])

@@ -29,7 +29,8 @@ class Config:
     tor_socks_port: int                 # SOCKS5 proxy port (9050 or 9150)
     tor_control_port: int               # Control port for NEWNYM
     tor_control_password: Optional[str] # Tor control password (None = cookie auth)
-
+    tor_exe_path: str                   # Full path to tor.exe; used for auto-launch
+    firefox_binary_path: str            # Path to firefox.exe used for Tor Browser scraping
     # ── Scraper behaviour ─────────────────────────────────────────────────────
     cache_ttl_seconds: int              # Re-use cached HTML for this duration
     low_confidence_threshold: float     # Trigger reclassification below this value
@@ -56,9 +57,20 @@ def load_config() -> Config:
         port=int(os.environ.get("SCRAPER_PORT", "8000")),
         db_path=os.environ.get("SCRAPER_DB_PATH", "scraper_metadata.db"),
         tor_socks_host=os.environ.get("TOR_SOCKS_HOST", "127.0.0.1"),
-        tor_socks_port=int(os.environ.get("TOR_SOCKS_PORT", "9050")),
-        tor_control_port=int(os.environ.get("TOR_CONTROL_PORT", "9051")),
+        # Tor Browser uses 9150; standalone tor daemon uses 9050.
+        # Both are tried automatically at runtime; this sets the default
+        # for the health check and explicit config overrides.
+        tor_socks_port=int(os.environ.get("TOR_SOCKS_PORT", "9150")),
+        tor_control_port=int(os.environ.get("TOR_CONTROL_PORT", "9151")),
         tor_control_password=os.environ.get("TOR_CONTROL_PASSWORD"),
+        tor_exe_path=os.environ.get(
+            "TOR_EXE_PATH",
+            r"C:\Users\Pc\Desktop\Tor Browser\Browser\TorBrowser\Tor\tor.exe",
+        ),
+        firefox_binary_path=os.environ.get(
+            "FIREFOX_BINARY_PATH",
+            r"C:\Users\Pc\Desktop\Tor Browser\Browser\firefox.exe",
+        ),
         cache_ttl_seconds=int(os.environ.get("CACHE_TTL_SECONDS", "600")),
         low_confidence_threshold=float(os.environ.get("LOW_CONFIDENCE_THRESHOLD", "0.6")),
         retry_count=int(os.environ.get("RETRY_COUNT", "3")),

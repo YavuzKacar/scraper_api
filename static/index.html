@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scraper API — Test UI</title>
+  <style>
+    :root {
+      --bg:          #0d1117;
+      --surface:     #161b22;
+      --surface2:    #21262d;
+      --border:      #30363d;
+      --text:        #c9d1d9;
+      --text-muted:  #8b949e;
+      --accent:      #58a6ff;
+      --accent-dim:  #1f6feb;
+      --success:     #3fb950;
+      --error:       #f85149;
+      --warning:     #d29922;
+      --radius:      6px;
+      --font:        -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      --mono:        ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; min-height: 100vh; }
+
+    /* ── Header ── */
+    .header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 10px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .header h1 { font-size: 15px; font-weight: 700; letter-spacing: .02em; flex-shrink: 0; }
+    .header-config { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; flex: 1; }
+    .config-label { font-size: 11px; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+
+    /* ── Layout ── */
+    .main { max-width: 1080px; margin: 0 auto; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+
+    /* ── Cards ── */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .card-header {
+      padding: 8px 14px; font-weight: 700; font-size: 11px; color: var(--text-muted);
+      background: var(--surface2); border-bottom: 1px solid var(--border);
+      text-transform: uppercase; letter-spacing: .05em; display: flex; justify-content: space-between; align-items: center;
+    }
+    .card-body { padding: 14px; }
+
+    /* ── Inputs ── */
+    input[type=text], input[type=password], input[type=url], textarea, select {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
+      color: var(--text); font-family: var(--font); font-size: 14px; padding: 6px 10px;
+      outline: none; transition: border-color .15s;
+    }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    input[type=checkbox] { accent-color: var(--accent); cursor: pointer; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 5px; padding: 6px 13px;
+      border-radius: var(--radius); border: 1px solid var(--border); cursor: pointer;
+      font-size: 13px; font-family: var(--font); font-weight: 600;
+      transition: background .12s, border-color .12s; white-space: nowrap; line-height: 1.4;
+    }
+    .btn-primary  { background: var(--accent-dim); border-color: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent); }
+    .btn-secondary { background: var(--surface2); color: var(--text); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-success  { background: #1a4a28; border-color: #2ea043; color: var(--success); }
+    .btn-success:hover { background: #196230; }
+    .btn-danger   { background: transparent; border-color: transparent; color: var(--text-muted); padding: 3px 7px; }
+    .btn-danger:hover { color: var(--error); border-color: var(--error); }
+    .btn-sm       { font-size: 11px; padding: 3px 9px; }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+    /* ── Badges ── */
+    .badge { display: inline-block; padding: 1px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+    .badge-ok      { background: #1a4a28; color: var(--success);  border: 1px solid #2ea043; }
+    .badge-fail    { background: #4a1a1a; color: var(--error);    border: 1px solid #8c1c1c; }
+    .badge-warn    { background: #4a3a10; color: var(--warning);  border: 1px solid #8c6a20; }
+    .badge-info    { background: #162032; color: var(--accent);   border: 1px solid var(--accent-dim); }
+    .badge-muted   { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
+
+    /* ── Test row ── */
+    .test-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .test-row input { flex: 1; min-width: 240px; font-size: 15px; padding: 8px 12px; }
+    .test-buttons { display: flex; gap: 6px; }
+    .options-row { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
+    .option-label { display: flex; align-items: center; gap: 5px; font-size: 12px; cursor: pointer; color: var(--text-muted); }
+    .option-label:hover { color: var(--text); }
+
+    /* ── Classification grid ── */
+    .cls-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+    .cls-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 9px 12px; }
+    .cls-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin-bottom: 4px; }
+    .cls-value { font-size: 14px; font-weight: 700; }
+    .conf-bar { height: 3px; background: var(--border); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+    .conf-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--error), var(--warning) 50%, var(--success)); }
+
+    /* ── Scrape status bar ── */
+    .status-bar {
+      display: flex; align-items: center; gap: 10px; padding: 9px 12px; margin-bottom: 12px;
+      background: var(--surface2); border-radius: var(--radius); border: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    /* ── HTML preview ── */
+    .html-preview {
+      background: #0a0e14; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 10px; font-family: var(--mono); font-size: 11px; line-height: 1.6;
+      max-height: 280px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;
+      color: #7d8590; display: none;
+    }
+    .html-preview.open { display: block; }
+
+    /* ── Content tabs (Raw / Rendered) ── */
+    .content-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-top: 12px; }
+    .tab-btn {
+      padding: 6px 15px; font-size: 12px; font-weight: 600; cursor: pointer;
+      background: transparent; border: none; border-bottom: 2px solid transparent;
+      color: var(--text-muted); font-family: var(--font); transition: color .12s;
+      margin-bottom: -1px;
+    }
+    .tab-btn.active  { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-btn:hover:not(.active) { color: var(--text); }
+    .tab-panel { display: none; padding-top: 8px; }
+    .tab-panel.active { display: block; }
+    /* Raw tab — always show the pre block when the panel is visible */
+    .tab-panel.active .html-preview { display: block; }
+    /* Rendered tab */
+    .frame-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .render-frame { width: 100%; height: 500px; border: none; background: #fff; display: block; }
+    .frame-note { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+
+    /* ── Comments ── */
+    .comment-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .comment-item {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 10px 12px; display: flex; gap: 8px; align-items: flex-start;
+    }
+    .comment-body { flex: 1; }
+    .comment-text { color: var(--text); line-height: 1.5; }
+    .comment-meta { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+    .comment-input { display: flex; flex-direction: column; gap: 8px; }
+    .comment-input textarea { resize: vertical; min-height: 72px; width: 100%; }
+    .comment-input .row-actions { display: flex; align-items: center; gap: 10px; }
+    .save-status { font-size: 12px; color: var(--text-muted); }
+
+    /* ── History table ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; padding: 7px 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); background: var(--surface2); border-bottom: 1px solid var(--border); }
+    td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,.02); }
+    .url-cell { font-family: var(--mono); font-size: 11px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .comment-cell { max-width: 320px; }
+
+    /* ── Misc ── */
+    .hidden { display: none !important; }
+    .mt { margin-top: 10px; }
+    .flex-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .text-muted { color: var(--text-muted); }
+    .text-ok    { color: var(--success); }
+    .text-fail  { color: var(--error); }
+    .text-warn  { color: var(--warning); }
+    .empty-state { padding: 28px; text-align: center; color: var(--text-muted); }
+    .error-msg { color: var(--error); font-size: 13px; margin-top: 8px; }
+    .msg { font-size: 13px; margin-top: 8px; color: var(--text-muted); }
+    #apiBase  { width: 210px; }
+    #apiKey   { width: 190px; font-family: var(--mono); }
+    a.url-link { color: var(--accent); text-decoration: none; }
+    a.url-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────────── -->
+<div class="header">
+  <h1>⚙ Scraper API</h1>
+  <div class="header-config">
+    <span class="config-label">API URL</span>
+    <input id="apiBase" type="text" placeholder="http://127.0.0.1:8000" oninput="saveConfig()">
+    <span class="config-label">API Key</span>
+    <input id="apiKey" type="password" placeholder="your-api-key" oninput="saveConfig()">
+    <button class="btn btn-secondary btn-sm" onclick="checkHealth()">◉ Health</button>
+    <span id="healthStatus" class="text-muted" style="font-size:12px;"></span>
+  </div>
+</div>
+
+<!-- ── Main ───────────────────────────────────────────────────────────────── -->
+<div class="main">
+
+  <!-- Test card -->
+  <div class="card">
+    <div class="card-header">Test a URL</div>
+    <div class="card-body">
+      <div class="test-row">
+        <input id="urlInput" type="url" placeholder="https://example.com"
+               onkeydown="if(event.key==='Enter')testUrl('scrape')">
+        <div class="test-buttons">
+          <button class="btn btn-primary" id="scrapeBtn" onclick="testUrl('scrape')">▶ Scrape</button>
+          <button class="btn btn-secondary" id="classifyBtn" onclick="testUrl('classify')">Classify</button>
+          <button class="btn btn-secondary btn-sm" title="Retrieve stored metadata" onclick="testUrl('status')">Status</button>
+        </div>
+      </div>
+      <div class="options-row">
+        <label class="option-label"><input type="checkbox" id="forceReclassify"> Force reclassify</label>
+        <label class="option-label"><input type="checkbox" id="forceScrape"> Bypass HTML cache</label>
+        <label class="option-label" style="gap:6px;">
+          <span style="white-space:nowrap;">Force strategy:</span>
+          <select id="forceStrategy" style="padding:3px 7px;font-size:12px;">
+            <option value="">— auto —</option>
+            <option value="static">static</option>
+            <option value="browser">browser</option>
+            <option value="tor">tor</option>
+            <option value="hybrid">hybrid</option>
+          </select>
+        </label>
+      </div>
+      <p class="msg hidden" id="loadingMsg">⏳ Working…</p>
+      <p class="error-msg hidden" id="errorMsg"></p>
+    </div>
+  </div>
+
+  <!-- Results card (hidden until tested) -->
+  <div class="card hidden" id="resultsCard">
+    <div class="card-header">
+      Results
+      <span id="resultUrl" style="font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%;"></span>
+    </div>
+    <div class="card-body" id="resultsBody"></div>
+  </div>
+
+  <!-- Comments card (hidden until tested) -->
+  <div class="card hidden" id="commentsCard">
+    <div class="card-header">Comments for this URL</div>
+    <div class="card-body">
+      <div id="existingComments" class="comment-list"></div>
+      <div class="comment-input">
+        <textarea id="commentText" placeholder="Add a comment — e.g. 'always fails with browser strategy', 'classified as static but needs browser', 'blocked after 3 requests', 'wrong strategy chosen'…"></textarea>
+        <div class="row-actions">
+          <button class="btn btn-success" onclick="saveComment()">💬 Save Comment</button>
+          <span id="saveStatus" class="save-status"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback history card -->
+  <div class="card">
+    <div class="card-header">
+      Feedback History
+      <div class="flex-row" style="gap:6px;">
+        <button class="btn btn-secondary btn-sm" onclick="loadHistory()">↺ Refresh</button>
+        <button class="btn btn-secondary btn-sm" onclick="exportFeedback()">⬇ Export JSON</button>
+        <button class="btn btn-danger" style="font-size:11px;padding:3px 9px;" onclick="clearAllComments()">🗑 Clear All</button>
+      </div>
+    </div>
+    <div id="historyContainer">
+      <div class="empty-state">No feedback yet. Test a URL and leave comments.</div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+'use strict';
+
+// ── Config ────────────────────────────────────────────────────────────────────
+
+function getConfig() {
+  return {
+    apiBase: (document.getElementById('apiBase').value || '').replace(/\/$/, ''),
+    apiKey:  document.getElementById('apiKey').value || '',
+  };
+}
+
+function saveConfig() {
+  const { apiBase, apiKey } = getConfig();
+  if (apiBase) localStorage.setItem('sa_apiBase', apiBase);
+  if (apiKey)  localStorage.setItem('sa_apiKey',  apiKey);
+}
+
+function loadConfig() {
+  // Default to same origin if the page is served from the API itself.
+  const defaultBase = window.location.origin !== 'null' ? window.location.origin : 'http://127.0.0.1:8000';
+  document.getElementById('apiBase').value = localStorage.getItem('sa_apiBase') || defaultBase;
+  document.getElementById('apiKey').value  = localStorage.getItem('sa_apiKey')  || '';
+}
+
+// ── API helpers ───────────────────────────────────────────────────────────────
+
+async function api(method, path, body) {
+  const { apiBase, apiKey } = getConfig();
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json', 'X-API-KEY': apiKey },
+  };
+  if (body !== undefined) opts.body = JSON.stringify(body);
+  let resp;
+  try {
+    resp = await fetch(apiBase + path, opts);
+  } catch (e) {
+    throw new Error('Network error — is the API server running? ' + e.message);
+  }
+  const data = await resp.json().catch(() => ({ detail: resp.statusText }));
+  if (!resp.ok) {
+    // FastAPI validation errors return detail as an array of objects.
+    let msg = data.detail;
+    if (Array.isArray(msg)) {
+      msg = msg.map(e => `${e.loc ? e.loc.slice(1).join('.') + ': ' : ''}${e.msg}`).join('; ');
+    } else if (typeof msg !== 'string') {
+      msg = JSON.stringify(msg);
+    }
+    throw new Error(msg || `HTTP ${resp.status}`);
+  }
+  return data;
+}
+
+// ── State ─────────────────────────────────────────────────────────────────────
+
+let currentUrl    = null;
+let lastResult    = null; // raw response from /scrape or /classify
+let lastHtml      = null; // full scraped HTML for the rendered tab
+
+// ── Health check ──────────────────────────────────────────────────────────────
+
+async function checkHealth() {
+  const el = document.getElementById('healthStatus');
+  el.textContent = '…';
+  try {
+    const r = await api('GET', '/health');
+    // Tor detail: port, control port, circuit
+    let torDetail = '';
+    if (r.tor_reachable) {
+      torDetail += ` <span class="text-ok">up</span>`;
+      if (r.tor_socks_port) torDetail += ` <span class="text-muted">(SOCKS :${r.tor_socks_port})</span>`;
+      if (r.tor_control_reachable) torDetail += ` <span class="text-ok">ctrl✓</span>`;
+      else torDetail += ` <span class="text-muted">ctrl✗</span>`;
+      if (r.tor_circuit_ok === true)  torDetail += ` <span class="text-ok">circuit✓</span>`;
+      else if (r.tor_circuit_ok === false) torDetail += ` <span class="text-fail">circuit✗</span>`;
+    } else {
+      torDetail = ` <span class="text-muted">down</span>`;
+    }
+    el.innerHTML =
+      `<span class="badge ${r.status === 'ok' ? 'badge-ok' : 'badge-warn'}">${r.status}</span> ` +
+      `DB: <span class="${r.database === 'ok' ? 'text-ok' : 'text-fail'}">${esc(r.database)}</span>` +
+      ` \u00b7 Tor:${torDetail}`;
+  } catch (e) {
+    el.innerHTML = `<span class="badge badge-fail">error</span> ${esc(e.message)}`;
+  }
+}
+
+// ── Test URL ──────────────────────────────────────────────────────────────────
+
+async function testUrl(mode) {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) { showError('Enter a URL first.'); return; }
+
+  setBusy(true);
+  clearError();
+  lastHtml = null;
+  document.getElementById('resultsCard').classList.add('hidden');
+
+  try {
+    let result;
+
+    if (mode === 'scrape') {
+      const forceStrategy = document.getElementById('forceStrategy').value || undefined;
+      result = await api('POST', '/scrape', {
+        url,
+        force_reclassify: document.getElementById('forceReclassify').checked,
+        force_scrape:     document.getElementById('forceScrape').checked,
+        ...(forceStrategy ? { force_strategy: forceStrategy } : {}),
+      });
+      renderScrape(url, result);
+
+    } else if (mode === 'classify') {
+      result = await api('POST', '/classify', {
+        url,
+        force: document.getElementById('forceReclassify').checked,
+      });
+      renderClassify(url, result);
+
+    } else if (mode === 'status') {
+      result = await api('GET', '/status/' + encodeURIComponent(url));
+      renderStatus(url, result);
+    }
+
+    currentUrl = url;
+    lastResult = result;
+    await activateComments(url);
+
+  } catch (e) {
+    showError(e.message);
+  } finally {
+    setBusy(false);
+  }
+}
+
+// ── Renderers ─────────────────────────────────────────────────────────────────
+
+function clsGrid(cls) {
+  if (!cls) return '<p class="text-muted">No classification available.</p>';
+  const conf = Math.round(cls.classification_confidence * 100);
+  const confColor = conf >= 80 ? 'var(--success)' : conf >= 60 ? 'var(--warning)' : 'var(--error)';
+  const stratClass = { static:'badge-info', browser:'badge-warn', tor:'badge-warn', hybrid:'badge-warn', blocked:'badge-fail' }[cls.scraping_strategy] || 'badge-muted';
+
+  function yesNo(val, good = 'yes') {
+    return val === good
+      ? `<span class="text-ok">${val}</span>`
+      : `<span class="text-muted">${val}</span>`;
+  }
+
+  return `
+    <div class="cls-grid">
+      <div class="cls-item">
+        <div class="cls-label">Strategy</div>
+        <div class="cls-value"><span class="badge ${stratClass}">${esc(cls.scraping_strategy)}</span></div>
+      </div>
+      <div class="cls-item">
+        <div class="cls-label">Confidence</div>
+        <div class="cls-value" style="color:${confColor}">${conf}%</div>
+        <div class="conf-bar"><div class="conf-fill" style="width:${conf}%"></div></div>
+      </div>
+      <div class="cls-item">
+        <div class="cls-label">Content Type</div>
+        <div class="cls-value">${esc(cls.content_type)}</div>
+      </div>
+      <div class="cls-item">
+        <div class="cls-label">Anti-Scraping</div>
+        <div class="cls-value">${cls.antiscraping_protection === 'none'
+          ? '<span class="text-ok">none</span>'
+          : '<span class="text-fail">protected</span>'}</div>
+      </div>
+      <div class="cls-item">
+        <div class="cls-label">Tor Available</div>
+        <div class="cls-value">${yesNo(cls.tor_network_available)}</div>
+      </div>
+      <div class="cls-item">
+        <div class="cls-label">Browser Available</div>
+        <div class="cls-value">${yesNo(cls.undetected_browser_available)}</div>
+      </div>
+      <div class="cls-item">
+        <div class="cls-label">Public Page</div>
+        <div class="cls-value">${yesNo(cls.is_public_page)}</div>
+      </div>
+    </div>`;
+}
+
+function renderScrape(url, r) {
+  const ok = r.scraping_success;
+  const cachedBadge = r.cached ? ' <span class="badge badge-info">cached</span>' : '';
+  const stratText = r.strategy_used ? ` · strategy: <b>${esc(r.strategy_used)}</b>` : '';
+
+  let html = `
+    <div class="status-bar">
+      <span class="badge ${ok ? 'badge-ok' : 'badge-fail'}">${ok ? '✓ Success' : '✗ Failed'}</span>
+      <span class="text-muted">${esc(r.message)}${stratText}${cachedBadge}</span>
+    </div>`;
+
+  if (r.classification) {
+    html += `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:8px;">Classification</div>`;
+    html += clsGrid(r.classification);
+  }
+
+  if (r.html) {
+    lastHtml = r.html;
+    const kb   = (r.html.length / 1024).toFixed(1);
+    const raw  = esc(r.html.slice(0, 15000)) + (r.html.length > 15000 ? '\n\n…(truncated to 15 000 chars)' : '');
+    html += `
+      <div class="mt">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:2px;">
+          Page Content &mdash; ${r.html.length.toLocaleString()} chars / ${kb}&nbsp;KB
+        </div>
+        <div class="content-tabs">
+          <button class="tab-btn active" data-tab="raw" onclick="switchTab('raw')">Raw HTML</button>
+          <button class="tab-btn" data-tab="rendered" onclick="switchTab('rendered')">Rendered</button>
+        </div>
+        <div class="tab-panel active" data-panel="raw">
+          <div class="html-preview">${raw}</div>
+        </div>
+        <div class="tab-panel" data-panel="rendered">
+          <div class="frame-wrap">
+            <iframe id="renderFrame" class="render-frame"
+              sandbox="allow-same-origin"
+              title="Rendered page preview"></iframe>
+          </div>
+          <p class="frame-note">Scripts are disabled. Images and external CSS load if URLs are absolute.</p>
+        </div>
+      </div>`;
+  }
+
+  setResults(url, html);
+}
+
+function renderClassify(url, r) {
+  const freshBadge = r.from_cache
+    ? '<span class="badge badge-info">from cache</span>'
+    : '<span class="badge badge-ok">fresh</span>';
+
+  const html = `
+    <div class="status-bar">
+      <span class="badge badge-ok">✓ Classified</span> ${freshBadge}
+    </div>
+    ${clsGrid(r.classification)}`;
+
+  setResults(url, html);
+}
+
+function renderStatus(url, r) {
+  if (!r.found) {
+    setResults(url, '<p class="text-muted">No stored record for this URL.</p>');
+    return;
+  }
+  const rec = r.record;
+  let inner = '<div class="cls-grid">';
+  for (const [k, v] of Object.entries(rec)) {
+    if (v === null || v === undefined || k === 'url' || k === 'last_success_html') continue;
+    inner += `<div class="cls-item"><div class="cls-label">${esc(k.replace(/_/g, ' '))}</div><div class="cls-value" style="font-size:13px;">${esc(String(v))}</div></div>`;
+  }
+  inner += '</div>';
+  setResults(url, inner);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p =>
+    p.classList.toggle('active', p.dataset.panel === tab));
+  if (tab === 'rendered') {
+    const iframe = document.getElementById('renderFrame');
+    if (iframe && lastHtml && !iframe.dataset.loaded) {
+      iframe.srcdoc = lastHtml;
+      iframe.dataset.loaded = '1';
+    }
+  }
+}
+
+function setResults(url, bodyHtml) {
+  document.getElementById('resultUrl').textContent = url;
+  document.getElementById('resultsBody').innerHTML = bodyHtml;
+  document.getElementById('resultsCard').classList.remove('hidden');
+}
+
+// ── Comments ──────────────────────────────────────────────────────────────────
+
+async function activateComments(url) {
+  document.getElementById('commentsCard').classList.remove('hidden');
+  document.getElementById('commentText').value = '';
+  document.getElementById('saveStatus').textContent = '';
+  await loadUrlComments(url);
+}
+
+async function loadUrlComments(url) {
+  const container = document.getElementById('existingComments');
+  container.innerHTML = '';
+  try {
+    const data = await api('GET', '/feedback?url=' + encodeURIComponent(url));
+    if (!data.items || data.items.length === 0) return;
+
+    container.innerHTML = data.items.map(item => `
+      <div class="comment-item">
+        <div class="comment-body">
+          <div class="comment-text">${esc(item.comment)}</div>
+          <div class="comment-meta">
+            ${item.strategy_used ? `strategy: <b>${esc(item.strategy_used)}</b>&ensp;·&ensp;` : ''}
+            ${item.scrape_success !== null && item.scrape_success !== undefined
+              ? `result: <b class="${item.scrape_success ? 'text-ok' : 'text-fail'}">${item.scrape_success ? 'success' : 'failed'}</b>&ensp;·&ensp;`
+              : ''}
+            ${fmtDate(item.created_at)}
+          </div>
+        </div>
+        <button class="btn btn-danger" title="Delete" onclick="deleteComment(${item.id}, true)">✕</button>
+      </div>
+    `).join('');
+  } catch (e) {
+    container.innerHTML = `<p class="error-msg">Could not load comments: ${esc(e.message)}</p>`;
+  }
+}
+
+async function saveComment() {
+  const comment = document.getElementById('commentText').value.trim();
+  const statusEl = document.getElementById('saveStatus');
+
+  if (!comment) { statusEl.textContent = 'Enter a comment first.'; return; }
+  if (!currentUrl) { statusEl.textContent = 'Test a URL first.'; return; }
+
+  const body = { url: currentUrl, comment };
+
+  // Attach context from the last scrape/classify result
+  if (lastResult) {
+    body.strategy_used  = lastResult.strategy_used || (lastResult.classification && lastResult.classification.scraping_strategy) || null;
+    body.scrape_success = lastResult.scraping_success !== undefined ? lastResult.scraping_success : null;
+  }
+
+  try {
+    await api('POST', '/feedback', body);
+    document.getElementById('commentText').value = '';
+    statusEl.textContent = '✓ Saved';
+    setTimeout(() => { statusEl.textContent = ''; }, 3000);
+    await loadUrlComments(currentUrl);
+    await loadHistory();
+  } catch (e) {
+    statusEl.textContent = '✗ ' + e.message;
+  }
+}
+
+async function deleteComment(id, refreshUrl) {
+  if (!confirm('Delete this comment?')) return;
+  try {
+    await api('DELETE', `/feedback/${id}`);
+    if (refreshUrl && currentUrl) await loadUrlComments(currentUrl);
+    await loadHistory();
+  } catch (e) {
+    alert('Delete failed: ' + e.message);
+  }
+}
+
+// ── History ───────────────────────────────────────────────────────────────────
+
+async function loadHistory() {
+  const container = document.getElementById('historyContainer');
+  try {
+    const data = await api('GET', '/feedback');
+    if (!data.items || data.items.length === 0) {
+      container.innerHTML = '<div class="empty-state">No feedback yet. Test a URL and leave comments.</div>';
+      return;
+    }
+
+    const rows = data.items.map(item => `
+      <tr>
+        <td class="url-cell" title="${esc(item.url)}">
+          <a class="url-link" href="#" onclick="fillUrl(${JSON.stringify(item.url)});return false;">${esc(item.url)}</a>
+        </td>
+        <td class="comment-cell">${esc(item.comment)}</td>
+        <td>${item.strategy_used ? `<span class="badge badge-info">${esc(item.strategy_used)}</span>` : '<span class="text-muted">—</span>'}</td>
+        <td>${item.scrape_success !== null && item.scrape_success !== undefined
+          ? (item.scrape_success ? '<span class="badge badge-ok">ok</span>' : '<span class="badge badge-fail">fail</span>')
+          : '<span class="text-muted">—</span>'}</td>
+        <td style="font-size:11px;color:var(--text-muted);white-space:nowrap;">${fmtDate(item.created_at)}</td>
+        <td><button class="btn btn-danger btn-sm" title="Delete" onclick="deleteComment(${item.id}, false)">✕</button></td>
+      </tr>
+    `).join('');
+
+    container.innerHTML = `
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>URL</th><th>Comment</th><th>Strategy</th><th>Result</th><th>Time</th><th></th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  } catch (e) {
+    container.innerHTML = `<div class="empty-state" style="color:var(--error);">Failed to load history: ${esc(e.message)}</div>`;
+  }
+}
+
+async function exportFeedback() {
+  try {
+    const data = await api('GET', '/feedback');
+    const blob = new Blob([JSON.stringify(data.items, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `scraper-feedback-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+  } catch (e) {
+    alert('Export failed: ' + e.message);
+  }
+}
+
+async function clearAllComments() {
+  if (!confirm('Delete ALL comments? This cannot be undone.')) return;
+  try {
+    const r = await api('DELETE', '/feedback');
+    if (currentUrl) {
+      document.getElementById('existingComments').innerHTML = '';
+    }
+    await loadHistory();
+  } catch (e) {
+    alert('Clear failed: ' + e.message);
+  }
+}
+
+// ── Utilities ─────────────────────────────────────────────────────────────────
+
+function fillUrl(url) {
+  document.getElementById('urlInput').value = url;
+  document.getElementById('urlInput').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('urlInput').focus();
+}
+
+function setBusy(on) {
+  document.getElementById('scrapeBtn').disabled   = on;
+  document.getElementById('classifyBtn').disabled = on;
+  const msg = document.getElementById('loadingMsg');
+  on ? msg.classList.remove('hidden') : msg.classList.add('hidden');
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = '✗ ' + msg;
+  el.classList.remove('hidden');
+}
+
+function clearError() {
+  document.getElementById('errorMsg').classList.add('hidden');
+}
+
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function fmtDate(iso) {
+  try { return new Date(iso).toLocaleString(); } catch { return iso; }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+(function init() {
+  loadConfig();
+  loadHistory();
+  // Auto-refresh history every 60 s so it stays current during a test session.
+  setInterval(loadHistory, 60_000);
+}());
+</script>
+</body>
+</html>

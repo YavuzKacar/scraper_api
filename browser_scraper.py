@@ -27,6 +27,10 @@ from utils import human_delay_sync
 
 logger = logging.getLogger(__name__)
 
+# Limit concurrent Chrome processes to avoid exhausting RAM.
+# Each undetected-chromedriver instance can consume 200-300 MB.
+_browser_semaphore = asyncio.Semaphore(3)
+
 
 # ── Driver context manager ────────────────────────────────────────────────────
 
@@ -55,7 +59,7 @@ def _uc_driver(profile: FingerprintProfile, headless: bool = True):
         # New headless mode — harder to detect than "--headless"
         options.add_argument("--headless=new")
 
-    driver = uc.Chrome(options=options, version_main=145)
+    driver = uc.Chrome(options=options, version_main=None)
 
     try:
         # Inject fingerprint overrides before any page load
@@ -141,6 +145,8 @@ def scrape_with_browser(
     logger.debug("Browser scraper: loading %s", url)
 
     with _uc_driver(profile, headless=headless) as driver:
+        # Prevent indefinite hang on pages that never finish loading.
+        driver.set_page_load_timeout(30)
         human_delay_sync(0.5, 1.5)
         driver.get(url)
 
@@ -166,12 +172,16 @@ async def scrape_with_browser_async(
     """
     Async wrapper — dispatches ``scrape_with_browser`` to the default
     thread-pool executor so it does not block the event loop.
+
+    Acquires ``_browser_semaphore`` before launching to cap concurrent
+    Chrome instances and prevent out-of-memory crashes under load.
     """
-    loop = asyncio.get_running_loop()
-    return await loop.run_in_executor(
-        None,
-        scrape_with_browser,
-        url,
-        profile,
-        headless,
-    )
+    async with _browser_semaphore:
+        loop = asyncio.get_running_loop()
+        return await loop.run_in_executor(
+            None,
+            scrape_with_browser,
+            url,
+            profile,
+            headless,
+        )

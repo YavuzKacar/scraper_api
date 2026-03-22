@@ -110,6 +110,7 @@ class ScrapeRequest(BaseModel):
     url: str
     force_reclassify: bool = False
     force_scrape: bool = False  # bypass HTML cache, keep existing classification
+    force_strategy: Optional[str] = None  # override strategy: static|browser|tor|hybrid
 
     @field_validator("url")
     @classmethod
@@ -117,6 +118,16 @@ class ScrapeRequest(BaseModel):
         v = v.strip()
         if not v.startswith(("http://", "https://")):
             raise ValueError("URL must start with http:// or https://")
+        return v
+
+    @field_validator("force_strategy")
+    @classmethod
+    def validate_force_strategy(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return v
+        allowed = {s.value for s in ScrapingStrategy} - {"blocked"}
+        if v not in allowed:
+            raise ValueError(f"force_strategy must be one of: {', '.join(sorted(allowed))}")
         return v
 
 
@@ -159,3 +170,31 @@ class HealthResponse(BaseModel):
     status: str
     database: str
     tor_reachable: bool
+    tor_socks_port: Optional[int] = None       # which SOCKS port responded
+    tor_control_reachable: bool = False         # control port open?
+    tor_circuit_ok: Optional[bool] = None       # test HTTP request through Tor succeeded?
+
+
+# ── Feedback models ────────────────────────────────────────────────────────────
+
+class FeedbackCreate(BaseModel):
+    """Payload for submitting a comment about a tested URL."""
+    url: str
+    comment: str
+    strategy_used: Optional[str] = None    # strategy that was active when comment was written
+    scrape_success: Optional[bool] = None  # whether the scrape succeeded at that time
+
+
+class FeedbackItem(BaseModel):
+    """Single feedback row returned from the API."""
+    id: int
+    url: str
+    comment: str
+    strategy_used: Optional[str] = None
+    scrape_success: Optional[bool] = None
+    created_at: str
+
+
+class FeedbackListResponse(BaseModel):
+    items: list[FeedbackItem]
+    total: int

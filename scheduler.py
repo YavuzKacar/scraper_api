@@ -77,20 +77,30 @@ async def _run_one_cycle() -> None:
     """Run a single scheduler cycle."""
     # 1. Low-confidence URLs
     low_conf_urls = await get_low_confidence_urls(CONFIG.low_confidence_threshold)
-    if low_conf_urls:
-        logger.info("Scheduler: %d low-confidence URLs to reclassify.", len(low_conf_urls))
-        for url in low_conf_urls:
-            await _reclassify_url(url)
-            # Brief pause between classifications to avoid hammering sites
-            await asyncio.sleep(2.0)
-
-    # 2. Stale metadata URLs
+    # 2. Stale metadata URLs — deduplicated against the low-confidence list so a
+    #    URL that qualifies for both is only reclassified once per cycle.
     stale_urls = await get_stale_urls(CONFIG.metadata_max_age_hours)
-    if stale_urls:
-        logger.info("Scheduler: %d stale URLs to refresh.", len(stale_urls))
-        for url in stale_urls:
-            await _reclassify_url(url)
-            await asyncio.sleep(2.0)
+    stale_urls = [u for u in stale_urls if u not in set(low_conf_urls)]
+
+    # Cap batch size to avoid a cycle running for hours when the DB is large.
+    _BATCH_CAP = 50
+    combined = (low_conf_urls + stale_urls)[:_BATCH_CAP]
+
+    if not combined:
+        return
+
+    logger.info(
+        "Scheduler: %d URL(s) to reclassify this cycle "
+        "(%d low-confidence, %d stale, cap=%d).",
+        len(combined),
+        len(low_conf_urls),
+        len(stale_urls),
+        _BATCH_CAP,
+    )
+    for url in combined:
+        await _reclassify_url(url)
+        # Brief pause between classifications to avoid hammering sites
+        await asyncio.sleep(2.0)
 
 
 async def _scheduler_loop() -> None:

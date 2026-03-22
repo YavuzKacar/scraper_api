@@ -27,14 +27,27 @@ import uvicorn
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from classifier import classify_url
 from config import CONFIG
-from database import get_url_record, init_db, upsert_url_record
+from database import (
+    add_feedback,
+    delete_feedback,
+    delete_all_feedback,
+    get_all_feedback,
+    get_feedback_for_url,
+    get_url_record,
+    init_db,
+    upsert_url_record,
+)
 from logging_setup import setup_logging
 from models import (
     ClassifyRequest,
     ClassifyResponse,
+    FeedbackCreate,
+    FeedbackItem,
+    FeedbackListResponse,
     HealthResponse,
     ScrapingStrategy,
     ScrapeRequest,
@@ -57,9 +70,13 @@ async def _lifespan(application: FastAPI):
     """Startup and shutdown logic."""
     logger.info("Scraper API starting on %s:%d", CONFIG.host, CONFIG.port)
     await init_db()
-    start_scheduler()
+    task = start_scheduler()
     yield
     stop_scheduler()
+    # Await the cancelled task so in-progress coroutines can clean up
+    # before the process exits.
+    with contextlib.suppress(asyncio.CancelledError):
+        await task
     logger.info("Scraper API shut down cleanly.")
 
 
@@ -271,7 +288,12 @@ async def health_endpoint() -> HealthResponse:
     """
     Return the liveness and readiness state of the API.
 
-    Checks database accessibility and Tor SOCKS port reachability.
+    Tor diagnostics
+    ---------------
+    tor_reachable        — any SOCKS port (9150 / 9050) is open
+    tor_socks_port       — which SOCKS port responded first (None if unreachable)
+    tor_control_reachable — control port (9151 / 9051) is open
+    tor_circuit_ok       — a real HTTP GET through the Tor proxy succeeded
     """
     import contextlib
 
@@ -282,19 +304,133 @@ async def health_endpoint() -> HealthResponse:
     except Exception as exc:
         db_status = f"error: {exc}"
 
-    # Tor check
-    tor_reachable = False
-    with contextlib.suppress(OSError):
-        with socket.create_connection(
-            (CONFIG.tor_socks_host, CONFIG.tor_socks_port), timeout=2.0
-        ):
-            tor_reachable = True
+    # Run all Tor checks in a single executor call so the event loop never blocks.
+    loop = asyncio.get_running_loop()
+
+    def _check_tor() -> dict:
+        result = {
+            "reachable": False,
+            "socks_port": None,
+            "control_reachable": False,
+            "circuit_ok": None,
+        }
+
+        # 1 — SOCKS port probe (9150 = Tor Browser, 9050 = standalone daemon)
+        for port in dict.fromkeys([CONFIG.tor_socks_port, 9150, 9050]):
+            with contextlib.suppress(OSError):
+                with socket.create_connection(
+                    (CONFIG.tor_socks_host, port), timeout=2.0
+                ):
+                    result["reachable"] = True
+                    result["socks_port"] = port
+                    break
+
+        # 2 — Control port probe (9151 = Tor Browser, 9051 = standalone daemon)
+        for ctrl_port in dict.fromkeys([CONFIG.tor_control_port, 9151, 9051]):
+            with contextlib.suppress(OSError):
+                with socket.create_connection(
+                    (CONFIG.tor_socks_host, ctrl_port), timeout=2.0
+                ):
+                    result["control_reachable"] = True
+                    break
+
+        # 3 — Real HTTP circuit test through the Tor SOCKS proxy.
+        #     Uses httpbin (plain HTTP, no TLS cert issues) so it's fast.
+        #     Only attempted when a SOCKS port was found.
+        if result["reachable"] and result["socks_port"]:
+            try:
+                import httpx as _httpx
+                proxy = f"socks5://{CONFIG.tor_socks_host}:{result['socks_port']}"
+                with _httpx.Client(
+                    proxy=proxy,
+                    timeout=10.0,
+                    follow_redirects=True,
+                    verify=False,
+                ) as client:
+                    resp = client.get("http://httpbin.org/ip")
+                    result["circuit_ok"] = (resp.status_code == 200)
+            except Exception:
+                result["circuit_ok"] = False
+
+        return result
+
+    tor = await loop.run_in_executor(None, _check_tor)
 
     return HealthResponse(
         status="ok" if db_status == "ok" else "degraded",
         database=db_status,
-        tor_reachable=tor_reachable,
+        tor_reachable=tor["reachable"],
+        tor_socks_port=tor["socks_port"],
+        tor_control_reachable=tor["control_reachable"],
+        tor_circuit_ok=tor["circuit_ok"],
     )
+
+
+# ── Feedback endpoints ─────────────────────────────────────────────────────────
+
+@app.post(
+    "/feedback",
+    summary="Save a comment for a URL",
+    dependencies=[Depends(require_api_key)],
+)
+async def add_feedback_endpoint(body: FeedbackCreate) -> dict:
+    """
+    Persist a free-text comment about a tested URL, along with the
+    strategy that was active and whether the scrape succeeded.
+    These comments are used to guide codebase improvements.
+    """
+    await add_feedback(
+        body.url,
+        body.comment,
+        body.strategy_used,
+        body.scrape_success,
+    )
+    return {"ok": True}
+
+
+@app.get(
+    "/feedback",
+    response_model=FeedbackListResponse,
+    summary="List feedback comments",
+    dependencies=[Depends(require_api_key)],
+)
+async def get_feedback_endpoint(url: str = None) -> FeedbackListResponse:
+    """
+    Return all feedback comments, or only those for a specific URL
+    when the ``url`` query parameter is provided.
+    """
+    raw = await get_feedback_for_url(url) if url else await get_all_feedback()
+    items = [FeedbackItem(**row) for row in raw]
+    return FeedbackListResponse(items=items, total=len(items))
+
+
+@app.delete(
+    "/feedback/{feedback_id}",
+    summary="Delete a feedback comment",
+    dependencies=[Depends(require_api_key)],
+)
+async def delete_feedback_endpoint(feedback_id: int) -> dict:
+    """Delete a single feedback comment by ID."""
+    await delete_feedback(feedback_id)
+    return {"ok": True}
+
+
+@app.delete(
+    "/feedback",
+    summary="Delete all feedback comments",
+    dependencies=[Depends(require_api_key)],
+)
+async def delete_all_feedback_endpoint() -> dict:
+    """Delete every feedback comment."""
+    deleted = await delete_all_feedback()
+    return {"ok": True, "deleted": deleted}
+
+
+# ── Test UI (static files, no auth required) ───────────────────────────────────
+import os as _os
+_static_dir = _os.path.join(_os.path.dirname(__file__), "static")
+if _os.path.isdir(_static_dir):
+    app.mount("/ui", StaticFiles(directory=_static_dir, html=True), name="ui")
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────

@@ -18,7 +18,9 @@ scrape(request: ScrapeRequest) → ScrapeResponse
 """
 from __future__ import annotations
 
+import asyncio
 import logging
+import random
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
@@ -41,6 +43,7 @@ from utils import (
     human_delay,
     is_scrape_failure,
 )
+from strategy import get_domain_override
 
 logger = logging.getLogger(__name__)
 
@@ -69,9 +72,9 @@ def _is_cache_valid(record: URLRecord) -> bool:
     """Return True if the cached HTML is still within the TTL window."""
     if not record.last_success_html or not record.last_checked:
         return False
-    age = datetime.now(timezone.utc) - record.last_checked.replace(
-        tzinfo=timezone.utc
-    )
+    # Use astimezone to correctly handle any timezone-aware datetime stored
+    # in the DB, rather than forcibly overwriting tzinfo with replace().
+    age = datetime.now(timezone.utc) - record.last_checked.astimezone(timezone.utc)
     return age < timedelta(seconds=CONFIG.cache_ttl_seconds)
 
 
@@ -95,10 +98,11 @@ async def _dispatch(
         return await scrape_with_tor(url, profile)
 
     if strategy == ScrapingStrategy.hybrid:
-        # Tor for transport anonymity; browser for JS rendering via Tor Firefox
-        from tor_scraper import scrape_with_tor_browser, rotate_tor_identity
+        # Tor for transport anonymity; browser for JS rendering via Tor Firefox.
+        # Do NOT call rotate_tor_identity here — the retry loop calls it between
+        # retries, which is sufficient and avoids a double rotation on attempt 1.
+        from tor_scraper import scrape_with_tor_browser
         import asyncio
-        await rotate_tor_identity()
         loop = asyncio.get_running_loop()
         return await loop.run_in_executor(
             None,
@@ -201,7 +205,45 @@ async def scrape(request: ScrapeRequest) -> ScrapeResponse:
     else:
         classification = record.to_classification()
 
-    strategy = ScrapingStrategy(record.scraping_strategy)
+    try:
+        strategy = ScrapingStrategy(record.scraping_strategy)
+    except (ValueError, KeyError):
+        logger.warning(
+            "Unknown scraping_strategy '%s' for %s — defaulting to static.",
+            record.scraping_strategy,
+            url,
+        )
+        strategy = ScrapingStrategy.static
+
+    # Domain overrides take priority over the stored classification.
+    # This lets known-problematic sites use the correct strategy even when
+    # their DB record was created before overrides were added.
+    domain_override = get_domain_override(url)
+    if domain_override is not None and domain_override != strategy:
+        logger.info(
+            "Domain override for %s: stored strategy=%s → using %s",
+            url, strategy.value, domain_override.value,
+        )
+        strategy = domain_override
+
+    # Caller-supplied force_strategy overrides everything (domain override
+    # included).  This lets the user try a specific strategy on demand
+    # (e.g. force_strategy="tor" to route through Tor regardless of
+    # what the classifier decided).
+    if request.force_strategy:
+        try:
+            forced = ScrapingStrategy(request.force_strategy)
+            if forced != strategy:
+                logger.info(
+                    "force_strategy override for %s: %s → %s",
+                    url, strategy.value, forced.value,
+                )
+            strategy = forced
+        except ValueError:
+            logger.warning(
+                "Ignoring unknown force_strategy=%r for %s",
+                request.force_strategy, url,
+            )
 
     # ── Step 2: private-page guard ────────────────────────────────────────────
     from models import PublicPage
@@ -223,7 +265,10 @@ async def scrape(request: ScrapeRequest) -> ScrapeResponse:
         )
 
     # ── Step 4: cache check ───────────────────────────────────────────────────
-    bypass_cache = request.force_reclassify or request.force_scrape
+    # force_strategy also implies a fresh scrape — stale cached HTML from a
+    # different strategy run is useless and would mask whether the new strategy
+    # actually worked.
+    bypass_cache = request.force_reclassify or request.force_scrape or bool(request.force_strategy)
     if not bypass_cache and _is_cache_valid(record):
         logger.info("Returning cached HTML for %s", url)
         return ScrapeResponse(
@@ -265,11 +310,43 @@ async def scrape(request: ScrapeRequest) -> ScrapeResponse:
             break
 
         if attempt < CONFIG.retry_count:
-            await human_delay(1.5, 3.5)
-            # Rotate Tor circuit between retries when using Tor paths
+            # Exponential backoff with jitter: 2^(attempt-1) * base ± 50%
+            base_wait = 2 ** (attempt - 1) * 2.0
+            jitter = random.uniform(-base_wait * 0.5, base_wait * 0.5)
+            wait = max(1.0, base_wait + jitter)
+            logger.debug("Retry backoff: %.1fs before attempt %d", wait, attempt + 1)
+            await asyncio.sleep(wait)
+            # Rotate Tor circuit between retries when using Tor paths.
+            # rotate_tor_identity already sleeps 10s after NEWNYM so the
+            # additional backoff above is skipped for Tor strategies.
             if strategy in (ScrapingStrategy.tor, ScrapingStrategy.hybrid):
                 from tor_scraper import rotate_tor_identity
                 await rotate_tor_identity()
+
+    # ── Step 6b: static fallback ──────────────────────────────────────────────
+    # If the classified strategy exhausted all retries without success, attempt
+    # one plain HTTP request before giving up.  Some server-rendered sites are
+    # misclassified as needing browser/tor (e.g. content-heavy HTML forums like
+    # eksisozluk.com) and a simple httpx GET is all that is needed.
+    # SKIP the fallback when the caller explicitly forced a strategy — silently
+    # downgrading to static would mask the real failure.
+    if (
+        not bool(html and not is_scrape_failure(html, 200))
+        and strategy != ScrapingStrategy.static
+        and not request.force_strategy
+    ):
+        logger.info(
+            "All %d retries failed with strategy=%s — trying static fallback for %s",
+            CONFIG.retry_count, strategy.value, url,
+        )
+        try:
+            fallback_html = await _scrape_static(url, get_random_profile())
+            if fallback_html and not is_scrape_failure(fallback_html, 200):
+                html = fallback_html
+                strategy = ScrapingStrategy.static
+                logger.info("Static fallback succeeded for %s", url)
+        except Exception as exc:
+            logger.debug("Static fallback also failed for %s: %s", url, exc)
 
     # ── Step 7: evaluate and persist ─────────────────────────────────────────
     success = bool(html) and not is_scrape_failure(html, 200)

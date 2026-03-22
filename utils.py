@@ -49,22 +49,43 @@ def human_delay_sync(
 
 # In-memory: maps domain → monotonic timestamp of last request.
 # Fine for a single-process server; does not survive restarts.
+_MAX_TRACKED_DOMAINS = 2000
 _domain_last_request: dict[str, float] = {}
+# Per-domain asyncio locks prevent the race where two concurrent coroutines
+# both read the same stale timestamp before either writes back.
+_domain_locks: dict[str, asyncio.Lock] = {}
+
+
+def _get_domain_lock(domain: str) -> asyncio.Lock:
+    """Return (creating if needed) the per-domain rate-limit lock."""
+    if domain not in _domain_locks:
+        _domain_locks[domain] = asyncio.Lock()
+    return _domain_locks[domain]
 
 
 async def enforce_domain_rate_limit(url: str, min_delay_s: float) -> None:
     """
     Ensure at least *min_delay_s* seconds have elapsed since the last
     request to the same domain.  Awaits the remainder if needed.
+
+    A per-domain lock prevents two concurrent coroutines from both seeing
+    the same stale timestamp and bypassing the rate limit.
     """
     domain = _extract_domain(url)
-    last = _domain_last_request.get(domain, 0.0)
-    elapsed = time.monotonic() - last
-    if elapsed < min_delay_s:
-        wait = min_delay_s - elapsed
-        logger.debug("Rate limit: sleeping %.2fs for domain '%s'", wait, domain)
-        await asyncio.sleep(wait)
-    _domain_last_request[domain] = time.monotonic()
+    lock = _get_domain_lock(domain)
+    async with lock:
+        last = _domain_last_request.get(domain, 0.0)
+        elapsed = time.monotonic() - last
+        if elapsed < min_delay_s:
+            wait = min_delay_s - elapsed
+            logger.debug("Rate limit: sleeping %.2fs for domain '%s'", wait, domain)
+            await asyncio.sleep(wait)
+        _domain_last_request[domain] = time.monotonic()
+        # Evict the oldest entry when the tracking dict grows too large to
+        # prevent unbounded memory growth over a long-running session.
+        if len(_domain_last_request) > _MAX_TRACKED_DOMAINS:
+            oldest = min(_domain_last_request, key=_domain_last_request.__getitem__)
+            del _domain_last_request[oldest]
 
 
 # ── Challenge / CAPTCHA detection ─────────────────────────────────────────────
@@ -74,8 +95,18 @@ _CF_CHALLENGE_RE = re.compile(
     r"please wait.*ddos|just a moment.*cloudflare)",
     re.IGNORECASE | re.DOTALL,
 )
+# Standard CAPTCHA widgets + Amazon robot-check + generic human-verification pages.
 _CAPTCHA_RE = re.compile(
-    r"(recaptcha|hcaptcha|funcaptcha|turnstile|captcha|challenge-form|data-sitekey)",
+    r"(recaptcha|hcaptcha|funcaptcha|turnstile|captcha|challenge-form|data-sitekey|"
+    r"robot.?check|verify.?you.?are.?human|not.?a.?robot|validateCaptcha|"
+    r"press.?and.?hold|i am not a robot|verify you'?re human|"
+    r"enter the characters you see|"
+    # Amazon-specific — present on the robot-check redirect page.
+    r"<title>\s*robot check\s*</title>|"
+    r"to discuss automated access to amazon|"
+    # Turkish phrases (Amazon.com.tr and other Turkish sites).
+    r"insan olduğunuzu doğrula|robot olmadığınızı|"
+    r"aşağıdaki karakterleri girin|karakterleri yazın|güvenlik doğrulaması)",
     re.IGNORECASE,
 )
 _BLOCK_RE = re.compile(
@@ -89,6 +120,32 @@ _APP_ERROR_RE = re.compile(
     r"(something went wrong|try again later|we('re| are) having trouble|"
     r"an error has occurred|page (isn'?t|is not) available|service unavailable|"
     r"error loading (page|content))",
+    re.IGNORECASE,
+)
+
+# Strong login-wall signals — phrases that indicate the page IS the login form
+# rather than just having a login link in the navigation.
+_LOGIN_WALL_RE = re.compile(
+    r"(sign in to (?:x|twitter|continue|view|access|see)|"
+    r"log in to (?:x|twitter|continue|view|access|see)|"
+    r"you need to (?:be )?logged in|"
+    r"please (?:log|sign) in to (?:view|access|see|continue)|"
+    r"create an account to (?:see|view|access|continue)|"
+    r"join .{0,30} to (?:see|view|access|continue))",
+    re.IGNORECASE,
+)
+
+# Unambiguous login-wall phrases that are never present on real content pages.
+# These trigger regardless of page size (no stripped-text length check).
+_STRONG_LOGIN_WALL_RE = re.compile(
+    r"(sign in to x to see|"
+    r"sign in to x\b|"
+    r"log in to x\b|"
+    r"sign in to twitter\b|"
+    r"log in to twitter\b|"
+    r"these tweets are protected|"
+    r"join x today|"
+    r"x'e giriş yap|twitter'a giriş yap)",  # Turkish X/Twitter login prompts
     re.IGNORECASE,
 )
 
@@ -113,7 +170,29 @@ def detect_block_page(html: str, status_code: int = 0) -> bool:
     """Return True if the response appears to be a hard block response."""
     if status_code in (403, 429, 503):
         return True
-    return bool(_BLOCK_RE.search(html)) and len(html.strip()) < 4096
+    # Use a generous size cap so that large bot-detection pages (e.g. full-page
+    # Amazon/Cloudflare blocks) are still detected, not quietly passed through.
+    return bool(_BLOCK_RE.search(html)) and len(html.strip()) < 50_000
+
+
+def detect_login_wall(html: str) -> bool:
+    """
+    Return True when the page is primarily a login/signup gate with no
+    real content — as opposed to a page that merely has a login link in
+    the navigation bar.
+
+    Two tiers:
+    1. Strong patterns (e.g. "Sign in to X") — unambiguous; trigger
+       unconditionally regardless of page size.
+    2. General patterns — require short stripped text (< 800 chars) to
+       avoid false positives on content pages that mention logging in.
+    """
+    if _STRONG_LOGIN_WALL_RE.search(html):
+        return True
+    if not _LOGIN_WALL_RE.search(html):
+        return False
+    stripped = re.sub(r"<[^>]+>", "", html).strip()
+    return len(stripped) < 800
 
 
 def is_empty_dom(html: str) -> bool:
@@ -127,6 +206,26 @@ def detect_app_error_page(html: str) -> bool:
     return bool(_APP_ERROR_RE.search(html))
 
 
+# Pages that require JavaScript to render — returned when using a static HTTP
+# client against a JS-gated site (e.g. Amazon deals, React SPAs with no SSR).
+_JS_REQUIRED_RE = re.compile(
+    r"(this (page |site |widget |app |application )?(requires|needs) javascript|"
+    r"please enable javascript|"
+    r"javascript is (disabled|required|not enabled)|"
+    r"enable javascript (to |and )?(continue|interact|use|view|access)|"
+    r"you need to enable javascript|"
+    r"your browser (does not support|has disabled) javascript|"
+    r"to discuss automated access to amazon|"
+    r"<noscript>[^<]{0,200}javascript)",
+    re.IGNORECASE | re.DOTALL,
+)
+
+
+def detect_js_required(html: str) -> bool:
+    """Return True when the page is a JavaScript-required gate (no real content)."""
+    return bool(_JS_REQUIRED_RE.search(html))
+
+
 def is_scrape_failure(html: str, status_code: int, headers: dict[str, str] | None = None) -> bool:
     """
     Aggregate check: return True when any failure mode is detected.
@@ -137,8 +236,10 @@ def is_scrape_failure(html: str, status_code: int, headers: dict[str, str] | Non
         is_empty_dom(html)
         or detect_challenge_page(html, headers)
         or detect_captcha(html)
+        or detect_login_wall(html)
         or detect_block_page(html, status_code)
         or detect_app_error_page(html)
+        or detect_js_required(html)
     )
 
 
