@@ -18,6 +18,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import random
+import time
 from datetime import datetime, timezone
 from typing import Optional
 from urllib.parse import urlparse
@@ -45,6 +46,42 @@ from utils import (
 )
 
 logger = logging.getLogger(__name__)
+
+# ── Concurrency control ───────────────────────────────────────────────────────
+# Cap the number of simultaneous scrape operations to prevent spawning too
+# many browser tabs or Tor circuits at once.
+_scrape_semaphore: asyncio.Semaphore = asyncio.Semaphore(CONFIG.max_concurrent_scrapes)
+
+# ── Result cache ──────────────────────────────────────────────────────────────
+# Simple TTL dict: url -> (ScrapeResponse, monotonic timestamp).
+# Avoids redundant scraping when the same URL is requested repeatedly within
+# result_cache_ttl_seconds.
+_scrape_cache: dict[str, tuple[ScrapeResponse, float]] = {}
+_MAX_CACHE_ENTRIES = 5000
+
+
+def _cache_get(url: str) -> Optional[ScrapeResponse]:
+    ttl = CONFIG.result_cache_ttl_seconds
+    if ttl <= 0:
+        return None
+    entry = _scrape_cache.get(url)
+    if entry is None:
+        return None
+    response, ts = entry
+    if (time.monotonic() - ts) < ttl:
+        return response
+    del _scrape_cache[url]
+    return None
+
+
+def _cache_set(url: str, response: ScrapeResponse) -> None:
+    if CONFIG.result_cache_ttl_seconds <= 0:
+        return
+    _scrape_cache[url] = (response, time.monotonic())
+    # Evict the oldest entry when the cache grows too large.
+    if len(_scrape_cache) > _MAX_CACHE_ENTRIES:
+        oldest = min(_scrape_cache, key=lambda k: _scrape_cache[k][1])
+        del _scrape_cache[oldest]
 
 
 # -- Helpers ------------------------------------------------------------------
@@ -103,15 +140,24 @@ async def scrape(request: ScrapeRequest) -> ScrapeResponse:
     Orchestrate a full scrape lifecycle for *request.url*.
 
     Steps:
-      1. Look up the stored per-domain strategy to decide attempt order.
-      2. Apply domain rate limit.
-      3. Try browser (or stored strategy) first, fall back to tor.
-      4. Persist the working strategy.
+      1. Return a cached result if one exists and force_strategy is not set.
+      2. Look up the stored per-domain strategy to decide attempt order.
+      3. Apply domain rate limit.
+      4. Acquire the global concurrency semaphore (caps parallel browser/Tor ops).
+      5. Try browser (or stored strategy) first, fall back to tor.
+      6. Persist the working strategy and cache the result.
     """
     url = request.url
     root = _root_url(url)
 
-    # -- Step 1: determine strategy order -------------------------------------
+    # -- Step 1: cache lookup (skip when caller forces a specific strategy) ---
+    if not request.force_strategy:
+        cached = _cache_get(url)
+        if cached is not None:
+            logger.info("Cache hit for %s", url)
+            return cached
+
+    # -- Step 2: determine strategy order -------------------------------------
     if request.force_strategy:
         try:
             strategies = [ScrapingStrategy(request.force_strategy)]
@@ -129,47 +175,51 @@ async def scrape(request: ScrapeRequest) -> ScrapeResponse:
     # -- Step 3: domain rate limit --------------------------------------------
     await enforce_domain_rate_limit(url, CONFIG.domain_rate_limit_seconds)
 
-    # -- Step 4: try each strategy --------------------------------------------
-    html: str = ""
-    last_error: str = ""
-    winning_strategy: Optional[ScrapingStrategy] = None
+    # -- Step 4: concurrency gate ---------------------------------------------
+    # Prevents the server from spawning more simultaneous browser / Tor
+    # operations than MAX_CONCURRENT_SCRAPES regardless of request burst size.
+    async with _scrape_semaphore:
+        # -- Step 5: try each strategy ----------------------------------------
+        html: str = ""
+        last_error: str = ""
+        winning_strategy: Optional[ScrapingStrategy] = None
 
-    for strategy in strategies:
-        for attempt in range(1, CONFIG.retry_count + 1):
-            profile = get_random_profile()
-            logger.info(
-                "Scrape attempt %d/%d strategy=%s url=%s",
-                attempt, CONFIG.retry_count, strategy.value, url,
-            )
-
-            try:
-                html = await _dispatch(url, strategy, profile)
-            except Exception as exc:
-                last_error = str(exc)
-                logger.warning(
-                    "Attempt %d/%d failed (%s): %s",
-                    attempt, CONFIG.retry_count, strategy.value, exc,
+        for strategy in strategies:
+            for attempt in range(1, CONFIG.retry_count + 1):
+                profile = get_random_profile()
+                logger.info(
+                    "Scrape attempt %d/%d strategy=%s url=%s",
+                    attempt, CONFIG.retry_count, strategy.value, url,
                 )
-                html = ""
 
-            if html and not is_scrape_failure(html, 200):
-                winning_strategy = strategy
+                try:
+                    html = await _dispatch(url, strategy, profile)
+                except Exception as exc:
+                    last_error = str(exc)
+                    logger.warning(
+                        "Attempt %d/%d failed (%s): %s",
+                        attempt, CONFIG.retry_count, strategy.value, exc,
+                    )
+                    html = ""
+
+                if html and not is_scrape_failure(html, 200):
+                    winning_strategy = strategy
+                    break
+
+                if attempt < CONFIG.retry_count:
+                    base_wait = 2 ** (attempt - 1) * 2.0
+                    jitter = random.uniform(-base_wait * 0.5, base_wait * 0.5)
+                    wait = max(1.0, base_wait + jitter)
+                    logger.debug("Retry backoff %.1fs before attempt %d", wait, attempt + 1)
+                    await asyncio.sleep(wait)
+                    if strategy == ScrapingStrategy.tor:
+                        from tor_scraper import rotate_tor_identity
+                        await rotate_tor_identity()
+
+            if winning_strategy is not None:
                 break
 
-            if attempt < CONFIG.retry_count:
-                base_wait = 2 ** (attempt - 1) * 2.0
-                jitter = random.uniform(-base_wait * 0.5, base_wait * 0.5)
-                wait = max(1.0, base_wait + jitter)
-                logger.debug("Retry backoff %.1fs before attempt %d", wait, attempt + 1)
-                await asyncio.sleep(wait)
-                if strategy == ScrapingStrategy.tor:
-                    from tor_scraper import rotate_tor_identity
-                    await rotate_tor_identity()
-
-        if winning_strategy is not None:
-            break
-
-    # -- Step 5: persist and return -------------------------------------------
+    # -- Step 6: persist and return -------------------------------------------
     if winning_strategy is not None:
         await upsert_domain_strategy(root, winning_strategy.value)
         await upsert_url_record(URLRecord(
@@ -178,13 +228,15 @@ async def scrape(request: ScrapeRequest) -> ScrapeResponse:
             last_checked=datetime.now(timezone.utc),
         ))
         await update_scrape_result(url, "success")
-        return ScrapeResponse(
+        result = ScrapeResponse(
             url=url,
             scraping_success=True,
             message="Scraped successfully.",
             html=html,
             strategy_used=winning_strategy.value,
         )
+        _cache_set(url, result)
+        return result
 
     await update_scrape_result(url, "failed")
     tried = " -> ".join(s.value for s in strategies)

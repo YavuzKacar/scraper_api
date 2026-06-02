@@ -3,18 +3,30 @@ database.py — Async SQLite persistence layer using aiosqlite.
 
 Public API
 ----------
-init_db()                         Create tables and indexes on startup.
+init_db()                         Open the persistent connection, create tables.
+close_db()                        Close the persistent connection gracefully.
 get_url_record(url)               Fetch a URLRecord by URL; None if absent.
 upsert_url_record(record)         Insert or update metadata.
 update_scrape_result(url, status) Update last_scrape_status for a URL.
 add_feedback(url, comment, ...)   Persist a user comment for a URL.
 get_all_feedback()                Return all feedback rows, newest first.
 get_feedback_for_url(url)         Return feedback rows for a specific URL.
-delete_feedback(id)               Delete a single feedback row by ID."""
+delete_feedback(id)               Delete a single feedback row by ID.
+get_credits()                     Return {balance, granted, used}.
+deduct_credit()                   Deduct 1 credit; return new balance.
+
+Connection strategy
+-------------------
+A single ``aiosqlite.Connection`` is opened at startup and reused for the
+lifetime of the process.  WAL journal mode lets multiple coroutines read
+simultaneously.  A single ``asyncio.Lock`` (_write_lock) serialises all
+multi-step write operations to prevent TOCTOU races.
+"""
 from __future__ import annotations
 
+import asyncio
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Optional
 
 import aiosqlite
@@ -23,6 +35,18 @@ from config import CONFIG
 from models import URLRecord
 
 logger = logging.getLogger(__name__)
+
+# ── Persistent connection ─────────────────────────────────────────────────────
+
+_db: Optional[aiosqlite.Connection] = None
+_write_lock: asyncio.Lock  # assigned in init_db()
+
+
+def _conn() -> aiosqlite.Connection:
+    """Return the open connection; raises RuntimeError if init_db() was not called."""
+    if _db is None:
+        raise RuntimeError("Database not initialised — call init_db() first.")
+    return _db
 
 # ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -59,6 +83,14 @@ CREATE TABLE IF NOT EXISTS url_feedback (
 );
 """
 
+_CREATE_CREDITS_TABLE_SQL = """
+CREATE TABLE IF NOT EXISTS credits (
+    id      INTEGER PRIMARY KEY CHECK (id = 1),
+    balance INTEGER NOT NULL DEFAULT 0,
+    granted INTEGER NOT NULL DEFAULT 0
+);
+"""
+
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -83,37 +115,58 @@ def _row_to_record(row: aiosqlite.Row) -> URLRecord:
 # ── Public functions ──────────────────────────────────────────────────────────
 
 async def init_db() -> None:
-    """Create the schema if it does not already exist."""
-    async with aiosqlite.connect(CONFIG.db_path) as db:
-        # WAL mode allows concurrent readers alongside a single writer and
-        # dramatically reduces "database is locked" errors under concurrent load.
-        await db.execute("PRAGMA journal_mode=WAL")
-        # Give writers up to 10 s to acquire the lock before raising
-        # OperationalError, instead of failing instantly.
-        await db.execute("PRAGMA busy_timeout=10000")
-        await db.execute(_CREATE_TABLE_SQL)
-        await db.execute(_CREATE_IDX_SQL)
-        await db.execute(_CREATE_DOMAIN_STRATEGY_TABLE_SQL)
-        await db.execute(_CREATE_FEEDBACK_TABLE_SQL)
-        await db.commit()
+    """Open the persistent connection and create the schema if missing."""
+    global _db, _write_lock
+    _write_lock = asyncio.Lock()
+    _db = await aiosqlite.connect(CONFIG.db_path)
+    _db.row_factory = aiosqlite.Row
+    # WAL mode: concurrent readers, single writer, no full-table locks.
+    await _db.execute("PRAGMA journal_mode=WAL")
+    # Give writers up to 10 s to acquire a lock before raising OperationalError.
+    await _db.execute("PRAGMA busy_timeout=10000")
+    # NORMAL is safe with WAL and roughly 2× faster than FULL.
+    await _db.execute("PRAGMA synchronous=NORMAL")
+    # 10 MB read cache kept in memory.
+    await _db.execute("PRAGMA cache_size=10000")
+    # Store temp tables / sort buffers in RAM instead of on disk.
+    await _db.execute("PRAGMA temp_store=MEMORY")
+    await _db.execute(_CREATE_TABLE_SQL)
+    await _db.execute(_CREATE_IDX_SQL)
+    await _db.execute(_CREATE_DOMAIN_STRATEGY_TABLE_SQL)
+    await _db.execute(_CREATE_FEEDBACK_TABLE_SQL)
+    await _db.execute(_CREATE_CREDITS_TABLE_SQL)
+    await _db.execute(
+        "INSERT OR IGNORE INTO credits (id, balance, granted) VALUES (1, ?, ?)",
+        (CONFIG.initial_credits, CONFIG.initial_credits),
+    )
+    await _db.commit()
     logger.info("Database ready at '%s'", CONFIG.db_path)
+
+
+async def close_db() -> None:
+    """Close the persistent connection gracefully on application shutdown."""
+    global _db
+    if _db is not None:
+        await _db.close()
+        _db = None
+        logger.info("Database connection closed.")
 
 
 async def get_url_record(url: str) -> Optional[URLRecord]:
     """Return the stored record for *url*, or None if not found."""
-    async with aiosqlite.connect(CONFIG.db_path) as db:
-        db.row_factory = aiosqlite.Row
-        async with db.execute(
-            "SELECT * FROM url_metadata WHERE url = ?", (url,)
-        ) as cursor:
-            row = await cursor.fetchone()
-            return _row_to_record(row) if row else None
+    db = _conn()
+    async with db.execute(
+        "SELECT * FROM url_metadata WHERE url = ?", (url,)
+    ) as cursor:
+        row = await cursor.fetchone()
+        return _row_to_record(row) if row else None
 
 
 async def upsert_url_record(record: URLRecord) -> None:
     """Insert or update a URLRecord (url, scraping_strategy, last_checked)."""
     now_iso = datetime.now(timezone.utc).isoformat()
-    async with aiosqlite.connect(CONFIG.db_path) as db:
+    db = _conn()
+    async with _write_lock:
         await db.execute(
             """
             INSERT INTO url_metadata (url, scraping_strategy, last_checked)
@@ -133,20 +186,19 @@ async def upsert_url_record(record: URLRecord) -> None:
 
 async def get_domain_strategy(root_url: str) -> Optional[str]:
     """Return the stored strategy for *root_url*, or None if not found."""
-    async with aiosqlite.connect(CONFIG.db_path) as db:
-        db.row_factory = aiosqlite.Row
-        async with db.execute(
-            "SELECT strategy FROM domain_strategies WHERE root_url = ?", (root_url,)
-        ) as cursor:
-            row = await cursor.fetchone()
-            return row["strategy"] if row else None
+    db = _conn()
+    async with db.execute(
+        "SELECT strategy FROM domain_strategies WHERE root_url = ?", (root_url,)
+    ) as cursor:
+        row = await cursor.fetchone()
+        return row["strategy"] if row else None
 
 
 async def upsert_domain_strategy(root_url: str, strategy: str) -> None:
     """Store the working strategy for *root_url*."""
     now_iso = datetime.now(timezone.utc).isoformat()
-    async with aiosqlite.connect(CONFIG.db_path) as db:
-        await db.execute("PRAGMA busy_timeout=10000")
+    db = _conn()
+    async with _write_lock:
         await db.execute(
             """
             INSERT INTO domain_strategies (root_url, strategy, last_updated)
@@ -162,7 +214,8 @@ async def upsert_domain_strategy(root_url: str, strategy: str) -> None:
 
 async def update_scrape_result(url: str, status: str) -> None:
     """Persist the outcome of a scrape attempt (updates last_scrape_status)."""
-    async with aiosqlite.connect(CONFIG.db_path) as db:
+    db = _conn()
+    async with _write_lock:
         await db.execute(
             "UPDATE url_metadata SET last_scrape_status = ? WHERE url = ?",
             (status, url),
@@ -181,8 +234,8 @@ async def add_feedback(
     """Persist a user comment (and optional scrape context) for a URL."""
     now_iso = datetime.now(timezone.utc).isoformat()
     success_int = int(scrape_success) if scrape_success is not None else None
-    async with aiosqlite.connect(CONFIG.db_path) as db:
-        await db.execute("PRAGMA busy_timeout=10000")
+    db = _conn()
+    async with _write_lock:
         await db.execute(
             """INSERT INTO url_feedback
                (url, comment, strategy_used, scrape_success, created_at)
@@ -206,33 +259,31 @@ def _row_to_feedback(row: aiosqlite.Row) -> dict:
 
 async def get_all_feedback() -> list[dict]:
     """Return all feedback rows ordered newest-first."""
-    async with aiosqlite.connect(CONFIG.db_path) as db:
-        db.row_factory = aiosqlite.Row
-        async with db.execute(
-            """SELECT id, url, comment, strategy_used, scrape_success, created_at
-               FROM url_feedback ORDER BY created_at DESC"""
-        ) as cursor:
-            rows = await cursor.fetchall()
-            return [_row_to_feedback(r) for r in rows]
+    db = _conn()
+    async with db.execute(
+        """SELECT id, url, comment, strategy_used, scrape_success, created_at
+           FROM url_feedback ORDER BY created_at DESC"""
+    ) as cursor:
+        rows = await cursor.fetchall()
+        return [_row_to_feedback(r) for r in rows]
 
 
 async def get_feedback_for_url(url: str) -> list[dict]:
     """Return feedback rows for a specific URL, newest-first."""
-    async with aiosqlite.connect(CONFIG.db_path) as db:
-        db.row_factory = aiosqlite.Row
-        async with db.execute(
-            """SELECT id, url, comment, strategy_used, scrape_success, created_at
-               FROM url_feedback WHERE url = ? ORDER BY created_at DESC""",
-            (url,),
-        ) as cursor:
-            rows = await cursor.fetchall()
-            return [_row_to_feedback(r) for r in rows]
+    db = _conn()
+    async with db.execute(
+        """SELECT id, url, comment, strategy_used, scrape_success, created_at
+           FROM url_feedback WHERE url = ? ORDER BY created_at DESC""",
+        (url,),
+    ) as cursor:
+        rows = await cursor.fetchall()
+        return [_row_to_feedback(r) for r in rows]
 
 
 async def delete_feedback(feedback_id: int) -> None:
     """Delete a single feedback row by primary key."""
-    async with aiosqlite.connect(CONFIG.db_path) as db:
-        await db.execute("PRAGMA busy_timeout=10000")
+    db = _conn()
+    async with _write_lock:
         await db.execute("DELETE FROM url_feedback WHERE id = ?", (feedback_id,))
         await db.commit()
 
@@ -243,8 +294,52 @@ async def delete_all_feedback() -> int:
 
     Returns the number of rows deleted.
     """
-    async with aiosqlite.connect(CONFIG.db_path) as db:
-        await db.execute("PRAGMA busy_timeout=10000")
+    db = _conn()
+    async with _write_lock:
         cursor = await db.execute("DELETE FROM url_feedback")
         await db.commit()
         return cursor.rowcount
+
+
+# ── Credits ───────────────────────────────────────────────────────────────────
+
+async def get_credits() -> dict:
+    """Return credit stats: balance, granted, and used."""
+    db = _conn()
+    async with db.execute(
+        "SELECT balance, granted FROM credits WHERE id = 1"
+    ) as cursor:
+        row = await cursor.fetchone()
+        if row is None:
+            return {"balance": 0, "granted": 0, "used": 0}
+        return {
+            "balance": row["balance"],
+            "granted": row["granted"],
+            "used":    row["granted"] - row["balance"],
+        }
+
+
+async def deduct_credit() -> int:
+    """
+    Atomically deduct 1 credit.
+
+    Returns the new balance.  Raises ``ValueError`` when the balance is
+    already 0 so the caller can return HTTP 402 before scraping.
+    """
+    db = _conn()
+    async with _write_lock:
+        async with db.execute(
+            "SELECT balance FROM credits WHERE id = 1"
+        ) as cursor:
+            row = await cursor.fetchone()
+        if row is None or row["balance"] <= 0:
+            raise ValueError("No credits remaining.")
+        await db.execute(
+            "UPDATE credits SET balance = balance - 1 WHERE id = 1 AND balance > 0"
+        )
+        await db.commit()
+        async with db.execute(
+            "SELECT balance FROM credits WHERE id = 1"
+        ) as cursor:
+            row = await cursor.fetchone()
+        return row["balance"] if row else 0

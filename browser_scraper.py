@@ -469,7 +469,7 @@ def _launch_uc_chrome(profile: FingerprintProfile, headless: bool):
     options.add_argument("--no-service-autorun")
     if headless:
         options.add_argument("--headless=new")
-    return uc.Chrome(options=options, version_main=None)
+    return uc.Chrome(options=options, version_main=146)
 
 
 def _quit_driver(driver) -> None:

@@ -30,11 +30,19 @@ class Config:
     tor_control_port: int               # Control port for NEWNYM
     tor_control_password: Optional[str] # Tor control password (None = cookie auth)
     tor_exe_path: str                   # Full path to tor.exe; used for auto-launch
-
+    firefox_binary_path: str            # Full path to Tor Browser's firefox.exe
     # ── Scraper behaviour ─────────────────────────────────────────────────────
     retry_count: int                    # Max scrape retries per request
     domain_rate_limit_seconds: float    # Min seconds between requests to same domain
     request_timeout: float              # HTTP request timeout in seconds
+    max_concurrent_scrapes: int         # Max parallel scrape operations (semaphore)
+    result_cache_ttl_seconds: int       # Seconds to cache successful results (0=disabled)
+
+    # ── Credits ───────────────────────────────────────────────────────────────
+    initial_credits: int                # Starting credit balance seeded at first run
+
+    # ── Scheduler ─────────────────────────────────────────────────────────────
+    scheduler_interval_seconds: int     # Background scheduler sleep interval
 
     # ── Logging ───────────────────────────────────────────────────────────────
     log_level: str                      # DEBUG | INFO | WARNING | ERROR
@@ -59,9 +67,17 @@ def load_config() -> Config:
             "TOR_EXE_PATH",
             r"C:\Users\Pc\Desktop\Tor Browser\Browser\TorBrowser\Tor\tor.exe",
         ),
+        firefox_binary_path=os.environ.get(
+            "FIREFOX_BINARY_PATH",
+            r"C:\Users\Pc\Desktop\Tor Browser\Browser\firefox.exe",
+        ),
         retry_count=int(os.environ.get("RETRY_COUNT", "3")),
         domain_rate_limit_seconds=float(os.environ.get("DOMAIN_RATE_LIMIT_SECONDS", "2.0")),
         request_timeout=float(os.environ.get("REQUEST_TIMEOUT", "30.0")),
+        max_concurrent_scrapes=int(os.environ.get("MAX_CONCURRENT_SCRAPES", "10")),
+        result_cache_ttl_seconds=int(os.environ.get("RESULT_CACHE_TTL_SECONDS", "600")),
+        initial_credits=int(os.environ.get("INITIAL_CREDITS", "10000")),
+        scheduler_interval_seconds=int(os.environ.get("SCHEDULER_INTERVAL_SECONDS", "300")),
         log_level=os.environ.get("LOG_LEVEL", "INFO").upper(),
         log_dir=os.environ.get("LOG_DIR", "logs"),
     )

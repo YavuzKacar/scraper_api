@@ -67,6 +67,7 @@ class ScrapeResponse(BaseModel):
     message: str
     html: Optional[str] = None
     strategy_used: Optional[str] = None
+    credits_remaining: Optional[int] = None
 
 
 class StatusResponse(BaseModel):
@@ -82,6 +83,12 @@ class HealthResponse(BaseModel):
     tor_socks_port: Optional[int] = None       # which SOCKS port responded
     tor_control_reachable: bool = False         # control port open?
     tor_circuit_ok: Optional[bool] = None       # test HTTP request through Tor succeeded?
+
+
+class CreditsResponse(BaseModel):
+    balance: int
+    granted: int
+    used: int
 
 
 # ── Feedback models ────────────────────────────────────────────────────────────

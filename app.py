@@ -5,8 +5,7 @@ Endpoints
 ---------
 POST /scrape        Scrape a URL (browser first, Tor fallback).
 GET  /status/{url}  Retrieve stored metadata for a URL.
-GET  /health        Liveness + readiness check.
-POST /feedback      Save / list / delete URL comments.
+GET  /health        Liveness + readiness check.GET  /credits       Remaining credit balance.POST /feedback      Save / list / delete URL comments.
 
 Security
 --------
@@ -24,23 +23,28 @@ import uuid
 from urllib.parse import unquote
 
 import uvicorn
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, Response, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from config import CONFIG
 from database import (
     add_feedback,
+    close_db,
     delete_feedback,
     delete_all_feedback,
+    deduct_credit,
     get_all_feedback,
+    get_credits,
     get_feedback_for_url,
     get_url_record,
     init_db,
 )
 from logging_setup import setup_logging
 from models import (
+    CreditsResponse,
     FeedbackCreate,
     FeedbackItem,
     FeedbackListResponse,
@@ -65,6 +69,7 @@ async def _lifespan(application: FastAPI):
     logger.info("Scraper API starting on %s:%d", CONFIG.host, CONFIG.port)
     await init_db()
     yield
+    await close_db()
     logger.info("Scraper API shut down cleanly.")
 
 
@@ -91,6 +96,10 @@ app.add_middleware(
     allow_methods=["POST", "GET"],
     allow_headers=["X-API-KEY", "Content-Type"],
 )
+
+# Compress responses larger than 1 KB — HTML payloads can be large (100 KB+)
+# and compression drops transfer size by 60-80 %.
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 
 
 # ── Request logging middleware ────────────────────────────────────────────────────
@@ -172,7 +181,20 @@ async def scrape_endpoint(request: ScrapeRequest) -> ScrapeResponse:
     Strategy order: browser first, then Tor. The working strategy is stored
     per root domain and reused on subsequent requests.
     """
-    return await scrape(request)
+    # Guard: refuse when the credit balance is exhausted.
+    credits = await get_credits()
+    if credits["balance"] <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail="No credits remaining.",
+        )
+
+    result = await scrape(request)
+    new_balance = await deduct_credit()
+    return ScrapeResponse(
+        **result.model_dump(exclude={"credits_remaining"}),
+        credits_remaining=new_balance,
+    )
 
 
 @app.get(
@@ -181,16 +203,20 @@ async def scrape_endpoint(request: ScrapeRequest) -> ScrapeResponse:
     summary="Get stored metadata for a URL",
     dependencies=[Depends(require_api_key)],
 )
-async def status_endpoint(url: str) -> StatusResponse:
+async def status_endpoint(url: str, response: Response) -> StatusResponse:
     """
     Return the persisted metadata record for the given URL.
 
     The URL must be URL-encoded if it contains special characters.
     Returns ``found: false`` (HTTP 200) when the URL has no stored record.
-
+    Results are cacheable for 60 seconds.
     """
     decoded_url = unquote(url)
     record = await get_url_record(decoded_url)
+
+    # Allow clients/proxies to cache this lightweight lookup for 60 s,
+    # reducing repeat DB reads for the same URL.
+    response.headers["Cache-Control"] = "private, max-age=60"
 
     if not record:
         return StatusResponse(url=decoded_url, found=False)
@@ -286,6 +312,24 @@ async def health_endpoint() -> HealthResponse:
     )
 
 
+@app.get(
+    "/credits",
+    response_model=CreditsResponse,
+    summary="Credit balance",
+    dependencies=[Depends(require_api_key)],
+)
+async def credits_endpoint() -> CreditsResponse:
+    """
+    Return the current credit balance.
+
+    balance — credits still available
+    granted — total credits ever issued
+    used    — credits consumed so far (granted − balance)
+    """
+    data = await get_credits()
+    return CreditsResponse(**data)
+
+
 # ── Feedback endpoints ─────────────────────────────────────────────────────────
 
 @app.post(
@@ -356,6 +400,11 @@ if _os.path.isdir(_static_dir):
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
+    import multiprocessing
+    # Use (CPU count * 2 + 1) workers, capped at 4 for SQLite-based deployments
+    # (SQLite doesn't support multi-process writes).  Each worker handles its own
+    # async event loop, multiplying throughput for I/O-bound endpoints.
+    workers = min(4, multiprocessing.cpu_count() * 2 + 1)
     uvicorn.run(
         "app:app",
         host=CONFIG.host,         # 127.0.0.1 — localhost only
@@ -363,4 +412,5 @@ if __name__ == "__main__":
         log_level="info",
         access_log=True,
         reload=False,
+        workers=workers,
     )
