@@ -8,12 +8,13 @@ close_db()                        Close the persistent connection gracefully.
 get_url_record(url)               Fetch a URLRecord by URL; None if absent.
 upsert_url_record(record)         Insert or update metadata.
 update_scrape_result(url, status) Update last_scrape_status for a URL.
+log_scrape_attempt(...)           Append one audit row to scrape_log.
 add_feedback(url, comment, ...)   Persist a user comment for a URL.
 get_all_feedback()                Return all feedback rows, newest first.
 get_feedback_for_url(url)         Return feedback rows for a specific URL.
 delete_feedback(id)               Delete a single feedback row by ID.
 get_credits()                     Return {balance, granted, used}.
-deduct_credit()                   Deduct 1 credit; return new balance.
+deduct_credit(amount)             Deduct the given cost; return new balance.
 
 Connection strategy
 -------------------
@@ -86,10 +87,41 @@ CREATE TABLE IF NOT EXISTS url_feedback (
 _CREATE_CREDITS_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS credits (
     id      INTEGER PRIMARY KEY CHECK (id = 1),
-    balance INTEGER NOT NULL DEFAULT 0,
-    granted INTEGER NOT NULL DEFAULT 0
+    balance REAL NOT NULL DEFAULT 0,
+    granted REAL NOT NULL DEFAULT 0
 );
 """
+
+_CREATE_SCRAPE_LOG_TABLE_SQL = """
+CREATE TABLE IF NOT EXISTS scrape_log (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    url             TEXT NOT NULL,
+    success         INTEGER NOT NULL,
+    provider        TEXT,
+    status          TEXT NOT NULL,
+    cost            REAL NOT NULL DEFAULT 0,
+    error_reason    TEXT,
+    duration_ms     INTEGER,
+    response_bytes  INTEGER,
+    created_at      TEXT NOT NULL
+);
+"""
+
+_CREATE_SCRAPE_LOG_IDX_URL_SQL = (
+    "CREATE INDEX IF NOT EXISTS idx_scrape_log_url ON scrape_log(url);"
+)
+_CREATE_SCRAPE_LOG_IDX_CREATED_SQL = (
+    "CREATE INDEX IF NOT EXISTS idx_scrape_log_created ON scrape_log(created_at);"
+)
+
+# Additive columns on url_metadata -- applied via a guarded ALTER TABLE in
+# init_db() since the DB file ships with existing data and SQLite has no
+# "ADD COLUMN IF NOT EXISTS" syntax.
+_URL_METADATA_NEW_COLUMNS: dict[str, str] = {
+    "last_provider": "TEXT",
+    "last_cost": "REAL",
+    "last_error_reason": "TEXT",
+}
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -104,11 +136,15 @@ def _parse_dt(value: Optional[str]) -> Optional[datetime]:
 
 
 def _row_to_record(row: aiosqlite.Row) -> URLRecord:
+    keys = row.keys()
     return URLRecord(
         url=row["url"],
         scraping_strategy=row["scraping_strategy"],
         last_checked=_parse_dt(row["last_checked"]),
         last_scrape_status=row["last_scrape_status"],
+        last_provider=row["last_provider"] if "last_provider" in keys else None,
+        last_cost=row["last_cost"] if "last_cost" in keys else None,
+        last_error_reason=row["last_error_reason"] if "last_error_reason" in keys else None,
     )
 
 
@@ -135,12 +171,27 @@ async def init_db() -> None:
     await _db.execute(_CREATE_DOMAIN_STRATEGY_TABLE_SQL)
     await _db.execute(_CREATE_FEEDBACK_TABLE_SQL)
     await _db.execute(_CREATE_CREDITS_TABLE_SQL)
+    await _db.execute(_CREATE_SCRAPE_LOG_TABLE_SQL)
+    await _db.execute(_CREATE_SCRAPE_LOG_IDX_URL_SQL)
+    await _db.execute(_CREATE_SCRAPE_LOG_IDX_CREATED_SQL)
+    await _migrate_url_metadata_columns()
     await _db.execute(
         "INSERT OR IGNORE INTO credits (id, balance, granted) VALUES (1, ?, ?)",
         (CONFIG.initial_credits, CONFIG.initial_credits),
     )
     await _db.commit()
     logger.info("Database ready at '%s'", CONFIG.db_path)
+
+
+async def _migrate_url_metadata_columns() -> None:
+    """Additively add any missing url_metadata columns (safe on existing data)."""
+    db = _conn()
+    async with db.execute("PRAGMA table_info(url_metadata)") as cursor:
+        existing = {row["name"] async for row in cursor}
+    for column, col_type in _URL_METADATA_NEW_COLUMNS.items():
+        if column not in existing:
+            await db.execute(f"ALTER TABLE url_metadata ADD COLUMN {column} {col_type}")
+            logger.info("Migrated url_metadata: added column '%s'.", column)
 
 
 async def close_db() -> None:
@@ -163,22 +214,29 @@ async def get_url_record(url: str) -> Optional[URLRecord]:
 
 
 async def upsert_url_record(record: URLRecord) -> None:
-    """Insert or update a URLRecord (url, scraping_strategy, last_checked)."""
+    """Insert or update a URLRecord (url, scraping_strategy, last_checked, ...)."""
     now_iso = datetime.now(timezone.utc).isoformat()
     db = _conn()
     async with _write_lock:
         await db.execute(
             """
-            INSERT INTO url_metadata (url, scraping_strategy, last_checked)
-            VALUES (?, ?, ?)
+            INSERT INTO url_metadata
+                (url, scraping_strategy, last_checked, last_provider, last_cost, last_error_reason)
+            VALUES (?, ?, ?, ?, ?, ?)
             ON CONFLICT(url) DO UPDATE SET
                 scraping_strategy = excluded.scraping_strategy,
-                last_checked      = excluded.last_checked
+                last_checked      = excluded.last_checked,
+                last_provider     = excluded.last_provider,
+                last_cost         = excluded.last_cost,
+                last_error_reason = excluded.last_error_reason
             """,
             (
                 record.url,
                 record.scraping_strategy,
                 record.last_checked.isoformat() if record.last_checked else now_iso,
+                record.last_provider,
+                record.last_cost,
+                record.last_error_reason,
             ),
         )
         await db.commit()
@@ -212,13 +270,54 @@ async def upsert_domain_strategy(root_url: str, strategy: str) -> None:
         await db.commit()
 
 
-async def update_scrape_result(url: str, status: str) -> None:
-    """Persist the outcome of a scrape attempt (updates last_scrape_status)."""
+async def update_scrape_result(
+    url: str,
+    status: str,
+    error_reason: Optional[str] = None,
+) -> None:
+    """
+    Persist the outcome of a scrape attempt (last_scrape_status, last_checked,
+    last_error_reason).  Creates the row if it doesn't exist yet -- every
+    requested URL is recorded, success or failure -- without touching
+    scraping_strategy / last_provider / last_cost, which only change on the
+    success path (upsert_url_record).
+    """
+    now_iso = datetime.now(timezone.utc).isoformat()
     db = _conn()
     async with _write_lock:
         await db.execute(
-            "UPDATE url_metadata SET last_scrape_status = ? WHERE url = ?",
-            (status, url),
+            """
+            INSERT INTO url_metadata (url, last_scrape_status, last_checked, last_error_reason)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(url) DO UPDATE SET
+                last_scrape_status = excluded.last_scrape_status,
+                last_checked       = excluded.last_checked,
+                last_error_reason  = excluded.last_error_reason
+            """,
+            (url, status, now_iso, error_reason),
+        )
+        await db.commit()
+
+
+async def log_scrape_attempt(
+    url: str,
+    success: bool,
+    provider: Optional[str],
+    status: str,
+    cost: float,
+    error_reason: Optional[str],
+    duration_ms: Optional[int],
+    response_bytes: Optional[int],
+) -> None:
+    """Append one row to scrape_log -- the full audit trail of every /scrape call."""
+    now_iso = datetime.now(timezone.utc).isoformat()
+    db = _conn()
+    async with _write_lock:
+        await db.execute(
+            """INSERT INTO scrape_log
+               (url, success, provider, status, cost, error_reason, duration_ms, response_bytes, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (url, int(success), provider, status, cost, error_reason, duration_ms, response_bytes, now_iso),
         )
         await db.commit()
 
@@ -311,7 +410,7 @@ async def get_credits() -> dict:
     ) as cursor:
         row = await cursor.fetchone()
         if row is None:
-            return {"balance": 0, "granted": 0, "used": 0}
+            return {"balance": 0.0, "granted": 0.0, "used": 0.0}
         return {
             "balance": row["balance"],
             "granted": row["granted"],
@@ -319,9 +418,10 @@ async def get_credits() -> dict:
         }
 
 
-async def deduct_credit() -> int:
+async def deduct_credit(amount: float = 1.0) -> float:
     """
-    Atomically deduct 1 credit.
+    Atomically deduct *amount* credits (the real cost of the provider that
+    served the request).
 
     Returns the new balance.  Raises ``ValueError`` when the balance is
     already 0 so the caller can return HTTP 402 before scraping.
@@ -335,11 +435,12 @@ async def deduct_credit() -> int:
         if row is None or row["balance"] <= 0:
             raise ValueError("No credits remaining.")
         await db.execute(
-            "UPDATE credits SET balance = balance - 1 WHERE id = 1 AND balance > 0"
+            "UPDATE credits SET balance = balance - ? WHERE id = 1 AND balance > 0",
+            (amount,),
         )
         await db.commit()
         async with db.execute(
             "SELECT balance FROM credits WHERE id = 1"
         ) as cursor:
             row = await cursor.fetchone()
-        return row["balance"] if row else 0
+        return row["balance"] if row else 0.0

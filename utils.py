@@ -279,3 +279,26 @@ def _extract_domain(url: str) -> str:
 def domain_from_url(url: str) -> str:
     """Public alias for _extract_domain."""
     return _extract_domain(url)
+
+
+# ── Response size cap ─────────────────────────────────────────────────────────
+
+class ResponseTooLargeError(Exception):
+    """Raised when a streamed HTTP response exceeds the configured size cap."""
+
+
+async def read_text_capped(response, max_bytes: int) -> str:
+    """
+    Drain a streaming httpx response (from ``client.stream(...)``) into text,
+    aborting as soon as the running total exceeds *max_bytes* -- this catches
+    oversized responses even when the server omits/lies about Content-Length.
+    """
+    chunks: list[bytes] = []
+    total = 0
+    async for chunk in response.aiter_bytes():
+        total += len(chunk)
+        if total > max_bytes:
+            raise ResponseTooLargeError(f"Response exceeded max size of {max_bytes} bytes.")
+        chunks.append(chunk)
+    encoding = response.encoding or "utf-8"
+    return b"".join(chunks).decode(encoding, errors="replace")

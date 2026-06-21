@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Top 1000 Sites — Scraper API</title>
+  <style>
+    :root {
+      --bg:         #0d1117;
+      --surface:    #161b22;
+      --surface2:   #21262d;
+      --border:     #30363d;
+      --text:       #c9d1d9;
+      --muted:      #8b949e;
+      --accent:     #58a6ff;
+      --accent-dim: #1f6feb;
+      --ok:         #3fb950;
+      --fail:       #f85149;
+      --warn:       #d29922;
+      --radius:     6px;
+      --font:       -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      --mono:       ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; min-height: 100vh; }
+
+    /* ── Header ── */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 8px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .header h1 { font-size: 14px; font-weight: 700; white-space: nowrap; }
+    .hcfg { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; flex: 1; }
+    .hlbl { font-size: 11px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+    #apiBase { width: 200px; }
+    #apiKey  { width: 180px; font-family: var(--mono); }
+    .header a { font-size: 12px; color: var(--accent); text-decoration: none; margin-left: 4px; }
+    .header a:hover { text-decoration: underline; }
+
+    /* ── Controls ── */
+    .controls {
+      position: sticky; top: 49px; z-index: 99;
+      background: var(--surface2); border-bottom: 1px solid var(--border);
+      padding: 8px 16px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    }
+    .controls input[type=text], .controls select {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      color: var(--text); font-family: var(--font); font-size: 13px; padding: 5px 9px;
+      outline: none; transition: border-color .15s;
+    }
+    .controls input:focus { border-color: var(--accent); }
+    #searchInput { width: 220px; }
+    #catFilter   { min-width: 140px; }
+
+    /* ── Stats bar ── */
+    .stats {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 6px 16px; display: flex; gap: 20px; align-items: center; font-size: 12px; color: var(--muted);
+    }
+    .stat-val { font-weight: 700; color: var(--text); }
+    .stat-ok  { color: var(--ok); }
+    .stat-fail{ color: var(--fail); }
+    .stat-run { color: var(--warn); }
+
+    /* ── Queue progress ── */
+    .queue-bar {
+      height: 2px; background: var(--border); position: relative; overflow: hidden;
+    }
+    .queue-fill {
+      height: 100%; background: var(--accent); transition: width .3s;
+      position: absolute; left: 0; top: 0; width: 0%;
+    }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead { position: sticky; top: 95px; z-index: 98; }
+    th {
+      text-align: left; padding: 6px 10px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+      color: var(--muted); background: var(--surface2); border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    th.sortable { cursor: pointer; user-select: none; }
+    th.sortable:hover { color: var(--text); }
+    th .sort-arrow { margin-left: 4px; opacity: .4; }
+    th.sort-asc .sort-arrow::after  { content: '↑'; opacity: 1; }
+    th.sort-desc .sort-arrow::after { content: '↓'; opacity: 1; }
+    th .sort-arrow::after { content: '↕'; }
+    td { padding: 6px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr.hidden-row { display: none; }
+    tr:hover td   { background: rgba(255,255,255,.015); }
+    tr.expanded td { background: #0f1419; }
+
+    .rank-cell { color: var(--muted); font-size: 11px; width: 44px; text-align: right; padding-right: 14px; }
+    .domain-cell { font-family: var(--mono); font-size: 12px; }
+    .domain-cell a { color: var(--accent); text-decoration: none; }
+    .domain-cell a:hover { text-decoration: underline; }
+    .cat-cell { color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .status-cell { width: 90px; }
+    .actions-cell { width: 160px; white-space: nowrap; }
+
+    /* ── Detail row ── */
+    .detail-row { display: none; }
+    .detail-row.open { display: table-row; }
+    .detail-td {
+      padding: 0 10px 10px 44px;
+      border-bottom: 1px solid var(--border);
+      background: #0a0e14;
+    }
+    .detail-inner { padding: 10px 0 2px; }
+    .detail-status {
+      display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      font-size: 12px; margin-bottom: 8px;
+    }
+    .detail-meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+    .detail-meta span b { color: var(--text); }
+    .html-pre {
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 8px; font-family: var(--mono); font-size: 11px; line-height: 1.5;
+      max-height: 220px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;
+      color: #7d8590;
+    }
+    .err-pre {
+      color: var(--fail); background: #1a0a0a; border-color: #3d1a1a;
+    }
+    .detail-actions { display: flex; gap: 6px; margin-top: 8px; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px;
+      border-radius: var(--radius); border: 1px solid var(--border); cursor: pointer;
+      font-size: 12px; font-family: var(--font); font-weight: 600;
+      transition: background .12s, border-color .12s; white-space: nowrap;
+    }
+    .btn-primary  { background: var(--accent-dim); border-color: var(--accent); color: #fff; }
+    .btn-primary:hover  { background: var(--accent); }
+    .btn-secondary { background: var(--surface2); color: var(--text); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-success  { background: #1a4a28; border-color: #2ea043; color: var(--ok); }
+    .btn-success:hover  { background: #196230; }
+    .btn-danger   { background: #3d1a1a; border-color: #8c1c1c; color: var(--fail); }
+    .btn-danger:hover   { background: #5a2020; }
+    .btn-warn     { background: #4a3a10; border-color: #8c6a20; color: var(--warn); }
+    .btn-warn:hover     { background: #5a4a18; }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-xs { font-size: 11px; padding: 2px 7px; }
+
+    /* ── Badges ── */
+    .badge { display: inline-block; padding: 1px 7px; border-radius: 12px; font-size: 10px; font-weight: 700; }
+    .badge-idle   { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+    .badge-run    { background: #4a3a10; color: var(--warn);  border: 1px solid #8c6a20; }
+    .badge-ok     { background: #1a4a28; color: var(--ok);   border: 1px solid #2ea043; }
+    .badge-fail   { background: #3d1a1a; color: var(--fail); border: 1px solid #8c1c1c; }
+    .badge-info   { background: #162032; color: var(--accent); border: 1px solid var(--accent-dim); }
+
+    /* ── Misc ── */
+    input[type=text], input[type=password] {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
+      color: var(--text); font-family: var(--font); font-size: 13px; padding: 5px 9px;
+      outline: none; transition: border-color .15s;
+    }
+    input:focus { border-color: var(--accent); }
+    select {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
+      color: var(--text); font-family: var(--font); font-size: 13px; padding: 5px 9px;
+      outline: none;
+    }
+    .spacer { flex: 1; }
+    .text-muted { color: var(--muted); }
+    #healthStatus { font-size: 12px; }
+    .conc-label { font-size: 11px; color: var(--muted); white-space: nowrap; }
+    #concurrency { width: 52px; text-align: center; }
+    .empty-state { padding: 40px; text-align: center; color: var(--muted); }
+    .sel-chk { accent-color: var(--accent); cursor: pointer; width: 14px; height: 14px; }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────────── -->
+<div class="header">
+  <h1>⚙ Scraper API</h1>
+  <div class="hcfg">
+    <span class="hlbl">API URL</span>
+    <input id="apiBase" type="text" placeholder="http://127.0.0.1:8000" oninput="saveConfig()">
+    <span class="hlbl">API Key</span>
+    <input id="apiKey" type="password" placeholder="your-api-key" oninput="saveConfig()">
+    <button class="btn btn-secondary btn-xs" onclick="checkHealth()">◉ Health</button>
+    <span id="healthStatus" class="text-muted"></span>
+  </div>
+  <a href="/ui/">← Main UI</a>
+</div>
+
+<!-- ── Controls ───────────────────────────────────────────────────────────── -->
+<div class="controls">
+  <input id="searchInput" type="text" placeholder="🔍 Filter domains…" oninput="applyFilter()">
+  <select id="catFilter" onchange="applyFilter()">
+    <option value="">All categories</option>
+  </select>
+  <select id="statusFilter" onchange="applyFilter()">
+    <option value="">All statuses</option>
+    <option value="idle">Idle</option>
+    <option value="running">Running</option>
+    <option value="ok">Success</option>
+    <option value="fail">Failed</option>
+  </select>
+  <button class="btn btn-secondary btn-xs" onclick="toggleSelectAll()">☑ Select Visible</button>
+  <button class="btn btn-success"   id="scrapeSelBtn" onclick="scrapeSelected()">▶ Scrape Selected</button>
+  <button class="btn btn-primary"   id="scrapeAllBtn" onclick="scrapeAllVisible()">▶▶ Scrape All Visible</button>
+  <button class="btn btn-warn btn-xs" id="pauseBtn" onclick="togglePause()" style="display:none">⏸ Pause</button>
+  <button class="btn btn-danger btn-xs" id="cancelBtn" onclick="cancelQueue()" style="display:none">✕ Cancel</button>
+  <span class="spacer"></span>
+  <span class="conc-label">Concurrency:</span>
+  <input id="concurrency" type="number" min="1" max="10" value="1" style="width:52px;text-align:center;">
+  <select id="forceStrategy" style="min-width:110px;">
+    <option value="">— auto —</option>
+    <option value="static">static</option>
+    <option value="browser">browser</option>
+    <option value="tor">tor</option>
+  </select>
+</div>
+
+<!-- ── Stats ──────────────────────────────────────────────────────────────── -->
+<div class="stats">
+  <span>Visible: <span class="stat-val" id="statVisible">1000</span></span>
+  <span>Selected: <span class="stat-val" id="statSelected">0</span></span>
+  <span>Queued: <span class="stat-val stat-run" id="statQueued">0</span></span>
+  <span>Running: <span class="stat-val stat-run" id="statRunning">0</span></span>
+  <span>Done: <span class="stat-val stat-ok" id="statDone">0</span></span>
+  <span>Failed: <span class="stat-val stat-fail" id="statFailed">0</span></span>
+</div>
+<div class="queue-bar"><div class="queue-fill" id="queueFill"></div></div>
+
+<!-- ── Table ──────────────────────────────────────────────────────────────── -->
+<div class="table-wrap">
+  <table id="sitesTable">
+    <thead>
+      <tr>
+        <th style="width:30px;"><input type="checkbox" class="sel-chk" id="masterChk" onclick="masterSelect(this)"></th>
+        <th class="sortable sort-desc" data-col="r" onclick="sortBy('r',this)">#<span class="sort-arrow"></span></th>
+        <th class="sortable" data-col="d" onclick="sortBy('d',this)">Domain<span class="sort-arrow"></span></th>
+        <th class="sortable" data-col="c" onclick="sortBy('c',this)">Category<span class="sort-arrow"></span></th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div id="noResults" class="empty-state" style="display:none;">No sites match the current filter.</div>
+</div>
+
+<script>
+'use strict';
+
+// ── Site list ─────────────────────────────────────────────────────────────────
+// Format: {r: rank, d: domain, c: category}
+// URL computed as: https:// + domain
+
+const SITES = [
+  // ── Search ───────────────────────────────────────────────────────────────
+  {r:1,   d:'google.com',               c:'Search'},
+  {r:2,   d:'baidu.com',                c:'Search'},
+  {r:3,   d:'bing.com',                 c:'Search'},
+  {r:4,   d:'yahoo.com',                c:'Portal'},
+  {r:5,   d:'yandex.ru',                c:'Search'},
+  {r:6,   d:'duckduckgo.com',           c:'Search'},
+  {r:7,   d:'google.co.in',             c:'Search'},
+  {r:8,   d:'google.co.jp',             c:'Search'},
+  {r:9,   d:'google.co.uk',             c:'Search'},
+  {r:10,  d:'google.de',                c:'Search'},
+  {r:11,  d:'google.fr',                c:'Search'},
+  {r:12,  d:'google.com.br',            c:'Search'},
+  {r:13,  d:'google.com.au',            c:'Search'},
+  {r:14,  d:'google.ru',                c:'Search'},
+  {r:15,  d:'google.it',                c:'Search'},
+  {r:16,  d:'google.es',                c:'Search'},
+  {r:17,  d:'google.ca',                c:'Search'},
+  {r:18,  d:'google.com.mx',            c:'Search'},
+  {r:19,  d:'google.pl',                c:'Search'},
+  {r:20,  d:'google.nl',                c:'Search'},
+  // ── Social Media ─────────────────────────────────────────────────────────
+  {r:21,  d:'youtube.com',              c:'Video'},
+  {r:22,  d:'facebook.com',             c:'Social'},
+  {r:23,  d:'instagram.com',            c:'Social'},
+  {r:24,  d:'twitter.com',              c:'Social'},
+  {r:25,  d:'tiktok.com',               c:'Social'},
+  {r:26,  d:'linkedin.com',             c:'Social'},
+  {r:27,  d:'reddit.com',               c:'Social'},
+  {r:28,  d:'pinterest.com',            c:'Social'},
+  {r:29,  d:'snapchat.com',             c:'Social'},
+  {r:30,  d:'tumblr.com',               c:'Social'},
+  {r:31,  d:'whatsapp.com',             c:'Messaging'},
+  {r:32,  d:'telegram.org',             c:'Messaging'},
+  {r:33,  d:'discord.com',              c:'Social'},
+  {r:34,  d:'twitch.tv',                c:'Video'},
+  {r:35,  d:'vk.com',                   c:'Social'},
+  {r:36,  d:'ok.ru',                    c:'Social'},
+  {r:37,  d:'weibo.com',                c:'Social'},
+  {r:38,  d:'qq.com',                   c:'Portal'},
+  {r:39,  d:'bilibili.com',             c:'Video'},
+  {r:40,  d:'quora.com',                c:'Q&A'},
+  {r:41,  d:'medium.com',               c:'Publishing'},
+  {r:42,  d:'flickr.com',               c:'Social'},
+  {r:43,  d:'soundcloud.com',           c:'Music'},
+  {r:44,  d:'imgur.com',                c:'Social'},
+  {r:45,  d:'deviantart.com',           c:'Social'},
+  {r:46,  d:'mix.com',                  c:'Social'},
+  {r:47,  d:'mewe.com',                 c:'Social'},
+  {r:48,  d:'mastodon.social',          c:'Social'},
+  {r:49,  d:'parler.com',               c:'Social'},
+  {r:50,  d:'gab.com',                  c:'Social'},
+  // ── Portals ───────────────────────────────────────────────────────────────
+  {r:51,  d:'naver.com',                c:'Portal'},
+  {r:52,  d:'yahoo.co.jp',              c:'Portal'},
+  {r:53,  d:'msn.com',                  c:'Portal'},
+  {r:54,  d:'live.com',                 c:'Portal'},
+  {r:55,  d:'aol.com',                  c:'Portal'},
+  {r:56,  d:'sohu.com',                 c:'Portal'},
+  {r:57,  d:'163.com',                  c:'Portal'},
+  {r:58,  d:'sina.com.cn',              c:'Portal'},
+  {r:59,  d:'uol.com.br',               c:'Portal'},
+  {r:60,  d:'terra.com.br',             c:'Portal'},
+  // ── Technology ───────────────────────────────────────────────────────────
+  {r:61,  d:'microsoft.com',            c:'Technology'},
+  {r:62,  d:'apple.com',                c:'Technology'},
+  {r:63,  d:'github.com',               c:'Technology'},
+  {r:64,  d:'stackoverflow.com',        c:'Technology'},
+  {r:65,  d:'gitlab.com',               c:'Technology'},
+  {r:66,  d:'adobe.com',                c:'Technology'},
+  {r:67,  d:'canva.com',                c:'Technology'},
+  {r:68,  d:'zoom.us',                  c:'Technology'},
+  {r:69,  d:'office.com',               c:'Technology'},
+  {r:70,  d:'dropbox.com',              c:'Technology'},
+  {r:71,  d:'wordpress.com',            c:'Technology'},
+  {r:72,  d:'wordpress.org',            c:'Technology'},
+  {r:73,  d:'wix.com',                  c:'Technology'},
+  {r:74,  d:'squarespace.com',          c:'Technology'},
+  {r:75,  d:'shopify.com',              c:'Technology'},
+  {r:76,  d:'cloudflare.com',           c:'Technology'},
+  {r:77,  d:'godaddy.com',              c:'Hosting'},
+  {r:78,  d:'namecheap.com',            c:'Hosting'},
+  {r:79,  d:'digitalocean.com',         c:'Technology'},
+  {r:80,  d:'heroku.com',               c:'Technology'},
+  {r:81,  d:'netlify.com',              c:'Technology'},
+  {r:82,  d:'vercel.com',               c:'Technology'},
+  {r:83,  d:'docker.com',               c:'Technology'},
+  {r:84,  d:'npmjs.com',                c:'Technology'},
+  {r:85,  d:'pypi.org',                 c:'Technology'},
+  {r:86,  d:'developer.mozilla.org',    c:'Technology'},
+  {r:87,  d:'python.org',               c:'Technology'},
+  {r:88,  d:'nodejs.org',               c:'Technology'},
+  {r:89,  d:'reactjs.org',              c:'Technology'},
+  {r:90,  d:'vuejs.org',                c:'Technology'},
+  {r:91,  d:'angular.io',               c:'Technology'},
+  {r:92,  d:'tailwindcss.com',          c:'Technology'},
+  {r:93,  d:'jquery.com',               c:'Technology'},
+  {r:94,  d:'getbootstrap.com',         c:'Technology'},
+  {r:95,  d:'oracle.com',               c:'Technology'},
+  {r:96,  d:'ibm.com',                  c:'Technology'},
+  {r:97,  d:'cisco.com',                c:'Technology'},
+  {r:98,  d:'sap.com',                  c:'Technology'},
+  {r:99,  d:'salesforce.com',           c:'Technology'},
+  {r:100, d:'atlassian.com',            c:'Technology'},
+  // ── E-commerce ───────────────────────────────────────────────────────────
+  {r:101, d:'amazon.com',               c:'E-commerce'},
+  {r:102, d:'ebay.com',                 c:'E-commerce'},
+  {r:103, d:'aliexpress.com',           c:'E-commerce'},
+  {r:104, d:'alibaba.com',              c:'E-commerce'},
+  {r:105, d:'taobao.com',               c:'E-commerce'},
+  {r:106, d:'tmall.com',                c:'E-commerce'},
+  {r:107, d:'jd.com',                   c:'E-commerce'},
+  {r:108, d:'walmart.com',              c:'E-commerce'},
+  {r:109, d:'target.com',               c:'E-commerce'},
+  {r:110, d:'bestbuy.com',              c:'E-commerce'},
+  {r:111, d:'homedepot.com',            c:'E-commerce'},
+  {r:112, d:'wayfair.com',              c:'E-commerce'},
+  {r:113, d:'ikea.com',                 c:'E-commerce'},
+  {r:114, d:'etsy.com',                 c:'E-commerce'},
+  {r:115, d:'wish.com',                 c:'E-commerce'},
+  {r:116, d:'shopee.com',               c:'E-commerce'},
+  {r:117, d:'lazada.com',               c:'E-commerce'},
+  {r:118, d:'flipkart.com',             c:'E-commerce'},
+  {r:119, d:'tokopedia.com',            c:'E-commerce'},
+  {r:120, d:'mercadolibre.com',         c:'E-commerce'},
+  {r:121, d:'amazon.co.uk',             c:'E-commerce'},
+  {r:122, d:'amazon.de',                c:'E-commerce'},
+  {r:123, d:'amazon.co.jp',             c:'E-commerce'},
+  {r:124, d:'amazon.fr',                c:'E-commerce'},
+  {r:125, d:'amazon.ca',                c:'E-commerce'},
+  {r:126, d:'amazon.com.au',            c:'E-commerce'},
+  {r:127, d:'amazon.it',                c:'E-commerce'},
+  {r:128, d:'amazon.es',                c:'E-commerce'},
+  {r:129, d:'amazon.in',                c:'E-commerce'},
+  {r:130, d:'rakuten.com',              c:'E-commerce'},
+  {r:131, d:'zara.com',                 c:'Fashion'},
+  {r:132, d:'hm.com',                   c:'Fashion'},
+  {r:133, d:'asos.com',                 c:'Fashion'},
+  {r:134, d:'shein.com',                c:'Fashion'},
+  {r:135, d:'uniqlo.com',               c:'Fashion'},
+  {r:136, d:'macys.com',                c:'E-commerce'},
+  {r:137, d:'nordstrom.com',            c:'E-commerce'},
+  {r:138, d:'kohls.com',                c:'E-commerce'},
+  {r:139, d:'costco.com',               c:'E-commerce'},
+  {r:140, d:'lowes.com',                c:'E-commerce'},
+  {r:141, d:'banggood.com',             c:'E-commerce'},
+  {r:142, d:'dhgate.com',               c:'E-commerce'},
+  {r:143, d:'pinduoduo.com',            c:'E-commerce'},
+  {r:144, d:'ozon.ru',                  c:'E-commerce'},
+  {r:145, d:'wildberries.ru',           c:'E-commerce'},
+  {r:146, d:'avito.ru',                 c:'E-commerce'},
+  {r:147, d:'myntra.com',               c:'E-commerce'},
+  {r:148, d:'noon.com',                 c:'E-commerce'},
+  {r:149, d:'jumia.com',                c:'E-commerce'},
+  {r:150, d:'coupang.com',              c:'E-commerce'},
+  // ── Finance ──────────────────────────────────────────────────────────────
+  {r:151, d:'paypal.com',               c:'Finance'},
+  {r:152, d:'stripe.com',               c:'Finance'},
+  {r:153, d:'coinbase.com',             c:'Finance'},
+  {r:154, d:'binance.com',              c:'Finance'},
+  {r:155, d:'kraken.com',               c:'Finance'},
+  {r:156, d:'robinhood.com',            c:'Finance'},
+  {r:157, d:'chase.com',                c:'Finance'},
+  {r:158, d:'bankofamerica.com',        c:'Finance'},
+  {r:159, d:'wellsfargo.com',           c:'Finance'},
+  {r:160, d:'capitalone.com',           c:'Finance'},
+  {r:161, d:'americanexpress.com',      c:'Finance'},
+  {r:162, d:'visa.com',                 c:'Finance'},
+  {r:163, d:'mastercard.com',           c:'Finance'},
+  {r:164, d:'bloomberg.com',            c:'Finance'},
+  {r:165, d:'wsj.com',                  c:'Finance'},
+  {r:166, d:'ft.com',                   c:'Finance'},
+  {r:167, d:'marketwatch.com',          c:'Finance'},
+  {r:168, d:'cnbc.com',                 c:'Finance'},
+  {r:169, d:'investopedia.com',         c:'Finance'},
+  {r:170, d:'nerdwallet.com',           c:'Finance'},
+  {r:171, d:'creditkarma.com',          c:'Finance'},
+  {r:172, d:'mint.com',                 c:'Finance'},
+  {r:173, d:'turbotax.com',             c:'Finance'},
+  {r:174, d:'usbank.com',               c:'Finance'},
+  {r:175, d:'citibank.com',             c:'Finance'},
+  {r:176, d:'schwab.com',               c:'Finance'},
+  {r:177, d:'fidelity.com',             c:'Finance'},
+  {r:178, d:'vanguard.com',             c:'Finance'},
+  {r:179, d:'etrade.com',               c:'Finance'},
+  {r:180, d:'tdameritrade.com',         c:'Finance'},
+  // ── Entertainment ────────────────────────────────────────────────────────
+  {r:181, d:'netflix.com',              c:'Entertainment'},
+  {r:182, d:'spotify.com',              c:'Music'},
+  {r:183, d:'hulu.com',                 c:'Entertainment'},
+  {r:184, d:'disneyplus.com',           c:'Entertainment'},
+  {r:185, d:'hbo.com',                  c:'Entertainment'},
+  {r:186, d:'primevideo.com',           c:'Entertainment'},
+  {r:187, d:'paramountplus.com',        c:'Entertainment'},
+  {r:188, d:'peacocktv.com',            c:'Entertainment'},
+  {r:189, d:'crunchyroll.com',          c:'Entertainment'},
+  {r:190, d:'imdb.com',                 c:'Entertainment'},
+  {r:191, d:'rottentomatoes.com',       c:'Entertainment'},
+  {r:192, d:'metacritic.com',           c:'Entertainment'},
+  {r:193, d:'vimeo.com',                c:'Video'},
+  {r:194, d:'dailymotion.com',          c:'Video'},
+  {r:195, d:'rumble.com',               c:'Video'},
+  {r:196, d:'plex.tv',                  c:'Entertainment'},
+  {r:197, d:'tubi.tv',                  c:'Entertainment'},
+  {r:198, d:'pluto.tv',                 c:'Entertainment'},
+  {r:199, d:'pandora.com',              c:'Music'},
+  {r:200, d:'deezer.com',               c:'Music'},
+  // ── News ─────────────────────────────────────────────────────────────────
+  {r:201, d:'cnn.com',                  c:'News'},
+  {r:202, d:'bbc.com',                  c:'News'},
+  {r:203, d:'reuters.com',              c:'News'},
+  {r:204, d:'apnews.com',               c:'News'},
+  {r:205, d:'theguardian.com',          c:'News'},
+  {r:206, d:'nytimes.com',              c:'News'},
+  {r:207, d:'washingtonpost.com',       c:'News'},
+  {r:208, d:'foxnews.com',              c:'News'},
+  {r:209, d:'usatoday.com',             c:'News'},
+  {r:210, d:'npr.org',                  c:'News'},
+  {r:211, d:'huffpost.com',             c:'News'},
+  {r:212, d:'buzzfeed.com',             c:'News'},
+  {r:213, d:'vice.com',                 c:'News'},
+  {r:214, d:'vox.com',                  c:'News'},
+  {r:215, d:'theatlantic.com',          c:'News'},
+  {r:216, d:'economist.com',            c:'News'},
+  {r:217, d:'time.com',                 c:'News'},
+  {r:218, d:'nbcnews.com',              c:'News'},
+  {r:219, d:'cbsnews.com',              c:'News'},
+  {r:220, d:'abcnews.go.com',           c:'News'},
+  {r:221, d:'nypost.com',               c:'News'},
+  {r:222, d:'bostonglobe.com',          c:'News'},
+  {r:223, d:'latimes.com',              c:'News'},
+  {r:224, d:'chicagotribune.com',       c:'News'},
+  {r:225, d:'politico.com',             c:'News'},
+  {r:226, d:'thehill.com',              c:'News'},
+  {r:227, d:'axios.com',                c:'News'},
+  {r:228, d:'breitbart.com',            c:'News'},
+  {r:229, d:'dailywire.com',            c:'News'},
+  {r:230, d:'slate.com',                c:'News'},
+  {r:231, d:'salon.com',                c:'News'},
+  {r:232, d:'motherjones.com',          c:'News'},
+  {r:233, d:'thedailybeast.com',        c:'News'},
+  {r:234, d:'independent.co.uk',        c:'News'},
+  {r:235, d:'dailymail.co.uk',          c:'News'},
+  {r:236, d:'thesun.co.uk',             c:'News'},
+  {r:237, d:'telegraph.co.uk',          c:'News'},
+  {r:238, d:'mirror.co.uk',             c:'News'},
+  {r:239, d:'express.co.uk',            c:'News'},
+  {r:240, d:'thetimes.co.uk',           c:'News'},
+  {r:241, d:'irishtimes.com',           c:'News'},
+  {r:242, d:'elpais.com',               c:'News'},
+  {r:243, d:'elmundo.es',               c:'News'},
+  {r:244, d:'lefigaro.fr',              c:'News'},
+  {r:245, d:'lemonde.fr',               c:'News'},
+  {r:246, d:'spiegel.de',               c:'News'},
+  {r:247, d:'bild.de',                  c:'News'},
+  {r:248, d:'sueddeutsche.de',          c:'News'},
+  {r:249, d:'corriere.it',              c:'News'},
+  {r:250, d:'repubblica.it',            c:'News'},
+  {r:251, d:'globo.com',                c:'News'},
+  {r:252, d:'folha.uol.com.br',         c:'News'},
+  {r:253, d:'estadao.com.br',           c:'News'},
+  {r:254, d:'rt.com',                   c:'News'},
+  {r:255, d:'tass.ru',                  c:'News'},
+  {r:256, d:'ria.ru',                   c:'News'},
+  {r:257, d:'lenta.ru',                 c:'News'},
+  {r:258, d:'gazeta.ru',                c:'News'},
+  {r:259, d:'timesofindia.com',         c:'News'},
+  {r:260, d:'ndtv.com',                 c:'News'},
+  {r:261, d:'hindustantimes.com',       c:'News'},
+  {r:262, d:'thehindu.com',             c:'News'},
+  {r:263, d:'aljazeera.com',            c:'News'},
+  {r:264, d:'arabnews.com',             c:'News'},
+  {r:265, d:'dawn.com',                 c:'News'},
+  {r:266, d:'japantimes.co.jp',         c:'News'},
+  {r:267, d:'asahi.com',                c:'News'},
+  {r:268, d:'yomiuri.co.jp',            c:'News'},
+  {r:269, d:'straitstimes.com',         c:'News'},
+  {r:270, d:'channelnewsasia.com',      c:'News'},
+  {r:271, d:'smh.com.au',               c:'News'},
+  {r:272, d:'abc.net.au',               c:'News'},
+  {r:273, d:'nzherald.co.nz',           c:'News'},
+  {r:274, d:'xinhuanet.com',            c:'News'},
+  {r:275, d:'chinadaily.com.cn',        c:'News'},
+  {r:276, d:'ifeng.com',                c:'News'},
+  {r:277, d:'thestar.com.my',           c:'News'},
+  {r:278, d:'thedailystar.net',         c:'News'},
+  {r:279, d:'wired.com',                c:'Technology'},
+  {r:280, d:'techcrunch.com',           c:'Technology'},
+  {r:281, d:'theverge.com',             c:'Technology'},
+  {r:282, d:'engadget.com',             c:'Technology'},
+  {r:283, d:'gizmodo.com',              c:'Technology'},
+  {r:284, d:'arstechnica.com',          c:'Technology'},
+  {r:285, d:'venturebeat.com',          c:'Technology'},
+  {r:286, d:'thenextweb.com',           c:'Technology'},
+  {r:287, d:'9to5mac.com',              c:'Technology'},
+  {r:288, d:'macrumors.com',            c:'Technology'},
+  {r:289, d:'androidauthority.com',     c:'Technology'},
+  {r:290, d:'gsmarena.com',             c:'Technology'},
+  {r:291, d:'cnet.com',                 c:'Technology'},
+  {r:292, d:'pcmag.com',                c:'Technology'},
+  {r:293, d:'tomshardware.com',         c:'Technology'},
+  {r:294, d:'anandtech.com',            c:'Technology'},
+  {r:295, d:'extremetech.com',          c:'Technology'},
+  {r:296, d:'news.ycombinator.com',     c:'Technology'},
+  {r:297, d:'producthunt.com',          c:'Technology'},
+  {r:298, d:'crunchbase.com',           c:'Technology'},
+  {r:299, d:'ycombinator.com',          c:'Technology'},
+  {r:300, d:'slashdot.org',             c:'Technology'},
+  // ── Sports ───────────────────────────────────────────────────────────────
+  {r:301, d:'espn.com',                 c:'Sports'},
+  {r:302, d:'nfl.com',                  c:'Sports'},
+  {r:303, d:'nba.com',                  c:'Sports'},
+  {r:304, d:'mlb.com',                  c:'Sports'},
+  {r:305, d:'nhl.com',                  c:'Sports'},
+  {r:306, d:'fifa.com',                 c:'Sports'},
+  {r:307, d:'uefa.com',                 c:'Sports'},
+  {r:308, d:'premierleague.com',        c:'Sports'},
+  {r:309, d:'formula1.com',             c:'Sports'},
+  {r:310, d:'ufc.com',                  c:'Sports'},
+  {r:311, d:'wwe.com',                  c:'Sports'},
+  {r:312, d:'olympics.com',             c:'Sports'},
+  {r:313, d:'bleacherreport.com',       c:'Sports'},
+  {r:314, d:'cbssports.com',            c:'Sports'},
+  {r:315, d:'foxsports.com',            c:'Sports'},
+  {r:316, d:'nbcsports.com',            c:'Sports'},
+  {r:317, d:'si.com',                   c:'Sports'},
+  {r:318, d:'skysports.com',            c:'Sports'},
+  {r:319, d:'goal.com',                 c:'Sports'},
+  {r:320, d:'transfermarkt.com',        c:'Sports'},
+  {r:321, d:'sofascore.com',            c:'Sports'},
+  {r:322, d:'flashscore.com',           c:'Sports'},
+  {r:323, d:'livescore.com',            c:'Sports'},
+  {r:324, d:'basketball-reference.com', c:'Sports'},
+  {r:325, d:'baseball-reference.com',   c:'Sports'},
+  {r:326, d:'pro-football-reference.com',c:'Sports'},
+  {r:327, d:'theathletic.com',          c:'Sports'},
+  {r:328, d:'laliga.com',               c:'Sports'},
+  {r:329, d:'bundesliga.com',           c:'Sports'},
+  {r:330, d:'nascar.com',               c:'Sports'},
+  // ── Gaming ───────────────────────────────────────────────────────────────
+  {r:331, d:'steampowered.com',         c:'Gaming'},
+  {r:332, d:'epicgames.com',            c:'Gaming'},
+  {r:333, d:'roblox.com',               c:'Gaming'},
+  {r:334, d:'minecraft.net',            c:'Gaming'},
+  {r:335, d:'chess.com',                c:'Gaming'},
+  {r:336, d:'ign.com',                  c:'Gaming'},
+  {r:337, d:'gamespot.com',             c:'Gaming'},
+  {r:338, d:'polygon.com',              c:'Gaming'},
+  {r:339, d:'kotaku.com',               c:'Gaming'},
+  {r:340, d:'ea.com',                   c:'Gaming'},
+  {r:341, d:'rockstargames.com',        c:'Gaming'},
+  {r:342, d:'ubisoft.com',              c:'Gaming'},
+  {r:343, d:'blizzard.com',             c:'Gaming'},
+  {r:344, d:'gog.com',                  c:'Gaming'},
+  {r:345, d:'itch.io',                  c:'Gaming'},
+  {r:346, d:'poki.com',                 c:'Gaming'},
+  {r:347, d:'miniclip.com',             c:'Gaming'},
+  {r:348, d:'newgrounds.com',           c:'Gaming'},
+  {r:349, d:'kongregate.com',           c:'Gaming'},
+  {r:350, d:'pcgamer.com',              c:'Gaming'},
+  // ── Education ────────────────────────────────────────────────────────────
+  {r:351, d:'coursera.org',             c:'Education'},
+  {r:352, d:'udemy.com',                c:'Education'},
+  {r:353, d:'edx.org',                  c:'Education'},
+  {r:354, d:'khanacademy.org',          c:'Education'},
+  {r:355, d:'duolingo.com',             c:'Education'},
+  {r:356, d:'skillshare.com',           c:'Education'},
+  {r:357, d:'masterclass.com',          c:'Education'},
+  {r:358, d:'pluralsight.com',          c:'Education'},
+  {r:359, d:'codecademy.com',           c:'Education'},
+  {r:360, d:'freecodecamp.org',         c:'Education'},
+  {r:361, d:'w3schools.com',            c:'Education'},
+  {r:362, d:'mit.edu',                  c:'Education'},
+  {r:363, d:'harvard.edu',              c:'Education'},
+  {r:364, d:'stanford.edu',             c:'Education'},
+  {r:365, d:'ox.ac.uk',                 c:'Education'},
+  {r:366, d:'cambridge.org',            c:'Education'},
+  {r:367, d:'quizlet.com',              c:'Education'},
+  {r:368, d:'brainly.com',              c:'Education'},
+  {r:369, d:'chegg.com',                c:'Education'},
+  {r:370, d:'babbel.com',               c:'Education'},
+  {r:371, d:'rosettastone.com',         c:'Education'},
+  {r:372, d:'memrise.com',              c:'Education'},
+  {r:373, d:'italki.com',               c:'Education'},
+  {r:374, d:'preply.com',               c:'Education'},
+  {r:375, d:'busuu.com',                c:'Education'},
+  {r:376, d:'teachable.com',            c:'Education'},
+  {r:377, d:'thinkific.com',            c:'Education'},
+  {r:378, d:'kahoot.com',               c:'Education'},
+  {r:379, d:'symbaloo.com',             c:'Education'},
+  {r:380, d:'classdojo.com',            c:'Education'},
+  // ── Travel ───────────────────────────────────────────────────────────────
+  {r:381, d:'booking.com',              c:'Travel'},
+  {r:382, d:'airbnb.com',               c:'Travel'},
+  {r:383, d:'tripadvisor.com',          c:'Travel'},
+  {r:384, d:'expedia.com',              c:'Travel'},
+  {r:385, d:'kayak.com',                c:'Travel'},
+  {r:386, d:'skyscanner.com',           c:'Travel'},
+  {r:387, d:'hotels.com',               c:'Travel'},
+  {r:388, d:'priceline.com',            c:'Travel'},
+  {r:389, d:'vrbo.com',                 c:'Travel'},
+  {r:390, d:'hilton.com',               c:'Travel'},
+  {r:391, d:'marriott.com',             c:'Travel'},
+  {r:392, d:'hyatt.com',                c:'Travel'},
+  {r:393, d:'ihg.com',                  c:'Travel'},
+  {r:394, d:'united.com',               c:'Travel'},
+  {r:395, d:'delta.com',                c:'Travel'},
+  {r:396, d:'aa.com',                   c:'Travel'},
+  {r:397, d:'southwest.com',            c:'Travel'},
+  {r:398, d:'britishairways.com',       c:'Travel'},
+  {r:399, d:'lufthansa.com',            c:'Travel'},
+  {r:400, d:'emirates.com',             c:'Travel'},
+  {r:401, d:'airfrance.com',            c:'Travel'},
+  {r:402, d:'klm.com',                  c:'Travel'},
+  {r:403, d:'qatarairways.com',         c:'Travel'},
+  {r:404, d:'ctrip.com',                c:'Travel'},
+  {r:405, d:'12306.cn',                 c:'Travel'},
+  // ── Health ───────────────────────────────────────────────────────────────
+  {r:406, d:'webmd.com',                c:'Health'},
+  {r:407, d:'healthline.com',           c:'Health'},
+  {r:408, d:'mayoclinic.org',           c:'Health'},
+  {r:409, d:'nih.gov',                  c:'Health'},
+  {r:410, d:'cdc.gov',                  c:'Health'},
+  {r:411, d:'who.int',                  c:'Health'},
+  {r:412, d:'medicinenet.com',          c:'Health'},
+  {r:413, d:'medscape.com',             c:'Health'},
+  {r:414, d:'drugs.com',                c:'Health'},
+  {r:415, d:'everydayhealth.com',       c:'Health'},
+  {r:416, d:'heart.org',                c:'Health'},
+  {r:417, d:'cancer.org',               c:'Health'},
+  {r:418, d:'diabetes.org',             c:'Health'},
+  {r:419, d:'aarp.org',                 c:'Health'},
+  {r:420, d:'psychcentral.com',          c:'Health'},
+  // ── Government ───────────────────────────────────────────────────────────
+  {r:421, d:'irs.gov',                  c:'Government'},
+  {r:422, d:'usa.gov',                  c:'Government'},
+  {r:423, d:'whitehouse.gov',           c:'Government'},
+  {r:424, d:'congress.gov',             c:'Government'},
+  {r:425, d:'nasa.gov',                 c:'Government'},
+  {r:426, d:'ssa.gov',                  c:'Government'},
+  {r:427, d:'medicare.gov',             c:'Government'},
+  {r:428, d:'healthcare.gov',           c:'Government'},
+  {r:429, d:'state.gov',                c:'Government'},
+  {r:430, d:'defense.gov',              c:'Government'},
+  // ── Reference ────────────────────────────────────────────────────────────
+  {r:431, d:'wikipedia.org',            c:'Reference'},
+  {r:432, d:'merriam-webster.com',      c:'Reference'},
+  {r:433, d:'dictionary.com',           c:'Reference'},
+  {r:434, d:'thesaurus.com',            c:'Reference'},
+  {r:435, d:'britannica.com',           c:'Reference'},
+  {r:436, d:'wolframalpha.com',         c:'Reference'},
+  {r:437, d:'archive.org',              c:'Reference'},
+  {r:438, d:'gutenberg.org',            c:'Reference'},
+  {r:439, d:'urbandictionary.com',      c:'Reference'},
+  {r:440, d:'weather.com',              c:'Reference'},
+  {r:441, d:'getpocket.com',            c:'Reference'},
+  {r:442, d:'instapaper.com',           c:'Reference'},
+  {r:443, d:'feedly.com',               c:'Reference'},
+  {r:444, d:'flipboard.com',            c:'Reference'},
+  {r:445, d:'deepl.com',                c:'Reference'},
+  {r:446, d:'reverso.net',              c:'Reference'},
+  {r:447, d:'wordreference.com',        c:'Reference'},
+  {r:448, d:'spanishdict.com',          c:'Reference'},
+  {r:449, d:'symbolab.com',             c:'Reference'},
+  {r:450, d:'desmos.com',               c:'Reference'},
+  // ── Science ──────────────────────────────────────────────────────────────
+  {r:451, d:'nature.com',               c:'Science'},
+  {r:452, d:'science.org',              c:'Science'},
+  {r:453, d:'scientificamerican.com',   c:'Science'},
+  {r:454, d:'newscientist.com',         c:'Science'},
+  {r:455, d:'livescience.com',          c:'Science'},
+  {r:456, d:'space.com',                c:'Science'},
+  {r:457, d:'nationalgeographic.com',   c:'Science'},
+  {r:458, d:'smithsonianmag.com',       c:'Science'},
+  {r:459, d:'arxiv.org',                c:'Science'},
+  {r:460, d:'pubmed.ncbi.nlm.nih.gov',  c:'Science'},
+  {r:461, d:'researchgate.net',         c:'Science'},
+  {r:462, d:'academia.edu',             c:'Science'},
+  {r:463, d:'jstor.org',                c:'Science'},
+  {r:464, d:'scholar.google.com',       c:'Science'},
+  {r:465, d:'esa.int',                  c:'Science'},
+  // ── Auto ─────────────────────────────────────────────────────────────────
+  {r:466, d:'cars.com',                 c:'Auto'},
+  {r:467, d:'autotrader.com',           c:'Auto'},
+  {r:468, d:'carmax.com',               c:'Auto'},
+  {r:469, d:'carvana.com',              c:'Auto'},
+  {r:470, d:'kbb.com',                  c:'Auto'},
+  {r:471, d:'edmunds.com',              c:'Auto'},
+  {r:472, d:'ford.com',                 c:'Auto'},
+  {r:473, d:'chevrolet.com',            c:'Auto'},
+  {r:474, d:'toyota.com',               c:'Auto'},
+  {r:475, d:'honda.com',                c:'Auto'},
+  {r:476, d:'bmw.com',                  c:'Auto'},
+  {r:477, d:'mercedes-benz.com',        c:'Auto'},
+  {r:478, d:'audi.com',                 c:'Auto'},
+  {r:479, d:'volkswagen.com',           c:'Auto'},
+  {r:480, d:'tesla.com',                c:'Auto'},
+  {r:481, d:'hyundai.com',              c:'Auto'},
+  {r:482, d:'kia.com',                  c:'Auto'},
+  {r:483, d:'nissan.com',               c:'Auto'},
+  {r:484, d:'subaru.com',               c:'Auto'},
+  {r:485, d:'rivian.com',               c:'Auto'},
+  // ── Real Estate ──────────────────────────────────────────────────────────
+  {r:486, d:'zillow.com',               c:'Real Estate'},
+  {r:487, d:'realtor.com',              c:'Real Estate'},
+  {r:488, d:'redfin.com',               c:'Real Estate'},
+  {r:489, d:'trulia.com',               c:'Real Estate'},
+  {r:490, d:'apartments.com',           c:'Real Estate'},
+  {r:491, d:'rent.com',                 c:'Real Estate'},
+  {r:492, d:'opendoor.com',             c:'Real Estate'},
+  {r:493, d:'compass.com',              c:'Real Estate'},
+  {r:494, d:'century21.com',            c:'Real Estate'},
+  {r:495, d:'remax.com',                c:'Real Estate'},
+  // ── Jobs ─────────────────────────────────────────────────────────────────
+  {r:496, d:'indeed.com',               c:'Jobs'},
+  {r:497, d:'glassdoor.com',            c:'Jobs'},
+  {r:498, d:'monster.com',              c:'Jobs'},
+  {r:499, d:'ziprecruiter.com',         c:'Jobs'},
+  {r:500, d:'careerbuilder.com',        c:'Jobs'},
+  {r:501, d:'upwork.com',               c:'Jobs'},
+  {r:502, d:'fiverr.com',               c:'Jobs'},
+  {r:503, d:'freelancer.com',           c:'Jobs'},
+  {r:504, d:'toptal.com',               c:'Jobs'},
+  {r:505, d:'dice.com',                 c:'Jobs'},
+  {r:506, d:'hh.ru',                    c:'Jobs'},
+  {r:507, d:'robota.ua',                c:'Jobs'},
+  {r:508, d:'work.ua',                  c:'Jobs'},
+  {r:509, d:'naukri.com',               c:'Jobs'},
+  {r:510, d:'shine.com',                c:'Jobs'},
+  // ── Food ─────────────────────────────────────────────────────────────────
+  {r:511, d:'doordash.com',             c:'Food'},
+  {r:512, d:'ubereats.com',             c:'Food'},
+  {r:513, d:'grubhub.com',              c:'Food'},
+  {r:514, d:'instacart.com',            c:'Food'},
+  {r:515, d:'hellofresh.com',           c:'Food'},
+  {r:516, d:'allrecipes.com',           c:'Food'},
+  {r:517, d:'foodnetwork.com',          c:'Food'},
+  {r:518, d:'epicurious.com',           c:'Food'},
+  {r:519, d:'seriouseats.com',          c:'Food'},
+  {r:520, d:'yummly.com',               c:'Food'},
+  {r:521, d:'tasty.co',                 c:'Food'},
+  {r:522, d:'bonappetit.com',           c:'Food'},
+  {r:523, d:'delish.com',               c:'Food'},
+  {r:524, d:'foodandwine.com',          c:'Food'},
+  {r:525, d:'meituan.com',              c:'Food'},
+  // ── Music ────────────────────────────────────────────────────────────────
+  {r:526, d:'music.apple.com',          c:'Music'},
+  {r:527, d:'tidal.com',                c:'Music'},
+  {r:528, d:'last.fm',                  c:'Music'},
+  {r:529, d:'shazam.com',               c:'Music'},
+  {r:530, d:'genius.com',               c:'Music'},
+  {r:531, d:'bandcamp.com',             c:'Music'},
+  {r:532, d:'audiomack.com',            c:'Music'},
+  {r:533, d:'mixcloud.com',             c:'Music'},
+  {r:534, d:'jiosaavn.com',             c:'Music'},
+  {r:535, d:'gaana.com',                c:'Music'},
+  {r:536, d:'anghami.com',              c:'Music'},
+  {r:537, d:'music.yandex.com',         c:'Music'},
+  {r:538, d:'reverbnation.com',         c:'Music'},
+  {r:539, d:'pitchfork.com',            c:'Music'},
+  {r:540, d:'rollingstone.com',         c:'Music'},
+  // ── Publishing / Blogs ───────────────────────────────────────────────────
+  {r:541, d:'substack.com',             c:'Publishing'},
+  {r:542, d:'ghost.org',                c:'Publishing'},
+  {r:543, d:'blogger.com',              c:'Publishing'},
+  {r:544, d:'livejournal.com',          c:'Publishing'},
+  {r:545, d:'scribd.com',               c:'Publishing'},
+  {r:546, d:'issuu.com',                c:'Publishing'},
+  {r:547, d:'slideshare.net',           c:'Publishing'},
+  {r:548, d:'wattpad.com',              c:'Publishing'},
+  {r:549, d:'archiveofourown.org',      c:'Publishing'},
+  {r:550, d:'fanfiction.net',           c:'Publishing'},
+  {r:551, d:'royalroad.com',            c:'Publishing'},
+  {r:552, d:'webnovel.com',             c:'Publishing'},
+  {r:553, d:'kickstarter.com',          c:'Crowdfunding'},
+  {r:554, d:'indiegogo.com',            c:'Crowdfunding'},
+  {r:555, d:'gofundme.com',             c:'Crowdfunding'},
+  {r:556, d:'patreon.com',              c:'Crowdfunding'},
+  // ── Cloud & DevOps ────────────────────────────────────────────────────────
+  {r:557, d:'aws.amazon.com',           c:'Cloud'},
+  {r:558, d:'cloud.google.com',         c:'Cloud'},
+  {r:559, d:'azure.microsoft.com',      c:'Cloud'},
+  {r:560, d:'hostinger.com',            c:'Hosting'},
+  {r:561, d:'bluehost.com',             c:'Hosting'},
+  {r:562, d:'siteground.com',           c:'Hosting'},
+  {r:563, d:'weebly.com',               c:'Technology'},
+  {r:564, d:'bigcommerce.com',          c:'Technology'},
+  {r:565, d:'slack.com',                c:'Technology'},
+  {r:566, d:'trello.com',               c:'Technology'},
+  {r:567, d:'asana.com',                c:'Technology'},
+  {r:568, d:'monday.com',               c:'Technology'},
+  {r:569, d:'notion.so',                c:'Technology'},
+  {r:570, d:'airtable.com',             c:'Technology'},
+  {r:571, d:'figma.com',                c:'Technology'},
+  {r:572, d:'miro.com',                 c:'Technology'},
+  {r:573, d:'hubspot.com',              c:'Technology'},
+  {r:574, d:'mailchimp.com',            c:'Technology'},
+  {r:575, d:'sendgrid.com',             c:'Technology'},
+  {r:576, d:'twilio.com',               c:'Technology'},
+  {r:577, d:'grammarly.com',            c:'Technology'},
+  {r:578, d:'deepl.com',                c:'Technology'},
+  {r:579, d:'sentry.io',                c:'Technology'},
+  {r:580, d:'datadog.com',              c:'Technology'},
+  {r:581, d:'newrelic.com',             c:'Technology'},
+  {r:582, d:'pagerduty.com',            c:'Technology'},
+  {r:583, d:'hotjar.com',               c:'Technology'},
+  {r:584, d:'logrocket.com',            c:'Technology'},
+  {r:585, d:'optimizely.com',           c:'Technology'},
+  {r:586, d:'surveymonkey.com',         c:'Technology'},
+  {r:587, d:'typeform.com',             c:'Technology'},
+  {r:588, d:'jotform.com',              c:'Technology'},
+  {r:589, d:'tableau.com',              c:'Technology'},
+  {r:590, d:'grafana.com',              c:'Technology'},
+  {r:591, d:'elastic.co',               c:'Technology'},
+  {r:592, d:'splunk.com',               c:'Technology'},
+  {r:593, d:'servicenow.com',           c:'Technology'},
+  {r:594, d:'workday.com',              c:'Technology'},
+  {r:595, d:'zendesk.com',              c:'Technology'},
+  {r:596, d:'freshworks.com',           c:'Technology'},
+  {r:597, d:'intercom.com',             c:'Technology'},
+  {r:598, d:'drift.com',                c:'Technology'},
+  {r:599, d:'clickfunnels.com',         c:'Technology'},
+  {r:600, d:'unbounce.com',             c:'Technology'},
+  // ── Design & Creativity ──────────────────────────────────────────────────
+  {r:601, d:'behance.net',              c:'Design'},
+  {r:602, d:'dribbble.com',             c:'Design'},
+  {r:603, d:'artstation.com',           c:'Design'},
+  {r:604, d:'500px.com',                c:'Design'},
+  {r:605, d:'vsco.com',                 c:'Design'},
+  {r:606, d:'shutterstock.com',         c:'Design'},
+  {r:607, d:'gettyimages.com',          c:'Design'},
+  {r:608, d:'unsplash.com',             c:'Design'},
+  {r:609, d:'pexels.com',               c:'Design'},
+  {r:610, d:'pixabay.com',              c:'Design'},
+  {r:611, d:'freepik.com',              c:'Design'},
+  {r:612, d:'flaticon.com',             c:'Design'},
+  {r:613, d:'icons8.com',               c:'Design'},
+  {r:614, d:'fontawesome.com',          c:'Design'},
+  {r:615, d:'dafont.com',               c:'Design'},
+  {r:616, d:'coolors.co',               c:'Design'},
+  {r:617, d:'colorhunt.co',             c:'Design'},
+  {r:618, d:'invisionapp.com',          c:'Design'},
+  {r:619, d:'sketch.com',               c:'Design'},
+  {r:620, d:'zeplin.io',                c:'Design'},
+  // ── Japan/Korea specific ──────────────────────────────────────────────────
+  {r:621, d:'nicovideo.jp',             c:'Video'},
+  {r:622, d:'pixiv.net',                c:'Social'},
+  {r:623, d:'kakao.com',                c:'Social'},
+  {r:624, d:'daum.net',                 c:'Portal'},
+  {r:625, d:'nikkei.com',               c:'Finance'},
+  {r:626, d:'livedoor.com',             c:'Portal'},
+  {r:627, d:'hatena.ne.jp',             c:'Portal'},
+  {r:628, d:'cookpad.com',              c:'Food'},
+  {r:629, d:'gmarket.co.kr',            c:'E-commerce'},
+  {r:630, d:'melon.com',                c:'Music'},
+  // ── China specific ───────────────────────────────────────────────────────
+  {r:631, d:'iqiyi.com',                c:'Video'},
+  {r:632, d:'youku.com',                c:'Video'},
+  {r:633, d:'zhihu.com',                c:'Q&A'},
+  {r:634, d:'tieba.baidu.com',          c:'Forums'},
+  {r:635, d:'douyin.com',               c:'Social'},
+  {r:636, d:'kuaishou.com',             c:'Social'},
+  {r:637, d:'dianping.com',             c:'Reviews'},
+  {r:638, d:'cctv.com',                 c:'Entertainment'},
+  {r:639, d:'xigua.com',                c:'Video'},
+  {r:640, d:'mgtv.com',                 c:'Video'},
+  // ── Russia specific ───────────────────────────────────────────────────────
+  {r:641, d:'mail.ru',                  c:'Portal'},
+  {r:642, d:'rambler.ru',               c:'Portal'},
+  {r:643, d:'rbc.ru',                   c:'Finance'},
+  {r:644, d:'kommersant.ru',            c:'News'},
+  {r:645, d:'vedomosti.ru',             c:'Finance'},
+  {r:646, d:'sports.ru',                c:'Sports'},
+  {r:647, d:'gismeteo.ru',              c:'Reference'},
+  {r:648, d:'2gis.ru',                  c:'Reference'},
+  {r:649, d:'eldorado.ru',              c:'E-commerce'},
+  {r:650, d:'mvideo.ru',                c:'E-commerce'},
+  // ── India / SE Asia specific ─────────────────────────────────────────────
+  {r:651, d:'snapdeal.com',             c:'E-commerce'},
+  {r:652, d:'ajio.com',                 c:'E-commerce'},
+  {r:653, d:'meesho.com',               c:'E-commerce'},
+  {r:654, d:'bukalapak.com',            c:'E-commerce'},
+  {r:655, d:'blibli.com',               c:'E-commerce'},
+  {r:656, d:'indiatimes.com',           c:'News'},
+  {r:657, d:'economictimes.indiatimes.com', c:'Finance'},
+  {r:658, d:'oneindia.com',             c:'News'},
+  {r:659, d:'zeenews.india.com',        c:'News'},
+  {r:660, d:'moneycontrol.com',         c:'Finance'},
+  // ── Middle East / Africa ─────────────────────────────────────────────────
+  {r:661, d:'namshi.com',               c:'E-commerce'},
+  {r:662, d:'olx.in',                   c:'E-commerce'},
+  {r:663, d:'konga.com',                c:'E-commerce'},
+  {r:664, d:'zawya.com',                c:'Finance'},
+  {r:665, d:'nairaland.com',            c:'Forums'},
+  // ── Brazil / Latin America ───────────────────────────────────────────────
+  {r:666, d:'americanas.com.br',        c:'E-commerce'},
+  {r:667, d:'magazineluiza.com.br',     c:'E-commerce'},
+  {r:668, d:'netshoes.com.br',          c:'E-commerce'},
+  {r:669, d:'casasbahia.com.br',        c:'E-commerce'},
+  {r:670, d:'olx.com.br',               c:'E-commerce'},
+  // ── European regional ────────────────────────────────────────────────────
+  {r:671, d:'allegro.pl',               c:'E-commerce'},
+  {r:672, d:'olx.pl',                   c:'E-commerce'},
+  {r:673, d:'zalando.de',               c:'E-commerce'},
+  {r:674, d:'otto.de',                  c:'E-commerce'},
+  {r:675, d:'mediamarkt.de',            c:'E-commerce'},
+  {r:676, d:'kaufland.de',              c:'E-commerce'},
+  {r:677, d:'cdiscount.com',            c:'E-commerce'},
+  {r:678, d:'fnac.com',                 c:'E-commerce'},
+  {r:679, d:'darty.com',                c:'E-commerce'},
+  {r:680, d:'leboncoin.fr',             c:'E-commerce'},
+  {r:681, d:'vinted.com',               c:'E-commerce'},
+  {r:682, d:'depop.com',                c:'E-commerce'},
+  {r:683, d:'poshmark.com',             c:'E-commerce'},
+  {r:684, d:'stockx.com',               c:'E-commerce'},
+  {r:685, d:'vestiairecollective.com',  c:'E-commerce'},
+  // ── Hardware & Electronics ────────────────────────────────────────────────
+  {r:686, d:'intel.com',                c:'Technology'},
+  {r:687, d:'amd.com',                  c:'Technology'},
+  {r:688, d:'nvidia.com',               c:'Technology'},
+  {r:689, d:'samsung.com',              c:'Technology'},
+  {r:690, d:'lg.com',                   c:'Technology'},
+  {r:691, d:'sony.com',                 c:'Technology'},
+  {r:692, d:'dell.com',                 c:'Technology'},
+  {r:693, d:'hp.com',                   c:'Technology'},
+  {r:694, d:'lenovo.com',               c:'Technology'},
+  {r:695, d:'asus.com',                 c:'Technology'},
+  {r:696, d:'acer.com',                 c:'Technology'},
+  {r:697, d:'huawei.com',               c:'Technology'},
+  {r:698, d:'xiaomi.com',               c:'Technology'},
+  {r:699, d:'qualcomm.com',             c:'Technology'},
+  {r:700, d:'oneplus.com',              c:'Technology'},
+  // ── Business Tools ────────────────────────────────────────────────────────
+  {r:701, d:'yelp.com',                 c:'Business'},
+  {r:702, d:'yellowpages.com',          c:'Business'},
+  {r:703, d:'bbb.org',                  c:'Business'},
+  {r:704, d:'angieslist.com',           c:'Business'},
+  {r:705, d:'trustpilot.com',           c:'Business'},
+  {r:706, d:'g2.com',                   c:'Business'},
+  {r:707, d:'capterra.com',             c:'Business'},
+  {r:708, d:'getapp.com',               c:'Business'},
+  {r:709, d:'producthunt.com',          c:'Business'},
+  {r:710, d:'angel.co',                 c:'Business'},
+  // ── Entertainment culture ─────────────────────────────────────────────────
+  {r:711, d:'variety.com',              c:'Entertainment'},
+  {r:712, d:'hollywoodreporter.com',    c:'Entertainment'},
+  {r:713, d:'deadline.com',             c:'Entertainment'},
+  {r:714, d:'billboard.com',            c:'Entertainment'},
+  {r:715, d:'nme.com',                  c:'Entertainment'},
+  {r:716, d:'allmusic.com',             c:'Music'},
+  {r:717, d:'screenrant.com',           c:'Entertainment'},
+  {r:718, d:'cinemablend.com',          c:'Entertainment'},
+  {r:719, d:'collider.com',             c:'Entertainment'},
+  {r:720, d:'empireonline.com',         c:'Entertainment'},
+  {r:721, d:'letterboxd.com',           c:'Entertainment'},
+  {r:722, d:'filmaffinity.com',         c:'Entertainment'},
+  {r:723, d:'comicbook.com',            c:'Entertainment'},
+  {r:724, d:'cbr.com',                  c:'Entertainment'},
+  {r:725, d:'marvel.com',               c:'Entertainment'},
+  {r:726, d:'dccomics.com',             c:'Entertainment'},
+  {r:727, d:'crunchyroll.com',          c:'Entertainment'},
+  {r:728, d:'funimation.com',           c:'Entertainment'},
+  {r:729, d:'history.com',              c:'Entertainment'},
+  {r:730, d:'discovery.com',            c:'Entertainment'},
+  // ── Photography / Stock ───────────────────────────────────────────────────
+  {r:731, d:'depositphotos.com',        c:'Design'},
+  {r:732, d:'istockphoto.com',          c:'Design'},
+  {r:733, d:'dreamstime.com',           c:'Design'},
+  {r:734, d:'stocksnap.io',             c:'Design'},
+  {r:735, d:'photobucket.com',          c:'Design'},
+  {r:736, d:'redbubble.com',            c:'E-commerce'},
+  {r:737, d:'society6.com',             c:'E-commerce'},
+  {r:738, d:'teepublic.com',            c:'E-commerce'},
+  {r:739, d:'spring.com',               c:'E-commerce'},
+  {r:740, d:'printful.com',             c:'E-commerce'},
+  // ── Forums & Communities ──────────────────────────────────────────────────
+  {r:741, d:'discourse.org',            c:'Forums'},
+  {r:742, d:'flarum.org',               c:'Forums'},
+  {r:743, d:'digg.com',                 c:'Forums'},
+  {r:744, d:'hackernoon.com',           c:'Technology'},
+  {r:745, d:'dev.to',                   c:'Technology'},
+  {r:746, d:'dzone.com',                c:'Technology'},
+  {r:747, d:'infoq.com',                c:'Technology'},
+  {r:748, d:'smashingmagazine.com',     c:'Technology'},
+  {r:749, d:'css-tricks.com',           c:'Technology'},
+  {r:750, d:'codrops.com',              c:'Technology'},
+  // ── Streaming / Podcasts ──────────────────────────────────────────────────
+  {r:751, d:'anchor.fm',                c:'Music'},
+  {r:752, d:'buzzsprout.com',           c:'Music'},
+  {r:753, d:'podbean.com',              c:'Music'},
+  {r:754, d:'castbox.fm',               c:'Music'},
+  {r:755, d:'stitcher.com',             c:'Music'},
+  {r:756, d:'iheartradio.com',          c:'Music'},
+  {r:757, d:'tunein.com',               c:'Music'},
+  {r:758, d:'radionomy.com',            c:'Music'},
+  {r:759, d:'shoutcast.com',            c:'Music'},
+  {r:760, d:'live365.com',              c:'Music'},
+  // ── Productivity ─────────────────────────────────────────────────────────
+  {r:761, d:'evernote.com',             c:'Technology'},
+  {r:762, d:'todoist.com',              c:'Technology'},
+  {r:763, d:'any.do',                   c:'Technology'},
+  {r:764, d:'ticktick.com',             c:'Technology'},
+  {r:765, d:'toggl.com',                c:'Technology'},
+  {r:766, d:'clockify.me',              c:'Technology'},
+  {r:767, d:'harvest.com',              c:'Technology'},
+  {r:768, d:'freshbooks.com',           c:'Finance'},
+  {r:769, d:'quickbooks.intuit.com',    c:'Finance'},
+  {r:770, d:'xero.com',                 c:'Finance'},
+  // ── Analytics / Marketing ─────────────────────────────────────────────────
+  {r:771, d:'analytics.google.com',     c:'Technology'},
+  {r:772, d:'semrush.com',              c:'Technology'},
+  {r:773, d:'ahrefs.com',               c:'Technology'},
+  {r:774, d:'moz.com',                  c:'Technology'},
+  {r:775, d:'similarweb.com',           c:'Technology'},
+  {r:776, d:'alexa.com',                c:'Technology'},
+  {r:777, d:'statcounter.com',          c:'Technology'},
+  {r:778, d:'crazyegg.com',             c:'Technology'},
+  {r:779, d:'mixpanel.com',             c:'Technology'},
+  {r:780, d:'amplitude.com',            c:'Technology'},
+  // ── VPN / Privacy ─────────────────────────────────────────────────────────
+  {r:781, d:'nordvpn.com',              c:'Technology'},
+  {r:782, d:'expressvpn.com',           c:'Technology'},
+  {r:783, d:'surfshark.com',            c:'Technology'},
+  {r:784, d:'protonvpn.com',            c:'Technology'},
+  {r:785, d:'privateinternetaccess.com',c:'Technology'},
+  {r:786, d:'mullvad.net',              c:'Technology'},
+  {r:787, d:'torproject.org',           c:'Technology'},
+  {r:788, d:'protonmail.com',           c:'Technology'},
+  {r:789, d:'tutanota.com',             c:'Technology'},
+  {r:790, d:'signal.org',               c:'Messaging'},
+  // ── Email Services ────────────────────────────────────────────────────────
+  {r:791, d:'gmail.com',                c:'Email'},
+  {r:792, d:'outlook.com',              c:'Email'},
+  {r:793, d:'mail.yahoo.com',           c:'Email'},
+  {r:794, d:'mail.google.com',          c:'Email'},
+  {r:795, d:'icloud.com',               c:'Email'},
+  {r:796, d:'zoho.com',                 c:'Email'},
+  {r:797, d:'fastmail.com',             c:'Email'},
+  {r:798, d:'mailbox.org',              c:'Email'},
+  {r:799, d:'hey.com',                  c:'Email'},
+  {r:800, d:'guerrillamail.com',        c:'Email'},
+  // ── Maps / Location ───────────────────────────────────────────────────────
+  {r:801, d:'maps.google.com',          c:'Reference'},
+  {r:802, d:'openstreetmap.org',        c:'Reference'},
+  {r:803, d:'here.com',                 c:'Reference'},
+  {r:804, d:'mapquest.com',             c:'Reference'},
+  {r:805, d:'waze.com',                 c:'Reference'},
+  // ── Domain / WHOIS ────────────────────────────────────────────────────────
+  {r:806, d:'whois.com',                c:'Technology'},
+  {r:807, d:'domaintools.com',          c:'Technology'},
+  {r:808, d:'dnschecker.org',           c:'Technology'},
+  {r:809, d:'mxtoolbox.com',            c:'Technology'},
+  {r:810, d:'shodan.io',                c:'Technology'},
+  // ── Cryptocurrency ───────────────────────────────────────────────────────
+  {r:811, d:'coinmarketcap.com',        c:'Finance'},
+  {r:812, d:'coingecko.com',            c:'Finance'},
+  {r:813, d:'blockchain.com',           c:'Finance'},
+  {r:814, d:'etherscan.io',             c:'Finance'},
+  {r:815, d:'crypto.com',               c:'Finance'},
+  {r:816, d:'okx.com',                  c:'Finance'},
+  {r:817, d:'bybit.com',                c:'Finance'},
+  {r:818, d:'kucoin.com',               c:'Finance'},
+  {r:819, d:'gate.io',                  c:'Finance'},
+  {r:820, d:'huobi.com',                c:'Finance'},
+  // ── AI & Machine Learning ─────────────────────────────────────────────────
+  {r:821, d:'openai.com',               c:'Technology'},
+  {r:822, d:'chat.openai.com',          c:'Technology'},
+  {r:823, d:'claude.ai',                c:'Technology'},
+  {r:824, d:'gemini.google.com',        c:'Technology'},
+  {r:825, d:'huggingface.co',           c:'Technology'},
+  {r:826, d:'midjourney.com',           c:'Technology'},
+  {r:827, d:'stability.ai',             c:'Technology'},
+  {r:828, d:'replicate.com',            c:'Technology'},
+  {r:829, d:'runway.ml',                c:'Technology'},
+  {r:830, d:'perplexity.ai',            c:'Technology'},
+  // ── Web3 / NFT ────────────────────────────────────────────────────────────
+  {r:831, d:'opensea.io',               c:'Finance'},
+  {r:832, d:'rarible.com',              c:'Finance'},
+  {r:833, d:'foundation.app',           c:'Finance'},
+  {r:834, d:'niftygateway.com',         c:'Finance'},
+  {r:835, d:'superrare.com',            c:'Finance'},
+  // ── Home Improvement / DIY ────────────────────────────────────────────────
+  {r:836, d:'instructables.com',        c:'Reference'},
+  {r:837, d:'diy.com',                  c:'Reference'},
+  {r:838, d:'familyhandyman.com',       c:'Reference'},
+  {r:839, d:'thisoldhouse.com',         c:'Reference'},
+  {r:840, d:'hgtv.com',                 c:'Entertainment'},
+  // ── Legal ────────────────────────────────────────────────────────────────
+  {r:841, d:'findlaw.com',              c:'Reference'},
+  {r:842, d:'avvo.com',                 c:'Reference'},
+  {r:843, d:'justia.com',               c:'Reference'},
+  {r:844, d:'law.cornell.edu',          c:'Reference'},
+  {r:845, d:'legalzoom.com',            c:'Reference'},
+  // ── Fitness ──────────────────────────────────────────────────────────────
+  {r:846, d:'strava.com',               c:'Sports'},
+  {r:847, d:'myfitnesspal.com',         c:'Health'},
+  {r:848, d:'fitbit.com',               c:'Health'},
+  {r:849, d:'garmin.com',               c:'Health'},
+  {r:850, d:'nike.com',                 c:'Sports'},
+  {r:851, d:'adidas.com',               c:'Sports'},
+  {r:852, d:'underarmour.com',          c:'Sports'},
+  {r:853, d:'lululemon.com',            c:'Sports'},
+  {r:854, d:'peloton.com',              c:'Health'},
+  {r:855, d:'bodybuilding.com',         c:'Health'},
+  // ── Home & Garden ─────────────────────────────────────────────────────────
+  {r:856, d:'houzz.com',                c:'Real Estate'},
+  {r:857, d:'bhg.com',                  c:'Reference'},
+  {r:858, d:'marthastewart.com',         c:'Reference'},
+  {r:859, d:'apartmenttherapy.com',     c:'Reference'},
+  {r:860, d:'architecturaldigest.com',  c:'Reference'},
+  // ── Kids & Parenting ─────────────────────────────────────────────────────
+  {r:861, d:'pbskids.org',              c:'Education'},
+  {r:862, d:'nick.com',                 c:'Education'},
+  {r:863, d:'cartoonnetwork.com',       c:'Entertainment'},
+  {r:864, d:'disney.com',               c:'Entertainment'},
+  {r:865, d:'sesamestreet.org',         c:'Education'},
+  // ── Coding / Developer ───────────────────────────────────────────────────
+  {r:866, d:'replit.com',               c:'Technology'},
+  {r:867, d:'codepen.io',               c:'Technology'},
+  {r:868, d:'jsfiddle.net',             c:'Technology'},
+  {r:869, d:'codesandbox.io',           c:'Technology'},
+  {r:870, d:'leetcode.com',             c:'Technology'},
+  {r:871, d:'hackerrank.com',           c:'Technology'},
+  {r:872, d:'codewars.com',             c:'Technology'},
+  {r:873, d:'exercism.org',             c:'Technology'},
+  {r:874, d:'projecteuler.net',         c:'Technology'},
+  {r:875, d:'codeforces.com',           c:'Technology'},
+  // ── Misc useful sites ─────────────────────────────────────────────────────
+  {r:876, d:'speedtest.net',            c:'Reference'},
+  {r:877, d:'fast.com',                 c:'Reference'},
+  {r:878, d:'whatsmyip.org',            c:'Reference'},
+  {r:879, d:'downdetector.com',         c:'Reference'},
+  {r:880, d:'pastebin.com',             c:'Reference'},
+  {r:881, d:'hastebin.com',             c:'Reference'},
+  {r:882, d:'gist.github.com',          c:'Technology'},
+  {r:883, d:'regex101.com',             c:'Technology'},
+  {r:884, d:'crontab.guru',             c:'Technology'},
+  {r:885, d:'jsonlint.com',             c:'Technology'},
+  {r:886, d:'base64encode.org',         c:'Technology'},
+  {r:887, d:'jwt.io',                   c:'Technology'},
+  {r:888, d:'swagger.io',               c:'Technology'},
+  {r:889, d:'postman.com',              c:'Technology'},
+  {r:890, d:'insomnia.rest',            c:'Technology'},
+  // ── More E-commerce ───────────────────────────────────────────────────────
+  {r:891, d:'rakuten.fr',               c:'E-commerce'},
+  {r:892, d:'fnac.com',                 c:'E-commerce'},
+  {r:893, d:'elcorteingles.es',         c:'E-commerce'},
+  {r:894, d:'pccomponentes.com',        c:'E-commerce'},
+  {r:895, d:'alternate.de',             c:'E-commerce'},
+  {r:896, d:'cyberport.de',             c:'E-commerce'},
+  {r:897, d:'notebooksbilliger.de',     c:'E-commerce'},
+  {r:898, d:'galaxus.ch',               c:'E-commerce'},
+  {r:899, d:'digitec.ch',               c:'E-commerce'},
+  {r:900, d:'bol.com',                  c:'E-commerce'},
+  // ── More Technology ───────────────────────────────────────────────────────
+  {r:901, d:'zoho.com',                 c:'Technology'},
+  {r:902, d:'freshdesk.com',            c:'Technology'},
+  {r:903, d:'basecamp.com',             c:'Technology'},
+  {r:904, d:'podio.com',                c:'Technology'},
+  {r:905, d:'wrike.com',                c:'Technology'},
+  {r:906, d:'smartsheet.com',           c:'Technology'},
+  {r:907, d:'clickup.com',              c:'Technology'},
+  {r:908, d:'linear.app',               c:'Technology'},
+  {r:909, d:'height.app',               c:'Technology'},
+  {r:910, d:'plane.so',                 c:'Technology'},
+  // ── More Social / Community ───────────────────────────────────────────────
+  {r:911, d:'nextdoor.com',             c:'Social'},
+  {r:912, d:'meetup.com',               c:'Social'},
+  {r:913, d:'eventbrite.com',           c:'Social'},
+  {r:914, d:'twoo.com',                 c:'Social'},
+  {r:915, d:'match.com',                c:'Social'},
+  {r:916, d:'tinder.com',               c:'Social'},
+  {r:917, d:'bumble.com',               c:'Social'},
+  {r:918, d:'okcupid.com',              c:'Social'},
+  {r:919, d:'hinge.co',                 c:'Social'},
+  {r:920, d:'badoo.com',                c:'Social'},
+  // ── More Finance ─────────────────────────────────────────────────────────
+  {r:921, d:'wise.com',                 c:'Finance'},
+  {r:922, d:'revolut.com',              c:'Finance'},
+  {r:923, d:'n26.com',                  c:'Finance'},
+  {r:924, d:'monzo.com',                c:'Finance'},
+  {r:925, d:'chime.com',                c:'Finance'},
+  {r:926, d:'cashapp.com',              c:'Finance'},
+  {r:927, d:'venmo.com',                c:'Finance'},
+  {r:928, d:'zelle.com',                c:'Finance'},
+  {r:929, d:'affirm.com',               c:'Finance'},
+  {r:930, d:'klarna.com',               c:'Finance'},
+  // ── Additional Global Sites ───────────────────────────────────────────────
+  {r:931, d:'yandex.com',               c:'Search'},
+  {r:932, d:'baidu.com',                c:'Search'},
+  {r:933, d:'seznam.cz',                c:'Search'},
+  {r:934, d:'ecosia.org',               c:'Search'},
+  {r:935, d:'startpage.com',            c:'Search'},
+  {r:936, d:'brave.com',                c:'Technology'},
+  {r:937, d:'firefox.com',              c:'Technology'},
+  {r:938, d:'chromium.org',             c:'Technology'},
+  {r:939, d:'opera.com',                c:'Technology'},
+  {r:940, d:'vivaldi.com',              c:'Technology'},
+  {r:941, d:'linode.com',               c:'Cloud'},
+  {r:942, d:'vultr.com',                c:'Cloud'},
+  {r:943, d:'hetzner.com',              c:'Cloud'},
+  {r:944, d:'ovhcloud.com',             c:'Cloud'},
+  {r:945, d:'scaleway.com',             c:'Cloud'},
+  {r:946, d:'render.com',               c:'Cloud'},
+  {r:947, d:'railway.app',              c:'Cloud'},
+  {r:948, d:'fly.io',                   c:'Cloud'},
+  {r:949, d:'supabase.com',             c:'Technology'},
+  {r:950, d:'firebase.google.com',      c:'Technology'},
+  {r:951, d:'mongodb.com',              c:'Technology'},
+  {r:952, d:'postgresql.org',           c:'Technology'},
+  {r:953, d:'mysql.com',                c:'Technology'},
+  {r:954, d:'redis.io',                 c:'Technology'},
+  {r:955, d:'sqlite.org',               c:'Technology'},
+  {r:956, d:'kafka.apache.org',         c:'Technology'},
+  {r:957, d:'rabbitmq.com',             c:'Technology'},
+  {r:958, d:'celeryproject.org',        c:'Technology'},
+  {r:959, d:'fastapi.tiangolo.com',     c:'Technology'},
+  {r:960, d:'djangoproject.com',        c:'Technology'},
+  {r:961, d:'flask.palletsprojects.com',c:'Technology'},
+  {r:962, d:'expressjs.com',            c:'Technology'},
+  {r:963, d:'nestjs.com',               c:'Technology'},
+  {r:964, d:'spring.io',                c:'Technology'},
+  {r:965, d:'laravel.com',              c:'Technology'},
+  {r:966, d:'symfony.com',              c:'Technology'},
+  {r:967, d:'rubyonrails.org',          c:'Technology'},
+  {r:968, d:'golang.org',               c:'Technology'},
+  {r:969, d:'rust-lang.org',            c:'Technology'},
+  {r:970, d:'kotlinlang.org',           c:'Technology'},
+  {r:971, d:'swift.org',                c:'Technology'},
+  {r:972, d:'typescriptlang.org',       c:'Technology'},
+  {r:973, d:'lua.org',                  c:'Technology'},
+  {r:974, d:'perl.org',                 c:'Technology'},
+  {r:975, d:'haskell.org',              c:'Technology'},
+  {r:976, d:'scala-lang.org',           c:'Technology'},
+  {r:977, d:'elixir-lang.org',          c:'Technology'},
+  {r:978, d:'clojure.org',              c:'Technology'},
+  {r:979, d:'r-project.org',            c:'Technology'},
+  {r:980, d:'julialang.org',            c:'Technology'},
+  {r:981, d:'unity.com',                c:'Gaming'},
+  {r:982, d:'unrealengine.com',         c:'Gaming'},
+  {r:983, d:'godotengine.org',          c:'Gaming'},
+  {r:984, d:'pygame.org',               c:'Gaming'},
+  {r:985, d:'phaser.io',                c:'Gaming'},
+  {r:986, d:'threejs.org',              c:'Technology'},
+  {r:987, d:'babylonjs.com',            c:'Technology'},
+  {r:988, d:'webgl.org',                c:'Technology'},
+  {r:989, d:'webassembly.org',          c:'Technology'},
+  {r:990, d:'pwa.rocks',                c:'Technology'},
+  {r:991, d:'web.dev',                  c:'Technology'},
+  {r:992, d:'caniuse.com',              c:'Technology'},
+  {r:993, d:'bundlephobia.com',         c:'Technology'},
+  {r:994, d:'packagephobia.com',        c:'Technology'},
+  {r:995, d:'libraries.io',             c:'Technology'},
+  {r:996, d:'snyk.io',                  c:'Technology'},
+  {r:997, d:'sonarqube.org',            c:'Technology'},
+  {r:998, d:'codecov.io',               c:'Technology'},
+  {r:999, d:'coveralls.io',             c:'Technology'},
+  {r:1000,d:'travis-ci.com',            c:'Technology'},
+];
+
+// Deduplicate (safety net)
+(function dedup() {
+  const seen = new Set();
+  for (let i = SITES.length - 1; i >= 0; i--) {
+    if (seen.has(SITES[i].d)) SITES.splice(i, 1);
+    else seen.add(SITES[i].d);
+  }
+}());
+
+// Compute URL
+SITES.forEach(s => { s.u = 'https://' + s.d; });
+
+// ── State ─────────────────────────────────────────────────────────────────────
+const state = {};   // domain -> {status:'idle'|'running'|'ok'|'fail', result, error}
+SITES.forEach(s => { state[s.d] = { status: 'idle' }; });
+
+let queue        = [];
+let running      = 0;
+let paused       = false;
+let cancelled    = false;
+let queueTotal   = 0;
+let queueDone    = 0;
+
+// ── Config ────────────────────────────────────────────────────────────────────
+function getConfig() {
+  return {
+    apiBase: (document.getElementById('apiBase').value || '').replace(/\/$/, ''),
+    apiKey:  document.getElementById('apiKey').value || '',
+  };
+}
+function saveConfig() {
+  const { apiBase, apiKey } = getConfig();
+  if (apiBase) localStorage.setItem('sa_apiBase', apiBase);
+  if (apiKey)  localStorage.setItem('sa_apiKey', apiKey);
+}
+function loadConfig() {
+  const defBase = window.location.origin !== 'null' ? window.location.origin : 'http://127.0.0.1:8000';
+  document.getElementById('apiBase').value = localStorage.getItem('sa_apiBase') || defBase;
+  document.getElementById('apiKey').value  = localStorage.getItem('sa_apiKey')  || '';
+}
+
+// ── API ───────────────────────────────────────────────────────────────────────
+async function api(method, path, body) {
+  const { apiBase, apiKey } = getConfig();
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json', 'X-API-KEY': apiKey },
+  };
+  if (body !== undefined) opts.body = JSON.stringify(body);
+  let resp;
+  try {
+    resp = await fetch(apiBase + path, opts);
+  } catch (e) {
+    throw new Error('Network error: ' + e.message);
+  }
+  const data = await resp.json().catch(() => ({ detail: resp.statusText }));
+  if (!resp.ok) {
+    let msg = data.detail;
+    if (Array.isArray(msg)) msg = msg.map(e => `${e.loc ? e.loc.slice(1).join('.') + ': ' : ''}${e.msg}`).join('; ');
+    else if (typeof msg !== 'string') msg = JSON.stringify(msg);
+    throw new Error(msg || `HTTP ${resp.status}`);
+  }
+  return data;
+}
+
+// ── Health check ──────────────────────────────────────────────────────────────
+async function checkHealth() {
+  const el = document.getElementById('healthStatus');
+  el.textContent = '…';
+  try {
+    const r = await api('GET', '/health');
+    el.innerHTML = `<span class="badge ${r.status === 'ok' ? 'badge-ok' : 'badge-run'}">${esc(r.status)}</span>`;
+  } catch (e) {
+    el.innerHTML = `<span class="badge badge-fail">error</span> ${esc(e.message)}`;
+  }
+}
+
+// ── Rendering ─────────────────────────────────────────────────────────────────
+function buildTable() {
+  // Populate category filter
+  const cats = [...new Set(SITES.map(s => s.c))].sort();
+  const cf = document.getElementById('catFilter');
+  cats.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; cf.appendChild(o); });
+
+  // Build rows
+  const tbody = document.getElementById('tbody');
+  const frag  = document.createDocumentFragment();
+  SITES.forEach(site => {
+    const tr = document.createElement('tr');
+    tr.id = 'row-' + esc(site.d);
+    tr.dataset.rank = site.r;
+    tr.dataset.domain = site.d.toLowerCase();
+    tr.dataset.cat  = site.c.toLowerCase();
+    tr.dataset.status = 'idle';
+    tr.innerHTML = `
+      <td><input type="checkbox" class="sel-chk row-chk" data-domain="${esc(site.d)}" onchange="updateSelCount()"></td>
+      <td class="rank-cell">${site.r}</td>
+      <td class="domain-cell">
+        <a href="${esc(site.u)}" target="_blank" rel="noopener noreferrer">${esc(site.d)}</a>
+      </td>
+      <td class="cat-cell">${esc(site.c)}</td>
+      <td class="status-cell" id="st-${esc(site.d)}"><span class="badge badge-idle">idle</span></td>
+      <td class="actions-cell">
+        <button class="btn btn-primary btn-xs" onclick="scrapeSingle('${esc(site.d)}', '${esc(site.u)}')">▶ Scrape</button>
+        <button class="btn btn-secondary btn-xs" onclick="statusSingle('${esc(site.d)}', '${esc(site.u)}')">Status</button>
+        <button class="btn btn-secondary btn-xs" id="expand-${esc(site.d)}" onclick="toggleDetail('${esc(site.d)}')" style="display:none">⌄</button>
+      </td>`;
+    frag.appendChild(tr);
+
+    // Detail row
+    const dr = document.createElement('tr');
+    dr.id = 'detail-' + esc(site.d);
+    dr.className = 'detail-row';
+    dr.innerHTML = `<td colspan="6" class="detail-td"><div id="detail-inner-${esc(site.d)}" class="detail-inner"></div></td>`;
+    frag.appendChild(dr);
+  });
+  tbody.appendChild(frag);
+  updateStats();
+}
+
+// ── Filter / sort ─────────────────────────────────────────────────────────────
+let currentSort = { col: 'r', dir: 'asc' };
+
+function applyFilter() {
+  const q   = document.getElementById('searchInput').value.toLowerCase().trim();
+  const cat = document.getElementById('catFilter').value.toLowerCase();
+  const sts = document.getElementById('statusFilter').value;
+
+  let visible = 0;
+  document.querySelectorAll('#tbody tr[id^="row-"]').forEach(tr => {
+    const domainMatch = !q   || tr.dataset.domain.includes(q);
+    const catMatch    = !cat || tr.dataset.cat === cat;
+    const stsMatch    = !sts || tr.dataset.status === sts;
+    const show = domainMatch && catMatch && stsMatch;
+    tr.classList.toggle('hidden-row', !show);
+    // Also hide the matching detail row
+    const dr = document.getElementById('detail-' + tr.id.replace('row-', ''));
+    if (dr) dr.classList.toggle('hidden-row', !show);
+    if (show) visible++;
+  });
+
+  document.getElementById('statVisible').textContent = visible;
+  document.getElementById('noResults').style.display = visible === 0 ? '' : 'none';
+  updateSelCount();
+}
+
+function sortBy(col, th) {
+  const dir = (currentSort.col === col && currentSort.dir === 'asc') ? 'desc' : 'asc';
+  currentSort = { col, dir };
+
+  document.querySelectorAll('th.sortable').forEach(t => t.classList.remove('sort-asc','sort-desc'));
+  th.classList.add(dir === 'asc' ? 'sort-asc' : 'sort-desc');
+
+  const tbody = document.getElementById('tbody');
+  const rows  = [...tbody.querySelectorAll('tr[id^="row-"]')];
+  rows.sort((a, b) => {
+    let av = col === 'r' ? Number(a.dataset.rank) : (col === 'd' ? a.dataset.domain : a.dataset.cat);
+    let bv = col === 'r' ? Number(b.dataset.rank) : (col === 'd' ? b.dataset.domain : b.dataset.cat);
+    if (av < bv) return dir === 'asc' ? -1 : 1;
+    if (av > bv) return dir === 'asc' ?  1 : -1;
+    return 0;
+  });
+
+  rows.forEach(r => {
+    const domain = r.id.replace('row-', '');
+    const dr = document.getElementById('detail-' + domain);
+    tbody.appendChild(r);
+    if (dr) tbody.appendChild(dr);
+  });
+}
+
+// ── Scrape a single site ──────────────────────────────────────────────────────
+async function scrapeSingle(domain, url, isQueued = false) {
+  setStatus(domain, 'running');
+  try {
+    const strategy = document.getElementById('forceStrategy').value || undefined;
+    const body = { url };
+    if (strategy) body.force_strategy = strategy;
+    const result = await api('POST', '/scrape', body);
+    state[domain] = { status: 'ok', result };
+    setStatus(domain, 'ok');
+    renderDetail(domain, result, null);
+  } catch (e) {
+    state[domain] = { status: 'fail', error: e.message };
+    setStatus(domain, 'fail');
+    renderDetail(domain, null, e.message);
+  } finally {
+    if (!isQueued) updateStats();
+  }
+}
+
+async function statusSingle(domain, url) {
+  setStatus(domain, 'running');
+  try {
+    const result = await api('GET', '/status/' + encodeURIComponent(url));
+    state[domain] = { status: 'ok', result };
+    setStatus(domain, 'ok');
+    renderStatusDetail(domain, result);
+  } catch (e) {
+    state[domain] = { status: 'fail', error: e.message };
+    setStatus(domain, 'fail');
+    renderDetail(domain, null, e.message);
+  } finally {
+    updateStats();
+  }
+}
+
+// ── Queue ─────────────────────────────────────────────────────────────────────
+function scrapeAllVisible() {
+  const domains = getVisibleDomains();
+  if (!domains.length) return;
+  startQueue(domains);
+}
+
+function scrapeSelected() {
+  const domains = getSelectedDomains();
+  if (!domains.length) { alert('Check some rows first.'); return; }
+  startQueue(domains);
+}
+
+function getVisibleDomains() {
+  return [...document.querySelectorAll('#tbody tr[id^="row-"]:not(.hidden-row)')]
+    .map(tr => ({ domain: tr.id.replace('row-', ''), url: 'https://' + tr.id.replace('row-', '') }));
+}
+
+function getSelectedDomains() {
+  return [...document.querySelectorAll('.row-chk:checked')]
+    .map(chk => ({ domain: chk.dataset.domain, url: 'https://' + chk.dataset.domain }));
+}
+
+function startQueue(items) {
+  queue      = [...items];
+  paused     = false;
+  cancelled  = false;
+  queueTotal = items.length;
+  queueDone  = 0;
+
+  document.getElementById('pauseBtn').style.display  = '';
+  document.getElementById('cancelBtn').style.display = '';
+  document.getElementById('scrapeAllBtn').disabled   = true;
+  document.getElementById('scrapeSelBtn').disabled   = true;
+
+  const conc = Math.max(1, Math.min(10, parseInt(document.getElementById('concurrency').value, 10) || 1));
+  for (let i = 0; i < conc; i++) runNext();
+}
+
+async function runNext() {
+  if (cancelled || paused || queue.length === 0) {
+    running = Math.max(0, running - 1);
+    if (running === 0 && (cancelled || queue.length === 0)) finaliseQueue();
+    updateStats();
+    return;
+  }
+  const item = queue.shift();
+  running++;
+  updateStats();
+  await scrapeSingle(item.domain, item.url, true);
+  queueDone++;
+  running--;
+  updateQueueProgress();
+  updateStats();
+  runNext();
+}
+
+function updateQueueProgress() {
+  const pct = queueTotal > 0 ? (queueDone / queueTotal * 100) : 0;
+  document.getElementById('queueFill').style.width = pct + '%';
+}
+
+function finaliseQueue() {
+  document.getElementById('pauseBtn').style.display  = 'none';
+  document.getElementById('cancelBtn').style.display = 'none';
+  document.getElementById('scrapeAllBtn').disabled   = false;
+  document.getElementById('scrapeSelBtn').disabled   = false;
+  document.getElementById('queueFill').style.width   = '0%';
+  queue = [];
+}
+
+function togglePause() {
+  paused = !paused;
+  const btn = document.getElementById('pauseBtn');
+  btn.textContent = paused ? '▶ Resume' : '⏸ Pause';
+  if (!paused) {
+    const conc = Math.max(1, Math.min(10, parseInt(document.getElementById('concurrency').value, 10) || 1));
+    for (let i = 0; i < conc; i++) runNext();
+  }
+}
+
+function cancelQueue() {
+  cancelled = true;
+  queue = [];
+  finaliseQueue();
+}
+
+// ── Detail rendering ──────────────────────────────────────────────────────────
+function renderDetail(domain, result, errMsg) {
+  const container = document.getElementById('detail-inner-' + domain);
+  if (!container) return;
+
+  if (errMsg) {
+    container.innerHTML = `<div class="detail-status">
+      <span class="badge badge-fail">✗ Error</span>
+      <span style="color:var(--fail)">${esc(errMsg)}</span>
+    </div>`;
+  } else {
+    const ok = result.scraping_success;
+    const stratText = result.strategy_used ? `strategy: <b>${esc(result.strategy_used)}</b>` : '';
+    const kb = result.html ? (result.html.length / 1024).toFixed(1) + ' KB' : '—';
+    const preview = result.html
+      ? esc(result.html.slice(0, 4000)) + (result.html.length > 4000 ? '\n…(truncated)' : '')
+      : '';
+
+    container.innerHTML = `
+      <div class="detail-status">
+        <span class="badge ${ok ? 'badge-ok' : 'badge-fail'}">${ok ? '✓ Success' : '✗ Failed'}</span>
+        <span class="text-muted">${esc(result.message || '')}</span>
+        ${stratText ? `<span class="text-muted">&middot; ${stratText}</span>` : ''}
+      </div>
+      <div class="detail-meta">
+        ${result.html ? `<span>Size: <b>${esc(kb)}</b></span>` : ''}
+        ${result.credits_remaining !== undefined ? `<span>Credits left: <b>${esc(String(result.credits_remaining))}</b></span>` : ''}
+        ${result.scrape_time_ms    !== undefined ? `<span>Time: <b>${esc(String(result.scrape_time_ms))}ms</b></span>` : ''}
+      </div>
+      ${preview ? `<div class="html-pre">${preview}</div>` : ''}
+      <div class="detail-actions">
+        ${result.html ? `<button class="btn btn-secondary btn-xs" onclick="copyHtml('${esc(domain)}')">⧉ Copy HTML</button>` : ''}
+        <button class="btn btn-secondary btn-xs" onclick="copyJson('${esc(domain)}')">{ } Copy JSON</button>
+      </div>`;
+  }
+
+  openDetail(domain);
+}
+
+function renderStatusDetail(domain, result) {
+  const container = document.getElementById('detail-inner-' + domain);
+  if (!container) return;
+  if (!result.found) {
+    container.innerHTML = `<div class="detail-status"><span class="badge badge-idle">Not found</span><span class="text-muted">No stored record for this URL.</span></div>`;
+  } else {
+    const rec = result.record;
+    let rows = '';
+    for (const [k, v] of Object.entries(rec)) {
+      if (v === null || v === undefined || k === 'url' || k === 'last_success_html') continue;
+      rows += `<span>${esc(k.replace(/_/g,' '))}: <b>${esc(String(v))}</b></span>`;
+    }
+    container.innerHTML = `<div class="detail-status"><span class="badge badge-info">Record</span></div><div class="detail-meta">${rows}</div>`;
+  }
+  openDetail(domain);
+}
+
+function openDetail(domain) {
+  const dr  = document.getElementById('detail-' + domain);
+  const btn = document.getElementById('expand-' + domain);
+  if (dr) { dr.classList.add('open'); dr.classList.remove('hidden-row'); }
+  if (btn) { btn.style.display = ''; btn.textContent = '⌃'; }
+}
+
+function toggleDetail(domain) {
+  const dr  = document.getElementById('detail-' + domain);
+  const btn = document.getElementById('expand-' + domain);
+  if (!dr) return;
+  const isOpen = dr.classList.contains('open');
+  dr.classList.toggle('open', !isOpen);
+  if (btn) btn.textContent = isOpen ? '⌄' : '⌃';
+}
+
+// ── Status badge ──────────────────────────────────────────────────────────────
+function setStatus(domain, sts) {
+  const el = document.getElementById('st-' + domain);
+  const tr = document.getElementById('row-' + domain);
+  if (!el) return;
+  const map = {
+    idle:    ['badge-idle',  'idle'],
+    running: ['badge-run',   '⏳ running'],
+    ok:      ['badge-ok',    '✓ ok'],
+    fail:    ['badge-fail',  '✗ failed'],
+  };
+  const [cls, label] = map[sts] || map.idle;
+  el.innerHTML = `<span class="badge ${cls}">${label}</span>`;
+  if (tr) tr.dataset.status = sts;
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+function updateStats() {
+  const statuses = Object.values(state).map(s => s.status);
+  document.getElementById('statRunning').textContent = running;
+  document.getElementById('statQueued').textContent  = queue.length;
+  document.getElementById('statDone').textContent    = statuses.filter(s => s === 'ok').length;
+  document.getElementById('statFailed').textContent  = statuses.filter(s => s === 'fail').length;
+  updateSelCount();
+}
+
+function updateSelCount() {
+  const checked = document.querySelectorAll('.row-chk:checked').length;
+  document.getElementById('statSelected').textContent = checked;
+}
+
+// ── Select all ────────────────────────────────────────────────────────────────
+let allSelected = false;
+function toggleSelectAll() {
+  allSelected = !allSelected;
+  document.querySelectorAll('#tbody tr[id^="row-"]:not(.hidden-row) .row-chk').forEach(chk => {
+    chk.checked = allSelected;
+  });
+  updateSelCount();
+}
+
+function masterSelect(chk) {
+  document.querySelectorAll('#tbody tr[id^="row-"]:not(.hidden-row) .row-chk').forEach(c => {
+    c.checked = chk.checked;
+  });
+  updateSelCount();
+}
+
+// ── Copy helpers ──────────────────────────────────────────────────────────────
+function copyHtml(domain) {
+  const s = state[domain];
+  if (s && s.result && s.result.html) {
+    navigator.clipboard.writeText(s.result.html).catch(() => {});
+  }
+}
+function copyJson(domain) {
+  const s = state[domain];
+  if (s && s.result) {
+    navigator.clipboard.writeText(JSON.stringify(s.result, null, 2)).catch(() => {});
+  }
+}
+
+// ── Utilities ─────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+(function init() {
+  loadConfig();
+  buildTable();
+  applyFilter();
+}());
+</script>
+</body>
+</html>

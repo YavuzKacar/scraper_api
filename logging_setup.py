@@ -96,6 +96,18 @@ def setup_logging(log_level: str = "INFO", log_dir: str = "logs") -> None:
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
 
+    # Suppress the benign Windows-only stem SocketClosed noise.
+    # When the Tor controller socket is closed, stem's background listener
+    # thread logs "Error while receiving a control message (SocketClosed)"
+    # with WinError 10038 ("not a socket").  The NEWNYM signal was already
+    # sent successfully at that point — this is purely cosmetic.
+    class _StemSocketClosedFilter(logging.Filter):
+        def filter(self, record: logging.LogRecord) -> bool:
+            msg = record.getMessage()
+            return not ("SocketClosed" in msg or "WinError 10038" in msg)
+
+    logging.getLogger("stem").addFilter(_StemSocketClosedFilter())
+
     logging.getLogger(__name__).info(
         "Logging initialised — level=%s dir=%s",
         log_level.upper(),

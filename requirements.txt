@@ -5,6 +5,7 @@ aiosqlite>=0.20.0
 pydantic>=2.7.0
 stem>=1.8.2
 websockets>=10.0
+python-dotenv>=1.0.0
 
 # Browser scraping (requires Google Chrome)
 undetected-chromedriver>=3.5.5

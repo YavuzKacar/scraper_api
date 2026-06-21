@@ -97,7 +97,7 @@ class TestScrape:
 
     def test_response_schema(self):
         body = requests.post(url("/scrape"), headers=HEADERS, json={"url": TEST_URL}).json()
-        for field in ("url", "scraping_success", "message"):
+        for field in ("url", "scraping_success", "message", "provider", "status", "cost_score", "error_reason"):
             assert field in body
 
     def test_url_echoed_back(self):
@@ -121,7 +121,11 @@ class TestScrape:
     def test_strategy_used_valid_when_present(self):
         body = requests.post(url("/scrape"), headers=HEADERS, json={"url": TEST_URL}).json()
         if body.get("strategy_used"):
-            assert body["strategy_used"] in {"static", "browser", "tor"}
+            assert body["strategy_used"] in {"static", "browser", "tor", "scrape_do", "zyte"}
+
+    def test_cost_score_is_number(self):
+        body = requests.post(url("/scrape"), headers=HEADERS, json={"url": TEST_URL}).json()
+        assert isinstance(body["cost_score"], (int, float))
 
     def test_invalid_url_returns_422(self):
         assert requests.post(url("/scrape"), headers=HEADERS, json={"url": "not-a-url"}).status_code == 422
@@ -188,6 +192,77 @@ class TestStatus:
     def test_missing_key_returns_401(self):
         encoded = urllib.parse.quote(TEST_URL, safe="")
         assert requests.get(url(f"/status/{encoded}")).status_code == 401
+
+
+# ===========================================================================
+# POST /scrape -- SSRF protection
+# ===========================================================================
+
+class TestSSRF:
+    BLOCKED_URLS = [
+        "http://127.0.0.1/",
+        "http://localhost/",
+        "http://0.0.0.0/",
+        "http://169.254.169.254/",       # cloud metadata endpoint
+        "http://10.0.0.5/",
+        "http://172.16.0.5/",
+        "http://192.168.1.5/",
+    ]
+
+    @pytest.mark.parametrize("blocked_url", BLOCKED_URLS)
+    def test_blocked_ip_or_host_returns_400(self, blocked_url):
+        r = requests.post(url("/scrape"), headers=HEADERS, json={"url": blocked_url})
+        assert r.status_code == 400
+
+    def test_non_http_scheme_rejected(self):
+        # Caught by Pydantic's scheme prefix check before the SSRF guard even runs.
+        r = requests.post(url("/scrape"), headers=HEADERS, json={"url": "file:///etc/passwd"})
+        assert r.status_code == 422
+
+    def test_blocked_request_does_not_deduct_credits(self):
+        before = requests.get(url("/credits"), headers=HEADERS).json()["balance"]
+        requests.post(url("/scrape"), headers=HEADERS, json={"url": "http://127.0.0.1/"})
+        after = requests.get(url("/credits"), headers=HEADERS).json()["balance"]
+        assert before == after
+
+
+# ===========================================================================
+# /admin/url-lists
+# ===========================================================================
+
+class TestAdminUrlLists:
+    TEST_DOMAIN = "ssrf-test-domain.example"
+
+    @pytest.fixture(autouse=True)
+    def cleanup(self):
+        yield
+        requests.delete(url(f"/admin/url-lists/block/{self.TEST_DOMAIN}"), headers=HEADERS)
+
+    def test_get_returns_both_lists(self):
+        body = requests.get(url("/admin/url-lists"), headers=HEADERS).json()
+        assert "allowlist" in body and "blocklist" in body
+
+    def test_add_to_blocklist(self):
+        r = requests.post(
+            url("/admin/url-lists/block"), headers=HEADERS, json={"domain": self.TEST_DOMAIN}
+        )
+        assert r.status_code == 200
+        assert self.TEST_DOMAIN in r.json()["blocklist"]
+
+    def test_remove_from_blocklist(self):
+        requests.post(url("/admin/url-lists/block"), headers=HEADERS, json={"domain": self.TEST_DOMAIN})
+        r = requests.delete(url(f"/admin/url-lists/block/{self.TEST_DOMAIN}"), headers=HEADERS)
+        assert r.status_code == 200
+        assert self.TEST_DOMAIN not in r.json()["blocklist"]
+
+    def test_blocked_domain_rejects_scrape(self):
+        requests.post(url("/admin/url-lists/block"), headers=HEADERS, json={"domain": self.TEST_DOMAIN})
+        r = requests.post(url("/scrape"), headers=HEADERS, json={"url": f"http://{self.TEST_DOMAIN}/"})
+        assert r.status_code == 400
+
+    def test_invalid_list_name_returns_400(self):
+        r = requests.post(url("/admin/url-lists/bogus"), headers=HEADERS, json={"domain": "x.com"})
+        assert r.status_code == 400
 
 
 # ===========================================================================

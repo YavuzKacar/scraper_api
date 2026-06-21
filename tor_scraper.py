@@ -4,7 +4,10 @@ tor_scraper.py — Tor-based scraping implementations.
 Public API
 ----------
 scrape_with_tor(url, profile)   -> str   (async, httpx path)
-rotate_tor_identity()           -> bool  (async)
+rotate_tor_identity()           -> bool  (async, cheap NEWNYM-only rotation)
+recover_tor_circuit()           -> bool  (async, robust: health-checks the
+                                           circuit and kills + relaunches Tor
+                                           from scratch if it's actually dead)
 """
 from __future__ import annotations
 
@@ -22,7 +25,8 @@ import httpx
 
 from config import CONFIG
 from fingerprint import FingerprintProfile, build_http_headers
-from utils import human_delay
+from url_security import httpx_redirect_validator_hook
+from utils import human_delay, read_text_capped
 
 logger = logging.getLogger(__name__)
 
@@ -203,6 +207,28 @@ def _launch_tor_daemon(exe: Path) -> int:
 
 # ── Circuit readiness check ───────────────────────────────────────────────────
 
+def _check_circuit_once(tor_port: int, timeout: float = 10.0) -> bool:
+    """
+    Single attempt: does a real HTTP request succeed through the Tor SOCKS
+    proxy right now? Used both by the startup poll loop (_wait_for_circuit)
+    and by recover_tor_circuit() for a cheap one-shot health check.
+    """
+    import socks  # PySocks — already a dependency of httpx[socks]
+
+    try:
+        s = socks.socksocket()
+        s.set_proxy(socks.SOCKS5, CONFIG.tor_socks_host, tor_port)
+        s.settimeout(timeout)
+        s.connect(("check.torproject.org", 80))
+        s.sendall(b"HEAD / HTTP/1.0\r\nHost: check.torproject.org\r\n\r\n")
+        resp = s.recv(128)
+        s.close()
+        return b"HTTP/" in resp
+    except Exception as exc:
+        logger.debug("Circuit check failed: %s", exc)
+        return False
+
+
 def _wait_for_circuit(tor_port: int, timeout: int = 60) -> bool:
     """
     Block until a real HTTP request succeeds through the Tor SOCKS proxy,
@@ -211,29 +237,49 @@ def _wait_for_circuit(tor_port: int, timeout: int = 60) -> bool:
     Polls every 3 seconds for up to *timeout* seconds.
     Returns True once the circuit is confirmed working, False on timeout.
     """
-    import urllib.request
-    import urllib.error
-    import socks  # PySocks — already a dependency of httpx[socks]
-
-    proxy_host = CONFIG.tor_socks_host
     deadline = time.monotonic() + timeout
-
     while time.monotonic() < deadline:
-        try:
-            # Use a lightweight endpoint that returns very little data.
-            s = socks.socksocket()
-            s.set_proxy(socks.SOCKS5, proxy_host, tor_port)
-            s.settimeout(10)
-            s.connect(("check.torproject.org", 80))
-            s.sendall(b"HEAD / HTTP/1.0\r\nHost: check.torproject.org\r\n\r\n")
-            resp = s.recv(128)
-            s.close()
-            if b"HTTP/" in resp:
-                return True
-        except Exception as exc:
-            logger.debug("Circuit not ready yet: %s", exc)
+        if _check_circuit_once(tor_port, timeout=10.0):
+            return True
         time.sleep(3)
     return False
+
+
+# ── Crash recovery: kill whatever owns a Tor port ─────────────────────────────
+
+def _kill_process_on_port(port: int) -> None:
+    """
+    Forcefully terminate whatever process is listening on *port* (Windows).
+
+    Used for recovery when the circuit is confirmed dead: the listening
+    process may belong to a Tor Browser instance this server process has no
+    subprocess handle for (e.g. left over from a previous run that this
+    process never spawned), so we find it by port ownership via `netstat`
+    instead of relying on the in-memory _tor_process handle.
+    """
+    try:
+        out = subprocess.run(
+            ["netstat", "-ano"], capture_output=True, text=True, timeout=10
+        ).stdout
+    except Exception as exc:
+        logger.debug("netstat failed while hunting for port %d: %s", port, exc)
+        return
+
+    pids: set[str] = set()
+    for line in out.splitlines():
+        parts = line.split()
+        if len(parts) < 5 or parts[0] != "TCP" or parts[3] != "LISTENING":
+            continue
+        if parts[1].endswith(f":{port}") and parts[-1].isdigit():
+            pids.add(parts[-1])
+
+    for pid in pids:
+        logger.warning("Killing stale process on Tor port %d (PID %s).", port, pid)
+        with contextlib.suppress(Exception):
+            subprocess.run(
+                ["taskkill", "/F", "/T", "/PID", pid],
+                capture_output=True, timeout=10,
+            )
 
 
 # ── Lightweight path: httpx through Tor SOCKS5 ───────────────────────────────
@@ -264,10 +310,11 @@ async def scrape_with_tor(url: str, profile: FingerprintProfile) -> str:
         follow_redirects=True,
         verify=False,
         limits=httpx.Limits(max_connections=3, max_keepalive_connections=2),
+        event_hooks={"request": [httpx_redirect_validator_hook]},
     ) as client:
-        response = await client.get(url, headers=headers)
-        response.raise_for_status()
-        return response.text
+        async with client.stream("GET", url, headers=headers) as response:
+            response.raise_for_status()
+            return await read_text_capped(response, CONFIG.max_response_size_bytes)
 
 
 # ── Full-browser path: Chrome through Tor SOCKS5 ─────────────────────────────
@@ -297,10 +344,15 @@ async def rotate_tor_identity() -> bool:
             last_exc = None
             for ctrl_port in control_ports:
                 try:
-                    with Controller.from_port(
+                    # Don't use the context manager: on Windows, stem raises
+                    # WinError 10038 ("not a socket") when closing the control
+                    # socket inside __exit__, which would swallow our return True.
+                    # Instead, close manually and suppress that benign error.
+                    ctrl = Controller.from_port(
                         address=CONFIG.tor_socks_host,
                         port=ctrl_port,
-                    ) as ctrl:
+                    )
+                    try:
                         if CONFIG.tor_control_password:
                             ctrl.authenticate(password=CONFIG.tor_control_password)
                         else:
@@ -316,6 +368,9 @@ async def rotate_tor_identity() -> bool:
                             ctrl_port,
                         )
                         return True
+                    finally:
+                        with contextlib.suppress(Exception):
+                            ctrl.close()
                 except Exception as exc:
                     last_exc = exc
                     continue
@@ -332,3 +387,65 @@ async def rotate_tor_identity() -> bool:
         # Proceeding immediately would still use the old circuit.
         await asyncio.sleep(10)
     return success
+
+
+async def recover_tor_circuit() -> bool:
+    """
+    Robust recovery for a possibly-broken Tor circuit -- call this between
+    retries instead of rotate_tor_identity() alone.
+
+    1. Single-shot health check on whatever port is currently reachable.
+    2. Healthy -> just rotate identity (NEWNYM), cheap, gets a fresh exit
+       node without a full restart.
+    3. Unhealthy or unreachable -> kill whatever is bound to every known
+       Tor port (covers a process this server spawned AND one left over
+       from a previous run we have no handle for), then relaunch Tor
+       Browser from scratch via _ensure_tor_running(), which blocks until
+       a fresh circuit is verified working (or raises).
+
+    Returns True once a healthy circuit is confirmed, False if recovery
+    failed entirely -- the caller should treat the tor stage as failed and
+    fall through to the next provider.
+    """
+    loop = asyncio.get_running_loop()
+
+    def _is_healthy() -> bool:
+        port = _find_tor_port()
+        return port is not None and _check_circuit_once(port, timeout=8.0)
+
+    if await loop.run_in_executor(None, _is_healthy):
+        return await rotate_tor_identity()
+
+    logger.warning("Tor circuit appears broken -- killing and relaunching Tor.")
+
+    def _kill_and_relaunch() -> bool:
+        global _tor_process
+        for p in dict.fromkeys([CONFIG.tor_socks_port, 9150, 9050]):
+            _kill_process_on_port(p)
+        if _tor_process is not None:
+            with contextlib.suppress(Exception):
+                _tor_process.kill()
+            _tor_process = None
+        time.sleep(2)  # let Windows release the port before rebinding
+        try:
+            _ensure_tor_running()  # raises RuntimeError on failure; success implies a verified circuit
+            return True
+        except RuntimeError as exc:
+            logger.error("Tor relaunch failed during recovery: %s", exc)
+            return False
+
+    return await loop.run_in_executor(None, _kill_and_relaunch)
+
+
+async def ensure_tor_started_async() -> None:
+    """
+    Pre-start Tor Browser at server startup so the first scrape request is instant.
+    Safe to call multiple times; a no-op when Tor is already running.
+    Logs a warning instead of raising if Tor cannot be started.
+    """
+    loop = asyncio.get_running_loop()
+    try:
+        await loop.run_in_executor(None, _ensure_tor_running)
+        logger.info("Tor Browser pre-start complete.")
+    except RuntimeError as exc:
+        logger.warning("Tor Browser pre-start failed (will retry on first request): %s", exc)

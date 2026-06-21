@@ -9,9 +9,8 @@ through the Chrome DevTools Protocol (CDP) directly â€” bypassing Selenium'
 sequential WebDriver command queue.
 
 Up to MAX_TABS requests are handled simultaneously; additional callers wait in
-an asyncio semaphore queue.  Chrome shuts down automatically IDLE_TIMEOUT
-seconds after the last request completes and restarts transparently on the
-next request.
+an asyncio semaphore queue.  Chrome is pre-started at server startup and kept
+alive permanently; it restarts transparently if it crashes.
 
 Public API
 ----------
@@ -30,7 +29,10 @@ import shutil
 
 import httpx
 
+from config import CONFIG
 from fingerprint import FingerprintProfile, build_browser_js_overrides
+from url_security import SSRFBlockedError, validate_url_scheme_and_literal
+from utils import ResponseTooLargeError
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +41,6 @@ logger = logging.getLogger(__name__)
 _UC_DEFAULT_DATA_DIR = os.path.join(os.environ.get("APPDATA", ""), "undetected_chromedriver")
 
 MAX_TABS: int = 10          # max simultaneous open tabs
-IDLE_TIMEOUT: float = 60.0  # seconds before Chrome shuts down when idle
 
 _CF_CHALLENGE_MARKERS: tuple[str, ...] = (
     "Just a moment",
@@ -155,8 +156,6 @@ class _ChromeManager:
         self._headless: bool = False
         self._semaphore: asyncio.Semaphore = asyncio.Semaphore(MAX_TABS)
         self._start_lock: asyncio.Lock = asyncio.Lock()
-        self._active: int = 0         # scrapes currently in progress
-        self._idle_task: asyncio.Task | None = None
 
     # â”€â”€ Lifecycle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -210,35 +209,15 @@ class _ChromeManager:
         except Exception:
             return False
 
-    # â”€â”€ Idle management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-    def _cancel_idle(self) -> None:
-        if self._idle_task is not None and not self._idle_task.done():
-            self._idle_task.cancel()
-        self._idle_task = None
-
-    def _arm_idle(self) -> None:
-        self._cancel_idle()
-        self._idle_task = asyncio.ensure_future(self._idle_shutdown())
-
-    async def _idle_shutdown(self) -> None:
-        try:
-            await asyncio.sleep(IDLE_TIMEOUT)
-        except asyncio.CancelledError:
-            return
-        # asyncio is single-threaded: no lock needed for the _active check.
-        if self._active == 0 and self._driver is not None:
-            await self._stop()
-
     # â”€â”€ Public entry point â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    async def scrape(self, url: str, profile: FingerprintProfile, headless: bool = False) -> str:
-        # Cancel any pending idle shutdown and mark this request as active
-        # before any await so the idle timer cannot fire between sign-up and
-        # the semaphore acquisition.
-        self._cancel_idle()
-        self._active += 1
+    async def ensure_started(self, profile: FingerprintProfile, headless: bool = False) -> None:
+        """Pre-warm: start Chrome if it is not already running."""
+        async with self._start_lock:
+            if not self._is_alive():
+                await self._start(profile, headless)
 
+    async def scrape(self, url: str, profile: FingerprintProfile, headless: bool = False) -> str:
         try:
             # Serialise Chrome start-up: the first caller creates the process;
             # subsequent concurrent callers return immediately once it is ready.
@@ -260,11 +239,6 @@ class _ChromeManager:
                     asyncio.get_running_loop().run_in_executor(None, _quit_driver, driver)
                 )
             raise
-
-        finally:
-            self._active -= 1
-            if self._active == 0:
-                self._arm_idle()
 
     # â”€â”€ CDP tab scraping â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -393,17 +367,46 @@ class _ChromeManager:
                 else:
                     await asyncio.sleep(0.2)
 
+        # -- SSRF guard: validate every Document-type navigation (initial load
+        # AND every server-side redirect of the main/sub frame) before letting
+        # Chrome follow it.  Fetch.enable pauses matching requests until we
+        # call Fetch.continueRequest / Fetch.failRequest.
+        async def _handle_fetch_paused(msg: dict) -> None:
+            params = msg.get("params") or {}
+            request_id = params.get("requestId")
+            request_url = (params.get("request") or {}).get("url", "")
+            if not request_id:
+                return
+            try:
+                if CONFIG.ssrf_protection_enabled:
+                    validate_url_scheme_and_literal(request_url)
+                await send("Fetch.continueRequest", {"requestId": request_id})
+            except SSRFBlockedError as exc:
+                logger.warning(
+                    "Browser navigation blocked by SSRF guard: %s (%s)", request_url, exc
+                )
+                with contextlib.suppress(Exception):
+                    await send(
+                        "Fetch.failRequest",
+                        {"requestId": request_id, "errorReason": "BlockedByClient"},
+                    )
+
+        def _on_fetch_paused(msg: dict) -> None:
+            asyncio.ensure_future(_handle_fetch_paused(msg))
+
         try:
             await send("Page.enable")
             await send("Runtime.enable")
             await send("Network.enable")
             await send("DOM.enable")  # required before DOM.getDocument / DOM.getOuterHTML
+            await send("Fetch.enable", {"patterns": [{"resourceType": "Document"}]})
 
             # Register persistent network callbacks for idle tracking.
             event_cbs.setdefault("Network.requestWillBeSent", []).append(_req_start)
             event_cbs.setdefault("Network.responseReceived", []).append(_req_end)
             event_cbs.setdefault("Network.loadingFailed",    []).append(_req_end)
             event_cbs.setdefault("Network.loadingFinished",  []).append(_req_end)
+            event_cbs.setdefault("Fetch.requestPaused",      []).append(_on_fetch_paused)
 
             if fp_js:
                 await send("Page.addScriptToEvaluateOnNewDocument", {"source": fp_js})
@@ -415,9 +418,9 @@ class _ChromeManager:
             await asyncio.sleep(random.uniform(0.2, 0.5))
             await send("Page.navigate", {"url": url})
 
-            # Wait up to 45 s for the page to fully load.
+            # Wait up to CONFIG.max_page_load_seconds for the page to fully load.
             try:
-                await asyncio.wait_for(asyncio.shield(load_evt), timeout=45.0)
+                await asyncio.wait_for(asyncio.shield(load_evt), timeout=CONFIG.max_page_load_seconds)
             except (asyncio.TimeoutError, asyncio.CancelledError):
                 logger.warning(
                     "Page load timed out for %s -- continuing with partial content.", url
@@ -444,6 +447,10 @@ class _ChromeManager:
 
             html = await _cdp_get_source(send)
             html = _strip_noscript(html)
+            if len(html.encode("utf-8", errors="replace")) > CONFIG.max_response_size_bytes:
+                raise ResponseTooLargeError(
+                    f"Rendered page exceeded max size of {CONFIG.max_response_size_bytes} bytes."
+                )
             logger.debug("CDP tab: got %d chars from %s.", len(html), url)
             return html
 
@@ -469,7 +476,7 @@ def _launch_uc_chrome(profile: FingerprintProfile, headless: bool):
     options.add_argument("--no-service-autorun")
     if headless:
         options.add_argument("--headless=new")
-    return uc.Chrome(options=options, version_main=146)
+    return uc.Chrome(options=options, version_main=149)
 
 
 def _quit_driver(driver) -> None:
@@ -480,6 +487,20 @@ def _quit_driver(driver) -> None:
 # â”€â”€ Module-level singleton and public API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 _manager: _ChromeManager | None = None
+
+
+async def start_browser_async(
+    profile: FingerprintProfile,
+    headless: bool = False,
+) -> None:
+    """
+    Pre-start Chrome at server startup so the first scrape request is instant.
+    Safe to call multiple times; a no-op when Chrome is already running.
+    """
+    global _manager
+    if _manager is None:
+        _manager = _ChromeManager()
+    await _manager.ensure_started(profile, headless)
 
 
 async def scrape_with_browser_async(

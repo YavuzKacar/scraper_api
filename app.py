@@ -3,14 +3,27 @@ app.py — FastAPI application entry point for the Scraper API.
 
 Endpoints
 ---------
-POST /scrape        Scrape a URL (browser first, Tor fallback).
-GET  /status/{url}  Retrieve stored metadata for a URL.
-GET  /health        Liveness + readiness check.GET  /credits       Remaining credit balance.POST /feedback      Save / list / delete URL comments.
+POST   /scrape                  Scrape a URL (static -> browser -> tor -> scrape_do -> zyte).
+GET    /status/{url}            Retrieve stored metadata for a URL.
+GET    /health                  Liveness + readiness check.
+GET    /credits                 Remaining credit balance.
+POST   /feedback                Save a comment for a URL.
+GET    /feedback                List feedback comments.
+DELETE /feedback/{id}           Delete a feedback comment.
+DELETE /feedback                Delete all feedback comments.
+GET    /admin/url-lists         Get the allow/block list.
+POST   /admin/url-lists/{name}  Add a domain to the allow or block list.
+DELETE /admin/url-lists/{name}/{domain}  Remove a domain from a list.
+
+See API_DOCUMENTATION.md for the full request/response contract.
 
 Security
 --------
 All endpoints require the X-API-KEY header.
 The server binds to 127.0.0.1 only (no external exposure).
+Every /scrape URL is validated against the SSRF guard (url_security.py) --
+blocked schemes, blocked IP ranges (loopback/private/link-local/metadata),
+and the allow/block list (url_lists.py) -- before any provider is dispatched.
 """
 from __future__ import annotations
 
@@ -52,10 +65,14 @@ from models import (
     ScrapeRequest,
     ScrapeResponse,
     StatusResponse,
+    URLListMutation,
+    URLListResponse,
     URLRecord,
 )
 from scraper import scrape
 from security import require_api_key
+from url_lists import add_domain, get_lists, load_lists, remove_domain
+from url_security import SSRFBlockedError, validate_url_for_scraping
 
 # ── Logging setup ─────────────────────────────────────────────────────────────
 setup_logging(log_level=CONFIG.log_level, log_dir=CONFIG.log_dir)
@@ -68,6 +85,20 @@ async def _lifespan(application: FastAPI):
     """Startup and shutdown logic."""
     logger.info("Scraper API starting on %s:%d", CONFIG.host, CONFIG.port)
     await init_db()
+    load_lists()
+    # Pre-start Chrome and Tor Browser so both are ready before the first request.
+    from fingerprint import get_random_profile
+    from browser_scraper import start_browser_async
+    from tor_scraper import ensure_tor_started_async
+    _fp = get_random_profile()
+    results = await asyncio.gather(
+        start_browser_async(_fp, headless=False),
+        ensure_tor_started_async(),
+        return_exceptions=True,
+    )
+    for label, result in zip(("Chrome", "Tor Browser"), results):
+        if isinstance(result, Exception):
+            logger.warning("%s pre-start failed: %s", label, result)
     yield
     await close_db()
     logger.info("Scraper API shut down cleanly.")
@@ -78,10 +109,11 @@ async def _lifespan(application: FastAPI):
 app = FastAPI(
     title="Scraper API",
     description=(
-        "Adaptive web scraping API. Tries browser first, falls back to Tor. "
-        "Learns the working strategy per domain and caches results."
+        "Adaptive web scraping API with a 5-stage fallback waterfall "
+        "(static HTML -> Chrome -> Tor -> Scrape.do -> Zyte) and built-in "
+        "SSRF protection. See API_DOCUMENTATION.md for the full contract."
     ),
-    version="1.0.0",
+    version="2.0.0",
     lifespan=_lifespan,
     # Disable automatic redirect that would reveal the existence of routes
     redirect_slashes=False,
@@ -178,9 +210,21 @@ async def scrape_endpoint(request: ScrapeRequest) -> ScrapeResponse:
     """
     Scrape the given URL.
 
-    Strategy order: browser first, then Tor. The working strategy is stored
-    per root domain and reused on subsequent requests.
+    Strategy order (fixed waterfall): static -> browser -> tor -> scrape_do
+    -> zyte, stopping at the first stage that returns usable content.
+
+    The URL is validated against the SSRF guard (scheme, blocked IP ranges,
+    allow/block list) before anything else -- a blocked URL is rejected with
+    HTTP 400 and never reaches a provider or the credit ledger.
     """
+    try:
+        await validate_url_for_scraping(request.url)
+    except SSRFBlockedError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"URL rejected: {exc}",
+        )
+
     # Guard: refuse when the credit balance is exhausted.
     credits = await get_credits()
     if credits["balance"] <= 0:
@@ -190,7 +234,7 @@ async def scrape_endpoint(request: ScrapeRequest) -> ScrapeResponse:
         )
 
     result = await scrape(request)
-    new_balance = await deduct_credit()
+    new_balance = await deduct_credit(result.cost_score) if result.scraping_success else credits["balance"]
     return ScrapeResponse(
         **result.model_dump(exclude={"credits_remaining"}),
         credits_remaining=new_balance,
@@ -388,6 +432,45 @@ async def delete_all_feedback_endpoint() -> dict:
     """Delete every feedback comment."""
     deleted = await delete_all_feedback()
     return {"ok": True, "deleted": deleted}
+
+
+# ── Allow/block list admin endpoints ────────────────────────────────────────
+
+@app.get(
+    "/admin/url-lists",
+    response_model=URLListResponse,
+    summary="Get the URL allow/block list",
+    dependencies=[Depends(require_api_key)],
+)
+async def get_url_lists_endpoint() -> URLListResponse:
+    """Return the current allow list and block list (domain entries)."""
+    return URLListResponse(**get_lists())
+
+
+@app.post(
+    "/admin/url-lists/{list_name}",
+    summary="Add a domain to the allow or block list",
+    dependencies=[Depends(require_api_key)],
+)
+async def add_url_list_entry_endpoint(list_name: str, body: URLListMutation) -> URLListResponse:
+    """Add a domain to ``list_name`` ('allow' or 'block'). Persists to disk immediately."""
+    if list_name not in ("allow", "block"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="list_name must be 'allow' or 'block'.")
+    await add_domain(list_name, body.domain)
+    return URLListResponse(**get_lists())
+
+
+@app.delete(
+    "/admin/url-lists/{list_name}/{domain}",
+    summary="Remove a domain from the allow or block list",
+    dependencies=[Depends(require_api_key)],
+)
+async def remove_url_list_entry_endpoint(list_name: str, domain: str) -> URLListResponse:
+    """Remove a domain from ``list_name`` ('allow' or 'block'). Persists to disk immediately."""
+    if list_name not in ("allow", "block"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="list_name must be 'allow' or 'block'.")
+    await remove_domain(list_name, domain)
+    return URLListResponse(**get_lists())
 
 
 # ── Test UI (static files, no auth required) ───────────────────────────────────

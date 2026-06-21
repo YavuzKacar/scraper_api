@@ -15,6 +15,9 @@ __pycache__/
 # Database (local state)
 scraper_metadata.db
 
+# URL allow/block list (runtime state, seeded from env on first run)
+data/
+
 # Logs
 logs/
 

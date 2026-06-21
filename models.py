@@ -18,11 +18,13 @@ from pydantic import BaseModel, field_validator
 # ── Enumerations ──────────────────────────────────────────────────────────────
 
 class ScrapingStrategy(str, Enum):
-    browser = "browser"
-    tor     = "tor"
-    static  = "static"   # available via force_strategy only
-    hybrid  = "hybrid"   # legacy DB value, treated as browser
-    blocked = "blocked"  # sentinel: do not scrape
+    static     = "static"      # 1st: plain httpx GET
+    browser    = "browser"     # 2nd: Chrome via CDP
+    tor        = "tor"         # 3rd: httpx over Tor SOCKS5
+    scrape_do  = "scrape_do"   # 4th: Scrape.do proxy API
+    zyte       = "zyte"        # 5th: Zyte Extract API
+    hybrid     = "hybrid"      # legacy DB value, treated as browser
+    blocked    = "blocked"     # sentinel: do not scrape
 
 
 # ── Core domain models ────────────────────────────────────────────────────────
@@ -34,13 +36,16 @@ class URLRecord(BaseModel):
     scraping_strategy: Optional[str] = None
     last_checked: Optional[datetime] = None
     last_scrape_status: Optional[str] = None
+    last_provider: Optional[str] = None
+    last_cost: Optional[float] = None
+    last_error_reason: Optional[str] = None
 
 
 # ── API request / response models ─────────────────────────────────────────────
 
 class ScrapeRequest(BaseModel):
     url: str
-    force_strategy: Optional[str] = None   # override strategy: browser|tor|static
+    force_strategy: Optional[str] = None   # override strategy: static|browser|tor|scrape_do|zyte
 
     @field_validator("url")
     @classmethod
@@ -55,7 +60,7 @@ class ScrapeRequest(BaseModel):
     def validate_force_strategy(cls, v: Optional[str]) -> Optional[str]:
         if v is None:
             return v
-        allowed = {"browser", "tor", "static"}
+        allowed = {"static", "browser", "tor", "scrape_do", "zyte"}
         if v not in allowed:
             raise ValueError(f"force_strategy must be one of: {', '.join(sorted(allowed))}")
         return v
@@ -66,8 +71,12 @@ class ScrapeResponse(BaseModel):
     scraping_success: bool
     message: str
     html: Optional[str] = None
-    strategy_used: Optional[str] = None
-    credits_remaining: Optional[int] = None
+    strategy_used: Optional[str] = None        # mirrors `provider`; kept for backward compat
+    provider: Optional[str] = None             # which provider produced the result (or None)
+    status: str = "failed"                     # success | blocked | timeout | failed
+    cost_score: float = 0.0                    # USD-equivalent cost charged for this scrape
+    error_reason: Optional[str] = None         # last error message, when scraping_success is False
+    credits_remaining: Optional[float] = None
 
 
 class StatusResponse(BaseModel):
@@ -86,9 +95,20 @@ class HealthResponse(BaseModel):
 
 
 class CreditsResponse(BaseModel):
-    balance: int
-    granted: int
-    used: int
+    balance: float
+    granted: float
+    used: float
+
+
+# ── URL allow/block list models ─────────────────────────────────────────────
+
+class URLListResponse(BaseModel):
+    allowlist: list[str]
+    blocklist: list[str]
+
+
+class URLListMutation(BaseModel):
+    domain: str
 
 
 # ── Feedback models ────────────────────────────────────────────────────────────

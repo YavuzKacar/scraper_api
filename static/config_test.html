@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scraper API — Config &amp; Security Test</title>
+  <style>
+    :root {
+      --bg:          #0d1117;
+      --surface:     #161b22;
+      --surface2:    #21262d;
+      --border:      #30363d;
+      --text:        #c9d1d9;
+      --text-muted:  #8b949e;
+      --accent:      #58a6ff;
+      --accent-dim:  #1f6feb;
+      --success:     #3fb950;
+      --error:       #f85149;
+      --warning:     #d29922;
+      --radius:      6px;
+      --font:        -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      --mono:        ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; min-height: 100vh; }
+
+    /* ── Header ── */
+    .header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 10px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .header h1 { font-size: 15px; font-weight: 700; letter-spacing: .02em; flex-shrink: 0; }
+    .header-config { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; flex: 1; }
+    .config-label { font-size: 11px; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+    .nav-link { font-size: 12px; color: var(--accent); text-decoration: none; margin-right: 4px; }
+    .nav-link:hover { text-decoration: underline; }
+
+    /* ── Layout ── */
+    .main { max-width: 1180px; margin: 0 auto; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* ── Cards ── */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .card-header {
+      padding: 8px 14px; font-weight: 700; font-size: 11px; color: var(--text-muted);
+      background: var(--surface2); border-bottom: 1px solid var(--border);
+      text-transform: uppercase; letter-spacing: .05em; display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    }
+    .card-header .hint { text-transform: none; font-weight: 400; font-size: 11px; }
+    .card-body { padding: 14px; }
+
+    /* ── Inputs ── */
+    input[type=text], input[type=password], input[type=url], textarea, select {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
+      color: var(--text); font-family: var(--font); font-size: 14px; padding: 6px 10px;
+      outline: none; transition: border-color .15s;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 5px; padding: 6px 13px;
+      border-radius: var(--radius); border: 1px solid var(--border); cursor: pointer;
+      font-size: 13px; font-family: var(--font); font-weight: 600;
+      transition: background .12s, border-color .12s; white-space: nowrap; line-height: 1.4;
+    }
+    .btn-primary  { background: var(--accent-dim); border-color: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent); }
+    .btn-secondary { background: var(--surface2); color: var(--text); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-success  { background: #1a4a28; border-color: #2ea043; color: var(--success); }
+    .btn-success:hover { background: #196230; }
+    .btn-danger   { background: transparent; border-color: transparent; color: var(--text-muted); padding: 3px 7px; }
+    .btn-danger:hover { color: var(--error); border-color: var(--error); }
+    .btn-sm       { font-size: 11px; padding: 3px 9px; }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+    /* ── Badges ── */
+    .badge { display: inline-block; padding: 1px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+    .badge-ok      { background: #1a4a28; color: var(--success);  border: 1px solid #2ea043; }
+    .badge-fail    { background: #4a1a1a; color: var(--error);    border: 1px solid #8c1c1c; }
+    .badge-warn    { background: #4a3a10; color: var(--warning);  border: 1px solid #8c6a20; }
+    .badge-info    { background: #162032; color: var(--accent);   border: 1px solid var(--accent-dim); }
+    .badge-muted   { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
+
+    /* ── Test row ── */
+    .test-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .test-row input { flex: 1; min-width: 240px; font-size: 15px; padding: 8px 12px; }
+    .test-buttons { display: flex; gap: 6px; }
+    .options-row { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
+    .option-label { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+
+    /* ── Stat / classification grid ── */
+    .cls-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
+    .cls-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 9px 12px; }
+    .cls-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin-bottom: 4px; }
+    .cls-value { font-size: 14px; font-weight: 700; word-break: break-word; }
+
+    /* ── Scrape status bar ── */
+    .status-bar {
+      display: flex; align-items: center; gap: 10px; padding: 9px 12px; margin-bottom: 12px;
+      background: var(--surface2); border-radius: var(--radius); border: 1px solid var(--border);
+      font-size: 13px; flex-wrap: wrap;
+    }
+
+    /* ── HTML preview ── */
+    .html-preview {
+      background: #0a0e14; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 10px; font-family: var(--mono); font-size: 11px; line-height: 1.6;
+      max-height: 280px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;
+      color: #7d8590;
+    }
+    .content-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-top: 12px; }
+    .tab-btn {
+      padding: 6px 15px; font-size: 12px; font-weight: 600; cursor: pointer;
+      background: transparent; border: none; border-bottom: 2px solid transparent;
+      color: var(--text-muted); font-family: var(--font); transition: color .12s;
+      margin-bottom: -1px;
+    }
+    .tab-btn.active  { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-btn:hover:not(.active) { color: var(--text); }
+    .tab-panel { display: none; padding-top: 8px; }
+    .tab-panel.active { display: block; }
+    .frame-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .render-frame { width: 100%; height: 420px; border: none; background: #fff; display: block; }
+    .frame-note { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+
+    /* ── List chips (allow/block list) ── */
+    .chip-list { display: flex; flex-wrap: wrap; gap: 6px; min-height: 30px; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 14px; padding: 3px 6px 3px 11px;
+      font-family: var(--mono); font-size: 12px;
+    }
+    .chip button {
+      background: transparent; border: none; color: var(--text-muted); cursor: pointer;
+      font-size: 13px; line-height: 1; padding: 2px 5px; border-radius: 50%;
+    }
+    .chip button:hover { color: var(--error); background: rgba(248,81,73,.15); }
+    .chip-empty { font-size: 12px; color: var(--text-muted); font-style: italic; }
+
+    /* ── SSRF test grid ── */
+    .ssrf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+    .ssrf-case {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 9px 11px; display: flex; flex-direction: column; gap: 5px;
+    }
+    .ssrf-case .ssrf-label { font-size: 12px; font-weight: 700; }
+    .ssrf-case .ssrf-url { font-family: var(--mono); font-size: 10.5px; color: var(--text-muted); word-break: break-all; }
+    .ssrf-case .ssrf-result { font-size: 11px; min-height: 16px; }
+
+    /* ── Misc ── */
+    .hidden { display: none !important; }
+    .mt { margin-top: 10px; }
+    .flex-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .text-muted { color: var(--text-muted); }
+    .text-ok    { color: var(--success); }
+    .text-fail  { color: var(--error); }
+    .text-warn  { color: var(--warning); }
+    .error-msg { color: var(--error); font-size: 13px; margin-top: 8px; }
+    .msg { font-size: 13px; margin-top: 8px; color: var(--text-muted); }
+    #apiBase  { width: 210px; }
+    #apiKey   { width: 190px; font-family: var(--mono); }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────────── -->
+<div class="header">
+  <h1>🛡 Scraper API — Config Test</h1>
+  <a class="nav-link" href="/ui/index.html" title="Scrape + feedback test UI">⚙ Main UI</a>
+  <a class="nav-link" href="/ui/top1000.html" title="Test top 1000 sites">🌐 Top 1000</a>
+  <div class="header-config">
+    <span class="config-label">API URL</span>
+    <input id="apiBase" type="text" placeholder="http://127.0.0.1:8000" oninput="saveConfig()">
+    <span class="config-label">API Key</span>
+    <input id="apiKey" type="password" placeholder="your-api-key" oninput="saveConfig()">
+    <button class="btn btn-secondary btn-sm" onclick="refreshStatus()">↺ Refresh status</button>
+  </div>
+</div>
+
+<!-- ── Main ───────────────────────────────────────────────────────────────── -->
+<div class="main">
+
+  <!-- Health + Credits dashboard -->
+  <div class="card">
+    <div class="card-header">
+      Server Status
+      <span class="hint" id="statusUpdated"></span>
+    </div>
+    <div class="card-body">
+      <div class="cls-grid" id="statusGrid">
+        <div class="cls-item"><div class="cls-label">Status</div><div class="cls-value text-muted">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scrape tester -->
+  <div class="card">
+    <div class="card-header">Scrape Tester — 5-Stage Waterfall (static → browser → tor → scrape_do → zyte)</div>
+    <div class="card-body">
+      <div class="test-row">
+        <input id="urlInput" type="url" placeholder="https://example.com" value="https://example.com"
+               onkeydown="if(event.key==='Enter')runScrape()">
+        <div class="test-buttons">
+          <button class="btn btn-primary" id="scrapeBtn" onclick="runScrape()">▶ Scrape</button>
+          <button class="btn btn-secondary btn-sm" onclick="runStatusLookup()">Status</button>
+        </div>
+      </div>
+      <div class="options-row">
+        <label class="option-label">
+          Force strategy:
+          <select id="forceStrategy">
+            <option value="">&#8212; auto (full waterfall) &#8212;</option>
+            <option value="static">static</option>
+            <option value="browser">browser</option>
+            <option value="tor">tor</option>
+            <option value="scrape_do">scrape_do</option>
+            <option value="zyte">zyte</option>
+          </select>
+        </label>
+      </div>
+      <p class="msg hidden" id="loadingMsg">⏳ Working…</p>
+      <p class="error-msg hidden" id="errorMsg"></p>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="card hidden" id="resultsCard">
+    <div class="card-header">
+      Result
+      <span id="resultUrl" style="font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%;"></span>
+    </div>
+    <div class="card-body" id="resultsBody"></div>
+  </div>
+
+  <!-- SSRF guard quick tests -->
+  <div class="card">
+    <div class="card-header">
+      SSRF Guard — Quick Tests
+      <span class="hint">each case should be rejected (HTTP 400 or 422)</span>
+    </div>
+    <div class="card-body">
+      <div class="flex-row" style="margin-bottom:10px;">
+        <button class="btn btn-secondary btn-sm" onclick="runAllSsrfCases()">▶ Run all</button>
+        <span id="ssrfSummary" class="text-muted" style="font-size:12px;"></span>
+      </div>
+      <div class="ssrf-grid" id="ssrfGrid"></div>
+    </div>
+  </div>
+
+  <!-- Allow / Block list manager -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        Allow List <span class="hint">empty = allow every domain</span>
+      </div>
+      <div class="card-body">
+        <div class="chip-list" id="allowListItems"></div>
+        <div class="flex-row mt">
+          <input id="allowDomainInput" type="text" placeholder="example.com" style="flex:1;"
+                 onkeydown="if(event.key==='Enter')addListEntry('allow')">
+          <button class="btn btn-success btn-sm" onclick="addListEntry('allow')">+ Add</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Block List <span class="hint">always wins over the allow list</span>
+      </div>
+      <div class="card-body">
+        <div class="chip-list" id="blockListItems"></div>
+        <div class="flex-row mt">
+          <input id="blockDomainInput" type="text" placeholder="example.com" style="flex:1;"
+                 onkeydown="if(event.key==='Enter')addListEntry('block')">
+          <button class="btn btn-success btn-sm" onclick="addListEntry('block')">+ Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+'use strict';
+
+// ── Config (shared localStorage keys with the main test UI) ───────────────────
+
+function getConfig() {
+  return {
+    apiBase: (document.getElementById('apiBase').value || '').replace(/\/$/, ''),
+    apiKey:  document.getElementById('apiKey').value || '',
+  };
+}
+
+function saveConfig() {
+  const { apiBase, apiKey } = getConfig();
+  if (apiBase) localStorage.setItem('sa_apiBase', apiBase);
+  if (apiKey)  localStorage.setItem('sa_apiKey',  apiKey);
+}
+
+function loadConfig() {
+  const defaultBase = window.location.origin !== 'null' ? window.location.origin : 'http://127.0.0.1:8000';
+  document.getElementById('apiBase').value = localStorage.getItem('sa_apiBase') || defaultBase;
+  document.getElementById('apiKey').value  = localStorage.getItem('sa_apiKey')  || '';
+}
+
+// ── API helpers ───────────────────────────────────────────────────────────────
+
+// Throws on non-2xx -- use for actions where failure should stop the flow.
+async function api(method, path, body) {
+  const { status, data } = await rawApi(method, path, body);
+  if (status < 200 || status >= 300) {
+    let msg = data && data.detail;
+    if (Array.isArray(msg)) msg = msg.map(e => `${e.loc ? e.loc.slice(1).join('.') + ': ' : ''}${e.msg}`).join('; ');
+    else if (msg && typeof msg !== 'string') msg = JSON.stringify(msg);
+    throw new Error(msg || `HTTP ${status}`);
+  }
+  return data;
+}
+
+// Never throws on HTTP error status -- use when the test expects a rejection
+// (e.g. SSRF guard cases) and we need to inspect the status code ourselves.
+async function rawApi(method, path, body) {
+  const { apiBase, apiKey } = getConfig();
+  const opts = { method, headers: { 'Content-Type': 'application/json', 'X-API-KEY': apiKey } };
+  if (body !== undefined) opts.body = JSON.stringify(body);
+  let resp;
+  try {
+    resp = await fetch(apiBase + path, opts);
+  } catch (e) {
+    throw new Error('Network error — is the API server running? ' + e.message);
+  }
+  const data = await resp.json().catch(() => ({ detail: resp.statusText }));
+  return { status: resp.status, data };
+}
+
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ── Server status dashboard (health + credits) ─────────────────────────────────
+
+async function refreshStatus() {
+  const grid = document.getElementById('statusGrid');
+  try {
+    const [health, credits] = await Promise.all([
+      api('GET', '/health'),
+      api('GET', '/credits'),
+    ]);
+
+    const items = [];
+    items.push(['API', `<span class="badge ${health.status === 'ok' ? 'badge-ok' : 'badge-warn'}">${esc(health.status)}</span>`]);
+    items.push(['Database', `<span class="${health.database === 'ok' ? 'text-ok' : 'text-fail'}">${esc(health.database)}</span>`]);
+    items.push(['Tor reachable', health.tor_reachable
+      ? `<span class="text-ok">yes</span>${health.tor_socks_port ? ` <span class="text-muted">(:${health.tor_socks_port})</span>` : ''}`
+      : `<span class="text-fail">no</span>`]);
+    items.push(['Tor circuit', health.tor_circuit_ok === true ? '<span class="text-ok">ok</span>'
+      : health.tor_circuit_ok === false ? '<span class="text-fail">failed</span>'
+      : '<span class="text-muted">n/a</span>']);
+    items.push(['Credits balance', `<span style="font-size:16px;">${fmtMoney(credits.balance)}</span>`]);
+    items.push(['Credits granted', fmtMoney(credits.granted)]);
+    items.push(['Credits used', fmtMoney(credits.used)]);
+
+    grid.innerHTML = items.map(([label, value]) =>
+      `<div class="cls-item"><div class="cls-label">${esc(label)}</div><div class="cls-value">${value}</div></div>`
+    ).join('');
+
+    document.getElementById('statusUpdated').textContent = 'updated ' + new Date().toLocaleTimeString();
+  } catch (e) {
+    grid.innerHTML = `<div class="cls-item"><div class="cls-label">Error</div><div class="cls-value text-fail">${esc(e.message)}</div></div>`;
+  }
+}
+
+function fmtMoney(n) {
+  if (typeof n !== 'number') return esc(String(n));
+  return '$' + n.toFixed(3);
+}
+
+// ── Scrape tester ─────────────────────────────────────────────────────────────
+
+let lastHtml = null;
+
+async function runScrape() {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) { showError('Enter a URL first.'); return; }
+
+  setBusy(true);
+  clearError();
+  lastHtml = null;
+  document.getElementById('resultsCard').classList.add('hidden');
+
+  try {
+    const forceStrategy = document.getElementById('forceStrategy').value || undefined;
+    const { status, data } = await rawApi('POST', '/scrape', {
+      url,
+      ...(forceStrategy ? { force_strategy: forceStrategy } : {}),
+    });
+    if (status >= 400) {
+      renderScrapeRejected(url, status, data);
+    } else {
+      renderScrape(url, data);
+    }
+    await refreshStatus(); // credits balance changed
+  } catch (e) {
+    showError(e.message);
+  } finally {
+    setBusy(false);
+  }
+}
+
+function renderScrapeRejected(url, status, data) {
+  const html = `
+    <div class="status-bar">
+      <span class="badge badge-fail">✗ HTTP ${status}</span>
+      <span class="text-muted">${esc(data.detail || 'Request rejected.')}</span>
+    </div>`;
+  setResults(url, html);
+}
+
+function renderScrape(url, r) {
+  const ok = r.scraping_success;
+  const badge = ok ? 'badge-ok' : 'badge-fail';
+  const badgeText = ok ? '✓ Success' : '✗ Failed';
+
+  let html = `
+    <div class="status-bar">
+      <span class="badge ${badge}">${badgeText}</span>
+      ${r.provider ? `<span class="badge badge-info">provider: ${esc(r.provider)}</span>` : ''}
+      <span class="badge badge-muted">status: ${esc(r.status)}</span>
+      <span class="badge badge-muted">cost: ${fmtMoney(r.cost_score)}</span>
+      ${r.credits_remaining !== null && r.credits_remaining !== undefined ? `<span class="badge badge-muted">credits left: ${fmtMoney(r.credits_remaining)}</span>` : ''}
+    </div>
+    <div class="mt text-muted" style="font-size:13px;">${esc(r.message)}</div>
+    ${r.error_reason ? `<div class="mt error-msg">${esc(r.error_reason)}</div>` : ''}`;
+
+  if (r.html) {
+    lastHtml = r.html;
+    const kb  = (r.html.length / 1024).toFixed(1);
+    const raw = esc(r.html.slice(0, 15000)) + (r.html.length > 15000 ? '\n\n…(truncated to 15 000 chars)' : '');
+    html += `
+      <div class="mt">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:2px;">
+          Page Content &mdash; ${r.html.length.toLocaleString()} chars / ${kb}&nbsp;KB
+        </div>
+        <div class="content-tabs">
+          <button class="tab-btn active" data-tab="raw" onclick="switchTab('raw')">Raw HTML</button>
+          <button class="tab-btn" data-tab="rendered" onclick="switchTab('rendered')">Rendered</button>
+        </div>
+        <div class="tab-panel active" data-panel="raw"><div class="html-preview">${raw}</div></div>
+        <div class="tab-panel" data-panel="rendered">
+          <div class="frame-wrap"><iframe id="renderFrame" class="render-frame" sandbox="allow-same-origin" title="Rendered page preview"></iframe></div>
+          <p class="frame-note">Scripts are disabled. Images and external CSS load if URLs are absolute.</p>
+        </div>
+      </div>`;
+  }
+
+  setResults(url, html);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === tab));
+  if (tab === 'rendered') {
+    const iframe = document.getElementById('renderFrame');
+    if (iframe && lastHtml && !iframe.dataset.loaded) {
+      iframe.srcdoc = lastHtml;
+      iframe.dataset.loaded = '1';
+    }
+  }
+}
+
+async function runStatusLookup() {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) { showError('Enter a URL first.'); return; }
+  setBusy(true);
+  clearError();
+  try {
+    const r = await api('GET', '/status/' + encodeURIComponent(url));
+    if (!r.found) {
+      setResults(url, '<p class="text-muted">No stored record for this URL.</p>');
+      return;
+    }
+    const rec = r.record;
+    let inner = '<div class="cls-grid">';
+    for (const [k, v] of Object.entries(rec)) {
+      if (v === null || v === undefined || k === 'url') continue;
+      inner += `<div class="cls-item"><div class="cls-label">${esc(k.replace(/_/g, ' '))}</div><div class="cls-value" style="font-size:13px;">${esc(String(v))}</div></div>`;
+    }
+    inner += '</div>';
+    setResults(url, inner);
+  } catch (e) {
+    showError(e.message);
+  } finally {
+    setBusy(false);
+  }
+}
+
+function setResults(url, bodyHtml) {
+  document.getElementById('resultUrl').textContent = url;
+  document.getElementById('resultsBody').innerHTML = bodyHtml;
+  document.getElementById('resultsCard').classList.remove('hidden');
+}
+
+function setBusy(on) {
+  document.getElementById('scrapeBtn').disabled = on;
+  const msg = document.getElementById('loadingMsg');
+  on ? msg.classList.remove('hidden') : msg.classList.add('hidden');
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = '✗ ' + msg;
+  el.classList.remove('hidden');
+}
+
+function clearError() {
+  document.getElementById('errorMsg').classList.add('hidden');
+}
+
+// ── SSRF guard quick tests ──────────────────────────────────────────────────────
+// Mirrors the mandatory blocked ranges/schemes from url_security.py + the
+// TestSSRF cases in test_api.py.
+
+const SSRF_CASES = [
+  ['localhost',        'http://localhost/'],
+  ['127.0.0.1',        'http://127.0.0.1/'],
+  ['0.0.0.0',          'http://0.0.0.0/'],
+  ['metadata IP',      'http://169.254.169.254/'],
+  ['10.0.0.0/8',       'http://10.0.0.5/'],
+  ['172.16.0.0/12',    'http://172.16.0.5/'],
+  ['192.168.0.0/16',   'http://192.168.1.5/'],
+  ['IPv6 loopback',    'http://[::1]/'],
+  ['file:// scheme',   'file:///etc/passwd'],
+  ['ftp:// scheme',    'ftp://example.com/'],
+];
+
+function renderSsrfGrid() {
+  const grid = document.getElementById('ssrfGrid');
+  grid.innerHTML = SSRF_CASES.map(([label, url], i) => `
+    <div class="ssrf-case" id="ssrf-case-${i}">
+      <div class="ssrf-label">${esc(label)}</div>
+      <div class="ssrf-url">${esc(url)}</div>
+      <div class="ssrf-result text-muted">not tested</div>
+      <button class="btn btn-secondary btn-sm" onclick="runSsrfCase(${i})">Test</button>
+    </div>
+  `).join('');
+}
+
+async function runSsrfCase(i) {
+  const [, testUrl] = SSRF_CASES[i];
+  const el = document.querySelector(`#ssrf-case-${i} .ssrf-result`);
+  el.innerHTML = '<span class="text-muted">…</span>';
+  try {
+    const { status } = await rawApi('POST', '/scrape', { url: testUrl });
+    const blocked = status === 400 || status === 422;
+    el.innerHTML = blocked
+      ? `<span class="badge badge-ok">PASS — HTTP ${status}</span>`
+      : `<span class="badge badge-fail">FAIL — HTTP ${status} (not blocked!)</span>`;
+    return blocked;
+  } catch (e) {
+    el.innerHTML = `<span class="badge badge-fail">ERROR — ${esc(e.message)}</span>`;
+    return false;
+  }
+}
+
+async function runAllSsrfCases() {
+  const summary = document.getElementById('ssrfSummary');
+  summary.textContent = 'Running…';
+  let passed = 0;
+  for (let i = 0; i < SSRF_CASES.length; i++) {
+    const ok = await runSsrfCase(i);
+    if (ok) passed++;
+  }
+  summary.innerHTML = passed === SSRF_CASES.length
+    ? `<span class="text-ok">${passed}/${SSRF_CASES.length} blocked correctly</span>`
+    : `<span class="text-fail">${passed}/${SSRF_CASES.length} blocked correctly — guard may be misconfigured or SSRF_PROTECTION_ENABLED is off</span>`;
+}
+
+// ── Allow / Block list manager ──────────────────────────────────────────────────
+
+async function loadLists() {
+  try {
+    const r = await api('GET', '/admin/url-lists');
+    renderChipList('allowListItems', 'allow', r.allowlist);
+    renderChipList('blockListItems', 'block', r.blocklist);
+  } catch (e) {
+    document.getElementById('allowListItems').innerHTML = `<span class="text-fail" style="font-size:12px;">${esc(e.message)}</span>`;
+  }
+}
+
+function renderChipList(containerId, listName, domains) {
+  const el = document.getElementById(containerId);
+  if (!domains || domains.length === 0) {
+    el.innerHTML = '<span class="chip-empty">empty</span>';
+    return;
+  }
+  el.innerHTML = domains.map(d => `
+    <span class="chip">${esc(d)}<button title="Remove" onclick="removeListEntry('${listName}', ${JSON.stringify(d)})">✕</button></span>
+  `).join('');
+}
+
+async function addListEntry(listName) {
+  const input = document.getElementById(listName + 'DomainInput');
+  const domain = input.value.trim();
+  if (!domain) return;
+  try {
+    await api('POST', `/admin/url-lists/${listName}`, { domain });
+    input.value = '';
+    await loadLists();
+  } catch (e) {
+    alert('Failed to add: ' + e.message);
+  }
+}
+
+async function removeListEntry(listName, domain) {
+  try {
+    await api('DELETE', `/admin/url-lists/${listName}/${encodeURIComponent(domain)}`);
+    await loadLists();
+  } catch (e) {
+    alert('Failed to remove: ' + e.message);
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+(function init() {
+  loadConfig();
+  renderSsrfGrid();
+  refreshStatus();
+  loadLists();
+}());
+</script>
+</body>
+</html>
